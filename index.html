@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misterios de Chile - Generador</title>
+    <title>Misterios de Chile - Juego Histórico</title>
     <style>
         :root {
             --bg-color: #0f172a;
@@ -65,7 +65,6 @@
             opacity: 0.6;
         }
 
-        /* HISTORIAL RESPONSIVO CON LUPA */
         #history-section { 
             margin-top: 40px; 
             width: 100%; 
@@ -87,7 +86,6 @@
             height: 60px; 
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 1;
-            cursor: default;
         }
 
         .history-item-container:hover { 
@@ -118,28 +116,110 @@
             pointer-events: none;
         }
 
-        /* REPRODUCTOR */
-        .mystery-content { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; flex: 1; padding: 20px; }
-        .pistas-column { display: flex; flex-direction: column; gap: 15px; }
-        .btn-pista { background: #1e40af; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; min-width: 150px; }
-        .btn-pista:disabled { background: #1e293b; color: #475569; border: 1px solid #334155; cursor: not-allowed; opacity: 0.7; }
-        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; flex-direction: column; overflow-y: auto; }
-        #full-img { max-width: 70vw; max-height: 70vh; object-fit: contain; border-radius: 10px; }
-        .controls { background: #0b1120; padding: 20px; display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; flex-wrap: wrap; }
+        #player-overlay { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.95); 
+            z-index: 999; 
+            flex-direction: column; 
+            justify-content: center; 
+            align-items: center; 
+            overflow-y: auto; 
+            padding: 20px;
+            box-sizing: border-box;
+        }
 
-        #pista-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--accent); z-index: 10000; width: 85%; max-width: 400px; text-align: center; }
-        .modal-overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; }
+        .mystery-content { 
+            display: flex; 
+            flex-direction: row; 
+            align-items: center; 
+            justify-content: center; 
+            gap: 40px; 
+            width: 100%; 
+            max-width: 1100px; 
+            margin: auto;
+        }
+
+        #full-img { 
+            max-width: 60%; 
+            max-height: 70vh; 
+            object-fit: contain; 
+            border-radius: 15px; 
+            box-shadow: 0 0 50px rgba(0,0,0,0.5);
+            border: 2px solid #334155;
+        }
+
+        .pistas-column { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 20px; 
+            min-width: 250px; 
+        }
+
+        .btn-pista { 
+            background: #1e40af; 
+            color: white; 
+            padding: 15px 30px; 
+            border: none; 
+            border-radius: 10px; 
+            font-weight: bold; 
+            cursor: pointer; 
+        }
+
+        .btn-pista:disabled { 
+            background: #1e293b; 
+            color: #475569; 
+            border: 1px solid #334155; 
+            cursor: not-allowed; 
+            opacity: 0.7; 
+        }
+
+        .controls { 
+            background: #0b1120; 
+            padding: 25px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 30px; 
+            width: 100%; 
+            border-top: 1px solid #1e293b;
+            margin-top: 20px;
+        }
+
+        #pista-modal { 
+            display: none; 
+            position: fixed; 
+            top: 50%; left: 50%; 
+            transform: translate(-50%, -50%); 
+            background: var(--card-bg); 
+            padding: 30px; 
+            border-radius: 20px; 
+            border: 2px solid var(--accent); 
+            z-index: 10000; 
+            width: 85%; 
+            max-width: 400px; 
+            text-align: center; 
+        }
+
+        .modal-overlay-bg { 
+            display: none; 
+            position: fixed; 
+            top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0,0,0,0.8); 
+            z-index: 9999; 
+        }
 
         footer { margin-top: 30px; padding: 20px; color: var(--text-dim); font-size: 0.85rem; text-align: center; }
 
         @media (max-width: 768px) {
             h1 { font-size: 1.4rem; }
-            .mystery-content { flex-direction: column; padding: 10px; }
-            #full-img { max-width: 90vw; max-height: 50vh; }
-            .pistas-column { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; }
-            .btn-pista { padding: 12px 20px; min-width: 100px; font-size: 0.9rem; }
+            .mystery-content { flex-direction: column; gap: 20px; }
+            #full-img { max-width: 100%; max-height: 40vh; }
+            .pistas-column { width: 100%; min-width: unset; }
+            .btn-pista { width: 100%; }
+            .controls { flex-direction: column; gap: 15px; padding: 15px; }
             .history-item-container:hover { transform: scale(2.2); }
-            .controls { gap: 10px; }
         }
     </style>
 </head>
@@ -147,8 +227,8 @@
 
     <div id="modal-bg" class="modal-overlay-bg"></div>
     <div id="pista-modal">
-        <h2 style="color: var(--accent); margin-top: 0;">Pista Revelada</h2>
-        <p id="pista-texto" style="line-height: 1.6; margin: 20px 0;"></p>
+        <h2 style="color: var(--accent); margin-top: 0; font-size: 1.2rem;">Pista Revelada</h2>
+        <p id="pista-texto" style="line-height: 1.6; margin: 20px 0; font-size: 1rem;"></p>
         <button onclick="cerrarPista()" style="padding: 10px 20px; background: var(--accent); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">ENTENDIDO</button>
     </div>
 
@@ -196,7 +276,7 @@
         </div>
         <audio id="audio-player"></audio>
     </div>
-//Carga de imagenes
+
     <script>
         const baseNombres = {
             "01": "id_01_expedicion_almagro", "02": "id_02_fundacion_de_santiago",
@@ -213,7 +293,7 @@
             "23": "id_23_los_talavera", "24": "id_24_manuel_rodriguez",
             "25": "id_25_batalla_de_chacabuco"
         };
-//Pistas por imagen
+
         const pistasData = {
             "01": ["Travesía que cruzó grandes montañas nevadas.", "El grupo venía desde la ciudad imperial del norte.", "Regresaron por el desierto al no encontrar riquezas."],
             "02": ["Ubicado entre dos brazos de un río caudaloso.", "Se utilizó un cerro como punto de vigilancia.", "El diseño seguía una forma de tablero de ajedrez."],
@@ -242,7 +322,6 @@
             "25": ["Carga decidida de caballería que desarticuló al enemigo.", "Primer gran triunfo tras el cruce de las altas cumbres.", "Despejó el camino definitivo hacia la capital."]
         };
 
-        // --- LÓGICA DE NO REPETICIÓN ---
         let availableIDs = Object.keys(baseNombres); 
         let currentActiveID = null;
         const viewedHistory = [];
@@ -259,29 +338,22 @@
 
         function generateRandomQR() {
             if (availableIDs.length === 0) return;
-
-            // Seleccionar un índice al azar de los disponibles
             const randomIndex = Math.floor(Math.random() * availableIDs.length);
             currentActiveID = availableIDs[randomIndex];
-
-            // Eliminar el ID de la lista de disponibles para que no se repita
             availableIDs.splice(randomIndex, 1);
-
             const img = document.getElementById('qr-image');
             const placeholder = document.getElementById('qr-placeholder');
             img.src = `./qr/id_${currentActiveID}_qr.png`; 
             img.style.display = 'block';
             placeholder.style.display = 'none';
-
             updateCounter();
         }
-        // ------------------------------
 
         function clickToOpen() {
-            if (currentActiveID) openMystery(currentActiveID);
+            if (currentActiveID) openMystery(currentActiveID, true);
         }
 
-        function openMystery(id) {
+        function openMystery(id, addToHistory = false) {
             const name = baseNombres[id];
             currentActiveID = id;
             document.getElementById('full-img').src = `./imagenes/${name}.png`;
@@ -290,7 +362,7 @@
             
             document.querySelectorAll('.btn-pista').forEach(btn => {
                 btn.disabled = true;
-                btn.innerText = btn.id.replace('btn-', '').replace('-', ' ').toUpperCase();
+                btn.innerText = "PISTA " + btn.id.split('-').pop();
             });
             document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear";
             document.getElementById('pista-status').style.color = "var(--accent)";
@@ -298,27 +370,37 @@
             audio.play();
             document.getElementById('btn-play').innerText = "PAUSAR";
 
-            if (!viewedHistory.includes(id)) {
+            if (addToHistory && !viewedHistory.includes(id)) {
                 viewedHistory.unshift(id);
                 updateHistoryUI();
             }
         }
 
+        // DESBLOQUEO SECUENCIAL (Cambio aquí)
         document.getElementById('audio-player').onended = function() {
-            document.querySelectorAll('.btn-pista').forEach(btn => btn.disabled = false);
-            document.getElementById('pista-status').innerText = "¡Pistas desbloqueadas!";
+            document.getElementById('btn-pista-1').disabled = false;
+            document.getElementById('pista-status').innerText = "¡Pista 1 desbloqueada!";
             document.getElementById('pista-status').style.color = "#22c55e";
         };
 
         function mostrarPista(numero) {
-            const textoPista = (pistasData[currentActiveID] && pistasData[currentActiveID][numero-1]) 
-                                ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
+            const textoPista = pistasData[currentActiveID] ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
             document.getElementById('pista-texto').innerText = textoPista;
             document.getElementById('modal-bg').style.display = 'block';
             document.getElementById('pista-modal').style.display = 'block';
-            const btn = document.getElementById(`btn-pista-${numero}`);
-            btn.disabled = true;
-            btn.innerText = "USADA";
+            
+            const currentBtn = document.getElementById(`btn-pista-${numero}`);
+            currentBtn.disabled = true;
+            currentBtn.innerText = "USADA";
+
+            // Habilitar la siguiente pista si existe
+            if (numero < 3) {
+                const nextNum = numero + 1;
+                document.getElementById(`btn-pista-${nextNum}`).disabled = false;
+                document.getElementById('pista-status').innerText = `¡Pista ${nextNum} desbloqueada!`;
+            } else {
+                document.getElementById('pista-status').innerText = "Has usado todas las pistas.";
+            }
         }
 
         function cerrarPista() {
@@ -331,21 +413,10 @@
             const list = document.getElementById('history-list');
             section.style.display = 'block';
             list.innerHTML = '';
-            
             viewedHistory.forEach(id => {
                 const container = document.createElement('div');
                 container.className = 'history-item-container';
-
-                const img = document.createElement('img');
-                img.src = `./imagenes/${baseNombres[id]}.png`;
-                img.className = 'history-item';
-                
-                const idTag = document.createElement('div');
-                idTag.className = 'history-id-tag';
-                idTag.innerText = id;
-
-                container.appendChild(img);
-                container.appendChild(idTag);
+                container.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" class="history-item"><div class="history-id-tag">${id}</div>`;
                 list.appendChild(container);
             });
         }
@@ -353,7 +424,6 @@
         function closePlayer() {
             document.getElementById('audio-player').pause();
             document.getElementById('player-overlay').style.display = 'none';
-            // Al cerrar, limpiamos el visual del generador para el siguiente
             document.getElementById('qr-image').style.display = 'none';
             document.getElementById('qr-placeholder').style.display = 'block';
             currentActiveID = null;
@@ -382,13 +452,8 @@
             Object.keys(baseNombres).sort().forEach(id => {
                 const div = document.createElement('div');
                 div.style.cssText = "background:#1e293b; border-radius:12px; overflow:hidden; cursor:pointer; border: 1px solid #334155;";
-                div.onclick = () => openMystery(id);
-                div.innerHTML = `
-                    <img src="./imagenes/${baseNombres[id]}.png" style="width:100%; height:110px; object-fit:cover;">
-                    <div style="padding:10px; text-align:center;">
-                        <span style="font-size:0.75rem; color:var(--accent); font-weight:bold;">ID ${id}</span>
-                    </div>
-                `;
+                div.onclick = () => openMystery(id, false); 
+                div.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px; text-align:center;"><span style="font-size:0.75rem; color:var(--accent); font-weight:bold;">ID ${id}</span></div>`;
                 grid.appendChild(div);
             });
         }
@@ -399,7 +464,6 @@
             document.getElementById('time-display').innerText = `${f(audio.currentTime)} / ${f(audio.duration || 0)}`;
         };
 
-        // Inicializar contador al cargar
         updateCounter();
     </script>
 </body>
