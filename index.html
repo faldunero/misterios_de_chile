@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misterios de Chile - Generador</title>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent: #3b82f6;
+            --text-main: #f1f5f9;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .view { display: none; flex-direction: column; align-items: center; width: 100%; padding: 20px; box-sizing: border-box; }
+        .view.active { display: flex; }
+
+        h1 { margin-top: 40px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-align: center; font-size: 1.8rem; }
+
+        .qr-wrapper {
+            background: white;
+            padding: 20px;
+            border-radius: 20px;
+            margin: 30px 0;
+            width: 100%;
+            max-width: 280px; 
+            aspect-ratio: 1 / 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
+            cursor: pointer;
+        }
+        
+        #qr-image { width: 100%; height: auto; display: none; }
+        .placeholder-text { color: #64748b; font-style: italic; text-align: center; font-size: 0.9rem; }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 18px 30px;
+            border-radius: 50px;
+            font-weight: 800;
+            border: none;
+            cursor: pointer;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn-primary:disabled {
+            background: #334155;
+            cursor: not-allowed;
+            opacity: 0.6;
+        }
+
+        /* HISTORIAL RESPONSIVO CON LUPA */
+        #history-section { 
+            margin-top: 40px; 
+            width: 100%; 
+            max-width: 900px; 
+            text-align: center;
+            padding-bottom: 60px; 
+        }
+        .history-list { 
+            display: flex; 
+            gap: 15px; 
+            padding: 20px; 
+            justify-content: center; 
+            flex-wrap: wrap;
+        }
+        
+        .history-item-container { 
+            position: relative; 
+            flex: 0 0 80px; 
+            height: 60px; 
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            z-index: 1;
+            cursor: default;
+        }
+
+        .history-item-container:hover { 
+            transform: scale(3); 
+            z-index: 100; 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+        }
+        
+        .history-item { 
+            width: 100%; 
+            height: 100%; 
+            border-radius: 6px; 
+            object-fit: cover; 
+            border: 2px solid #334155; 
+            display: block;
+        }
+
+        .history-id-tag {
+            position: absolute;
+            bottom: 2px;
+            right: 2px;
+            background: rgba(15, 23, 42, 0.9);
+            color: var(--accent);
+            font-size: 8px;
+            font-weight: bold;
+            padding: 1px 3px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+
+        /* REPRODUCTOR */
+        .mystery-content { display: flex; flex-direction: row; align-items: center; justify-content: center; gap: 20px; width: 100%; max-width: 1200px; flex: 1; padding: 20px; }
+        .pistas-column { display: flex; flex-direction: column; gap: 15px; }
+        .btn-pista { background: #1e40af; color: white; padding: 15px 30px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; min-width: 150px; }
+        .btn-pista:disabled { background: #1e293b; color: #475569; border: 1px solid #334155; cursor: not-allowed; opacity: 0.7; }
+        #player-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 999; flex-direction: column; overflow-y: auto; }
+        #full-img { max-width: 70vw; max-height: 70vh; object-fit: contain; border-radius: 10px; }
+        .controls { background: #0b1120; padding: 20px; display: flex; justify-content: center; align-items: center; gap: 20px; width: 100%; flex-wrap: wrap; }
+
+        #pista-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: var(--card-bg); padding: 30px; border-radius: 20px; border: 2px solid var(--accent); z-index: 10000; width: 85%; max-width: 400px; text-align: center; }
+        .modal-overlay-bg { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 9999; }
+
+        footer { margin-top: 30px; padding: 20px; color: var(--text-dim); font-size: 0.85rem; text-align: center; }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 1.4rem; }
+            .mystery-content { flex-direction: column; padding: 10px; }
+            #full-img { max-width: 90vw; max-height: 50vh; }
+            .pistas-column { flex-direction: row; flex-wrap: wrap; justify-content: center; gap: 10px; }
+            .btn-pista { padding: 12px 20px; min-width: 100px; font-size: 0.9rem; }
+            .history-item-container:hover { transform: scale(2.2); }
+            .controls { gap: 10px; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="modal-bg" class="modal-overlay-bg"></div>
+    <div id="pista-modal">
+        <h2 style="color: var(--accent); margin-top: 0;">Pista Revelada</h2>
+        <p id="pista-texto" style="line-height: 1.6; margin: 20px 0;"></p>
+        <button onclick="cerrarPista()" style="padding: 10px 20px; background: var(--accent); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">ENTENDIDO</button>
+    </div>
+
+    <div id="view-generator" class="view active">
+        <h1>Misterios de Chile</h1>
+        <div class="qr-wrapper" onclick="clickToOpen()">
+            <div id="qr-placeholder" class="placeholder-text">Genera un misterio para comenzar</div>
+            <img id="qr-image" src="" alt="QR Misterio">
+        </div>
+        <button class="btn-primary" id="btn-generate" onclick="generateRandomQR()">GENERAR MISTERIO (QR)</button>
+        <p id="counter-info" style="font-size: 0.7rem; color: var(--text-dim); margin-top: 10px;"></p>
+
+        <div id="history-section" style="display:none;">
+            <p style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Visto recientemente</p>
+            <div class="history-list" id="history-list"></div>
+        </div>
+
+        <button onclick="showGallery()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Ver galería completa</button>
+
+        <footer>
+            Autor: <strong>Felipe Ignacio Aldunate Romero</strong>
+        </footer>
+    </div>
+
+    <div id="view-gallery" class="view">
+        <h1>Galería Completa</h1>
+        <div id="selection-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; width: 100%; max-width: 1000px;"></div>
+        <button onclick="showGenerator()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Volver al Generador</button>
+    </div>
+
+    <div id="player-overlay">
+        <div class="mystery-content">
+            <img id="full-img" src="">
+            <div class="pistas-column">
+                <button class="btn-pista" id="btn-pista-1" onclick="mostrarPista(1)" disabled>Pista 1</button>
+                <button class="btn-pista" id="btn-pista-2" onclick="mostrarPista(2)" disabled>Pista 2</button>
+                <button class="btn-pista" id="btn-pista-3" onclick="mostrarPista(3)" disabled>Pista 3</button>
+                <p id="pista-status" style="font-size: 0.7rem; color: var(--accent); text-align: center;">Escucha el audio para desbloquear</p>
+            </div>
+        </div>
+        <div class="controls">
+            <span id="time-display" style="font-family: monospace;">00:00 / 00:00</span>
+            <button onclick="toggleAudio()" id="btn-play" style="padding:12px 24px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
+            <button onclick="closePlayer()" style="padding:12px 24px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
+        </div>
+        <audio id="audio-player"></audio>
+    </div>
+//Carga de imagenes
+    <script>
+        const baseNombres = {
+            "01": "id_01_expedicion_almagro", "02": "id_02_fundacion_de_santiago",
+            "03": "id_03_destruccion_de_santiago", "04": "id_04_fundacion_de_concepcion",
+            "05": "id_05_batalla_de_tucapel", "06": "id_06_batalla_de_lagunillas",
+            "07": "id_07_desastre_de_curalaba", "08": "id_08_real_situado",
+            "09": "id_09_esclavitud_indigena", "10": "id_10_parlamento_de_quilin",
+            "11": "id_11_el_terremoto_magno", "12": "id_12_el_inquilino",
+            "13": "id_13_expulsion_jesuita", "14": "id_14_abolicion_encomienda",
+            "15": "id_15_camino_santiago_valparaiso", "16": "id_16_primera_junta_de_gobierno",
+            "17": "id_17_primer_congreso_nacional", "18": "id_18_libertad_de_vientres", 
+            "19": "id_19_la_aurora_de_chile", "20": "id_20_reglamento_constitucional",
+            "21": "id_21_instituto_nacional", "22": "id_22_desastre_de_rancagua",
+            "23": "id_23_los_talavera", "24": "id_24_manuel_rodriguez",
+            "25": "id_25_batalla_de_chacabuco"
+        };
+//Pistas por imagen
+        const pistasData = {
+            "01": ["Travesía que cruzó grandes montañas nevadas.", "El grupo venía desde la ciudad imperial del norte.", "Regresaron por el desierto al no encontrar riquezas."],
+            "02": ["Ubicado entre dos brazos de un río caudaloso.", "Se utilizó un cerro como punto de vigilancia.", "El diseño seguía una forma de tablero de ajedrez."],
+            "03": ["Tras el descontento de comunidades locales por el avance foráneo.", "La ciudad fue reducida a cenizas casi en su totalidad.", "Obligó a refugiarse en el centro de la plaza principal."],
+            "04": ["Establecido cerca de una bahía protegida en el sur.", "Punto de apoyo militar para la guerra en la frontera.", "Destruida y refundada en múltiples ocasiones."],
+            "05": ["Librada en una zona de ciénagas y humedales.", "Victoria decisiva para los defensores de la tierra.", "Marcó el fin del liderazgo del principal conquistador."],
+            "06": ["Ocurrió cerca de las orillas de un río fronterizo.", "Guerreros locales enfrentaron a tropas extranjeras.", "Valentía extrema mostrada a pesar de las heridas."],
+            "07": ["Emboscada nocturna en medio del bosque.", "Pérdida de la máxima autoridad del territorio.", "Retirada general de las ciudades del sur."],
+            "08": ["Dinero enviado desde las minas del norte.", "Servía para pagar sueldos del ejército permanente.", "Vital para la estabilidad económica de la zona."],
+            "09": ["Captura de mano de obra en zonas de guerra.", "Debate sobre la libertad de los pueblos originarios.", "Justificado como castigo por la rebelión."],
+            "10": ["Reunión diplomática en un campo abierto.", "Buscaba establecer condiciones de paz y límites.", "Intercambio de regalos y discursos de amistad."],
+            "11": ["Evento sísmico que destruyó la infraestructura colonial.", "Impacto en la ciudad portuaria más importante.", "Cambió la arquitectura de iglesias y casas."],
+            "12": ["Trabajaba la tierra a cambio de protección y vivienda.", "Vivía dentro de grandes propiedades rurales.", "Base de la sociedad campesina por siglos."],
+            "13": ["Orden religiosa expulsada de todos los territorios.", "Influyentes en educación y economía.", "Dejaron atrás bibliotecas y tierras de cultivo."],
+            "14": ["Fin del sistema de entrega de trabajadores a señores.", "Modernización de administración y derechos básicos.", "Resistencia entre dueños de grandes extensiones."],
+            "15": ["Ruta de transporte entre el centro y la costa.", "Comercio de productos que llegaban por mar.", "Obra de ingeniería compleja para la época."],
+            "16": ["Paso hacia la autonomía administrativa propia.", "Convocado por la ausencia del monarca.", "Ciudadanos influyentes reunidos en cabildo abierto."],
+            "17": ["Representantes de distintas zonas reunidos a legislar.", "Base de una nueva organización política.", "Debates entre cambios rápidos y lentos."],
+            "18": ["Ley que otorgaba libertad a hijos de esclavizados.", "Paso pionero hacia la justicia social.", "Buscaba extinguir la servidumbre forzada."],
+            "19": ["Primer medio impreso de ideas de autonomía.", "Educación sobre derechos ciudadanos.", "Textos circulaban sin permiso oficial."],
+            "20": ["Reglas para limitar el poder de gobernantes.", "Derechos y deberes de quienes habitaban el suelo.", "Antecesor de las cartas fundamentales modernas."],
+            "21": ["Se fundó un pilar para el pensamiento de la nueva nación.", "Concebida como un faro de luz para formar ciudadanos.", "La institución educativa más antigua del país."],
+            "22": ["Una resistencia tenaz que terminó en sacrificio extremo.", "Marcó el inicio de un periodo de restauración del poder foráneo.", "Obligó a un exilio doloroso tras la cordillera."],
+            "23": ["Regimiento extranjero de disciplina implacable.", "Famosos por su extrema crueldad en labores de represión.", "Simbolizaron el fin de la tolerancia en la capital."],
+            "24": ["Líder audaz que tejía una red de inteligencia en los valles.", "Se volvía invisible a plena vista usando diversos disfraces.", "Actuó como los ojos y oídos de las fuerzas libertadoras."],
+            "25": ["Carga decidida de caballería que desarticuló al enemigo.", "Primer gran triunfo tras el cruce de las altas cumbres.", "Despejó el camino definitivo hacia la capital."]
+        };
+
+        // --- LÓGICA DE NO REPETICIÓN ---
+        let availableIDs = Object.keys(baseNombres); 
+        let currentActiveID = null;
+        const viewedHistory = [];
+
+        function updateCounter() {
+            const info = document.getElementById('counter-info');
+            info.innerText = `Misterios restantes: ${availableIDs.length}`;
+            if (availableIDs.length === 0) {
+                document.getElementById('btn-generate').innerText = "PARTIDA COMPLETADA";
+                document.getElementById('btn-generate').disabled = true;
+                info.innerText = "Has visto todos los misterios de esta sesión.";
+            }
+        }
+
+        function generateRandomQR() {
+            if (availableIDs.length === 0) return;
+
+            // Seleccionar un índice al azar de los disponibles
+            const randomIndex = Math.floor(Math.random() * availableIDs.length);
+            currentActiveID = availableIDs[randomIndex];
+
+            // Eliminar el ID de la lista de disponibles para que no se repita
+            availableIDs.splice(randomIndex, 1);
+
+            const img = document.getElementById('qr-image');
+            const placeholder = document.getElementById('qr-placeholder');
+            img.src = `./qr/id_${currentActiveID}_qr.png`; 
+            img.style.display = 'block';
+            placeholder.style.display = 'none';
+
+            updateCounter();
+        }
+        // ------------------------------
+
+        function clickToOpen() {
+            if (currentActiveID) openMystery(currentActiveID);
+        }
+
+        function openMystery(id) {
+            const name = baseNombres[id];
+            currentActiveID = id;
+            document.getElementById('full-img').src = `./imagenes/${name}.png`;
+            const audio = document.getElementById('audio-player');
+            audio.src = `./audios/${name}.mp4`;
+            
+            document.querySelectorAll('.btn-pista').forEach(btn => {
+                btn.disabled = true;
+                btn.innerText = btn.id.replace('btn-', '').replace('-', ' ').toUpperCase();
+            });
+            document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear";
+            document.getElementById('pista-status').style.color = "var(--accent)";
+            document.getElementById('player-overlay').style.display = 'flex';
+            audio.play();
+            document.getElementById('btn-play').innerText = "PAUSAR";
+
+            if (!viewedHistory.includes(id)) {
+                viewedHistory.unshift(id);
+                updateHistoryUI();
+            }
+        }
+
+        document.getElementById('audio-player').onended = function() {
+            document.querySelectorAll('.btn-pista').forEach(btn => btn.disabled = false);
+            document.getElementById('pista-status').innerText = "¡Pistas desbloqueadas!";
+            document.getElementById('pista-status').style.color = "#22c55e";
+        };
+
+        function mostrarPista(numero) {
+            const textoPista = (pistasData[currentActiveID] && pistasData[currentActiveID][numero-1]) 
+                                ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
+            document.getElementById('pista-texto').innerText = textoPista;
+            document.getElementById('modal-bg').style.display = 'block';
+            document.getElementById('pista-modal').style.display = 'block';
+            const btn = document.getElementById(`btn-pista-${numero}`);
+            btn.disabled = true;
+            btn.innerText = "USADA";
+        }
+
+        function cerrarPista() {
+            document.getElementById('modal-bg').style.display = 'none';
+            document.getElementById('pista-modal').style.display = 'none';
+        }
+
+        function updateHistoryUI() {
+            const section = document.getElementById('history-section');
+            const list = document.getElementById('history-list');
+            section.style.display = 'block';
+            list.innerHTML = '';
+            
+            viewedHistory.forEach(id => {
+                const container = document.createElement('div');
+                container.className = 'history-item-container';
+
+                const img = document.createElement('img');
+                img.src = `./imagenes/${baseNombres[id]}.png`;
+                img.className = 'history-item';
+                
+                const idTag = document.createElement('div');
+                idTag.className = 'history-id-tag';
+                idTag.innerText = id;
+
+                container.appendChild(img);
+                container.appendChild(idTag);
+                list.appendChild(container);
+            });
+        }
+
+        function closePlayer() {
+            document.getElementById('audio-player').pause();
+            document.getElementById('player-overlay').style.display = 'none';
+            // Al cerrar, limpiamos el visual del generador para el siguiente
+            document.getElementById('qr-image').style.display = 'none';
+            document.getElementById('qr-placeholder').style.display = 'block';
+            currentActiveID = null;
+        }
+
+        function toggleAudio() {
+            const audio = document.getElementById('audio-player');
+            if(audio.paused) { audio.play(); document.getElementById('btn-play').innerText = "PAUSAR"; }
+            else { audio.pause(); document.getElementById('btn-play').innerText = "REPRODUCIR"; }
+        }
+
+        function showGallery() {
+            document.getElementById('view-generator').classList.remove('active');
+            document.getElementById('view-gallery').classList.add('active');
+            renderGrid();
+        }
+
+        function showGenerator() {
+            document.getElementById('view-gallery').classList.remove('active');
+            document.getElementById('view-generator').classList.add('active');
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('selection-grid');
+            grid.innerHTML = '';
+            Object.keys(baseNombres).sort().forEach(id => {
+                const div = document.createElement('div');
+                div.style.cssText = "background:#1e293b; border-radius:12px; overflow:hidden; cursor:pointer; border: 1px solid #334155;";
+                div.onclick = () => openMystery(id);
+                div.innerHTML = `
+                    <img src="./imagenes/${baseNombres[id]}.png" style="width:100%; height:110px; object-fit:cover;">
+                    <div style="padding:10px; text-align:center;">
+                        <span style="font-size:0.75rem; color:var(--accent); font-weight:bold;">ID ${id}</span>
+                    </div>
+                `;
+                grid.appendChild(div);
+            });
+        }
+
+        document.getElementById('audio-player').ontimeupdate = () => {
+            const audio = document.getElementById('audio-player');
+            const f = (t) => Math.floor(t/60).toString().padStart(2,'0') + ":" + Math.floor(t%60).toString().padStart(2,'0');
+            document.getElementById('time-display').innerText = `${f(audio.currentTime)} / ${f(audio.duration || 0)}`;
+        };
+
+        // Inicializar contador al cargar
+        updateCounter();
+    </script>
+</body>
+</html>
