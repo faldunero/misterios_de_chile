@@ -1,0 +1,24 @@
+<svg width="700" height="250" viewBox="0 0 700 250" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad_misterios_final" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F58220" />
+      <stop offset="100%" style="stop-color:#D4145A" />
+    </linearGradient>
+  </defs>
+
+  <g id="isotipo" transform="translate(20, 25)">
+    <circle cx="100" cy="100" r="95" stroke="#8B7355" stroke-width="3" fill="#F4EBD0" fill-opacity="0.1"/>
+    <circle cx="100" cy="100" r="85" stroke="#5C4B32" stroke-width="1.5"/>
+    <path d="M100 10 L112 90 L190 100 L112 110 L100 190 L88 110 L10 100 L88 90 Z" fill="#A48961" stroke="#3E3221" stroke-width="2"/>
+    <path d="M100 40 L108 92 L160 100 L108 108 L100 160 L92 108 L40 100 L92 92 Z" fill="#8B7355" stroke="#5C4B32" stroke-width="1"/>
+    <circle cx="100" cy="100" r="30" fill="#A48961" stroke="#5C4B32" stroke-width="1.5"/>
+    <path d="M100 70 A30 30 0 0 1 130 100 L100 100 Z" fill="#8B7355" opacity="0.6"/>
+    <path d="M100 100 L145 55 L100 95 L55 145 Z" fill="#3E3221"/>
+    <circle cx="100" cy="100" r="8" fill="#F4EBD0" stroke="#3E3221" stroke-width="2"/>
+  </g>
+
+  <g id="logotipo" transform="translate(240, 70)">
+    <text x="0" y="50" fill="url(#grad_misterios_final)" font-family="Montserrat, sans-serif" font-weight="800" font-size="75">Misterios</text>
+    <text x="0" y="115" fill="#1A369C" font-family="Montserrat, sans-serif" font-weight="800" font-size="65">de Chile</text>
+  </g>
+</svg>

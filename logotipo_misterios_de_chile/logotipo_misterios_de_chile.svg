@@ -1,0 +1,14 @@
+<svg width="500" height="160" viewBox="0 0 500 160" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad_misterios_solo" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#F58220" />
+      <stop offset="100%" style="stop-color:#D4145A" />
+    </linearGradient>
+  </defs>
+
+  <g font-family="Montserrat, sans-serif">
+    <text x="0" y="65" fill="url(#grad_misterios_solo)" font-weight="800" font-size="80">Misterios</text>
+    
+    <text x="0" y="135" fill="#1A369C" font-weight="800" font-size="70">de Chile</text>
+  </g>
+</svg>
