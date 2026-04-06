@@ -27,7 +27,13 @@
         .view { display: none; flex-direction: column; align-items: center; width: 100%; padding: 20px; box-sizing: border-box; }
         .view.active { display: flex; }
 
-        h1 { margin-top: 40px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-align: center; font-size: 1.8rem; }
+        h1 { margin-top: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-align: center; font-size: 1.8rem; }
+
+        .main-logo {
+            max-width: 420px; 
+            height: auto;
+            margin-top: 40px;
+        }
 
         .qr-wrapper {
             background: white;
@@ -130,20 +136,25 @@
             box-sizing: border-box;
         }
 
+        #player-overlay .main-logo {
+            margin-top: 0;
+            margin-bottom: 20px;
+        }
+
         .mystery-content { 
             display: flex; 
-            flex-direction: row; 
+            flex-direction: column; 
             align-items: center; 
             justify-content: center; 
-            gap: 40px; 
+            gap: 25px; 
             width: 100%; 
-            max-width: 1100px; 
-            margin: auto;
+            max-width: 800px; 
+            margin: 0 auto; 
         }
 
         #full-img { 
-            max-width: 60%; 
-            max-height: 70vh; 
+            max-width: 100%; 
+            max-height: 50vh; 
             object-fit: contain; 
             border-radius: 15px; 
             box-shadow: 0 0 50px rgba(0,0,0,0.5);
@@ -152,19 +163,23 @@
 
         .pistas-column { 
             display: flex; 
-            flex-direction: column; 
-            gap: 20px; 
-            min-width: 250px; 
+            flex-direction: row; 
+            gap: 10px; 
+            width: 100%;
+            justify-content: center;
         }
 
         .btn-pista { 
             background: #1e40af; 
             color: white; 
-            padding: 15px 30px; 
+            padding: 12px 20px; 
             border: none; 
             border-radius: 10px; 
             font-weight: bold; 
             cursor: pointer; 
+            flex: 1;
+            max-width: 120px;
+            font-size: 0.9rem;
         }
 
         .btn-pista:disabled { 
@@ -177,14 +192,16 @@
 
         .controls { 
             background: #0b1120; 
-            padding: 25px; 
+            padding: 20px; 
             display: flex; 
             justify-content: center; 
             align-items: center; 
-            gap: 30px; 
+            gap: 20px; 
             width: 100%; 
-            border-top: 1px solid #1e293b;
-            margin-top: 20px;
+            max-width: 500px; 
+            border-radius: 15px;
+            border: 1px solid #1e293b;
+            margin-top: 30px;
         }
 
         #pista-modal { 
@@ -210,16 +227,14 @@
             z-index: 9999; 
         }
 
-        footer { margin-top: 30px; padding: 20px; color: var(--text-dim); font-size: 0.85rem; text-align: center; }
+        footer { margin-top: auto; padding: 20px; color: var(--text-dim); font-size: 0.85rem; text-align: center; }
 
         @media (max-width: 768px) {
             h1 { font-size: 1.4rem; }
-            .mystery-content { flex-direction: column; gap: 20px; }
-            #full-img { max-width: 100%; max-height: 40vh; }
-            .pistas-column { width: 100%; min-width: unset; }
-            .btn-pista { width: 100%; }
-            .controls { flex-direction: column; gap: 15px; padding: 15px; }
-            .history-item-container:hover { transform: scale(2.2); }
+            .main-logo { max-width: 280px; }
+            .pistas-column { flex-direction: column; align-items: center; }
+            .btn-pista { max-width: 280px; width: 100%; }
+            .controls { flex-direction: column; gap: 10px; width: 90%; }
         }
     </style>
 </head>
@@ -233,11 +248,13 @@
     </div>
 
     <div id="view-generator" class="view active">
-        <h1>Misterios de Chile</h1>
+        <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo Misterios de Chile" class="main-logo">
+        
         <div class="qr-wrapper" onclick="clickToOpen()">
             <div id="qr-placeholder" class="placeholder-text">Genera un misterio para comenzar</div>
             <img id="qr-image" src="" alt="QR Misterio">
         </div>
+
         <button class="btn-primary" id="btn-generate" onclick="generateRandomQR()">GENERAR MISTERIO (QR)</button>
         <p id="counter-info" style="font-size: 0.7rem; color: var(--text-dim); margin-top: 10px;"></p>
 
@@ -249,7 +266,8 @@
         <button onclick="showGallery()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Ver galería completa</button>
 
         <footer>
-            Autor: <strong>Felipe Ignacio Aldunate Romero</strong>
+            Autor: <strong>Felipe Ignacio Aldunate Romero</strong> (faldunate@gmail.com)<br>
+            <img src="logotipo_ludo_lab.svg" alt="Ludo Lab Logo" style="max-width: 200px; height: auto; margin-top: 20px; opacity: 1;">
         </footer>
     </div>
 
@@ -260,19 +278,22 @@
     </div>
 
     <div id="player-overlay">
+        <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo Misterios de Chile" class="main-logo">
+        
         <div class="mystery-content">
             <img id="full-img" src="">
+            <p id="pista-status" style="font-size: 0.8rem; color: var(--accent); margin: 0;">Escucha el audio para desbloquear pistas</p>
             <div class="pistas-column">
                 <button class="btn-pista" id="btn-pista-1" onclick="mostrarPista(1)" disabled>Pista 1</button>
                 <button class="btn-pista" id="btn-pista-2" onclick="mostrarPista(2)" disabled>Pista 2</button>
                 <button class="btn-pista" id="btn-pista-3" onclick="mostrarPista(3)" disabled>Pista 3</button>
-                <p id="pista-status" style="font-size: 0.7rem; color: var(--accent); text-align: center;">Escucha el audio para desbloquear</p>
             </div>
         </div>
+
         <div class="controls">
-            <span id="time-display" style="font-family: monospace;">00:00 / 00:00</span>
-            <button onclick="toggleAudio()" id="btn-play" style="padding:12px 24px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
-            <button onclick="closePlayer()" style="padding:12px 24px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
+            <span id="time-display" style="font-family: monospace; font-size: 0.9rem;">00:00 / 00:00</span>
+            <button onclick="toggleAudio()" id="btn-play" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
+            <button onclick="closePlayer()" style="padding:10px 20px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
         </div>
         <audio id="audio-player"></audio>
     </div>
@@ -314,7 +335,7 @@
             "17": ["Representantes de distintas zonas reunidos a legislar.", "Base de una nueva organización política.", "Debates entre cambios rápidos y lentos."],
             "18": ["Ley que otorgaba libertad a hijos de esclavizados.", "Paso pionero hacia la justicia social.", "Buscaba extinguir la servidumbre forzada."],
             "19": ["Primer medio impreso de ideas de autonomía.", "Educación sobre derechos ciudadanos.", "Textos circulaban sin permiso oficial."],
-            "20": ["Reglas para limitar el poder de gobernantes.", "Derechos y deberes de quienes habitaban el suelo.", "Antecesor de las cartas fundamentales modernas."],
+            "20": ["Regrules para limitar el poder de gobernantes.", "Derechos y deberes de quienes habitaban el suelo.", "Antecesor de las cartas fundamentales modernas."],
             "21": ["Se fundó un pilar para el pensamiento de la nueva nación.", "Concebida como un faro de luz para formar ciudadanos.", "La institución educativa más antigua del país."],
             "22": ["Una resistencia tenaz que terminó en sacrificio extremo.", "Marcó el inicio de un periodo de restauración del poder foráneo.", "Obligó a un exilio doloroso tras la cordillera."],
             "23": ["Regimiento extranjero de disciplina implacable.", "Famosos por su extrema crueldad en labores de represión.", "Simbolizaron el fin de la tolerancia en la capital."],
@@ -328,11 +349,10 @@
 
         function updateCounter() {
             const info = document.getElementById('counter-info');
-            info.innerText = `Misterios restantes: ${availableIDs.length}`;
+            if(info) info.innerText = `Misterios restantes: ${availableIDs.length}`;
             if (availableIDs.length === 0) {
-                document.getElementById('btn-generate').innerText = "PARTIDA COMPLETADA";
-                document.getElementById('btn-generate').disabled = true;
-                info.innerText = "Has visto todos los misterios de esta sesión.";
+                const btn = document.getElementById('btn-generate');
+                if(btn) { btn.innerText = "PARTIDA COMPLETADA"; btn.disabled = true; }
             }
         }
 
@@ -362,9 +382,9 @@
             
             document.querySelectorAll('.btn-pista').forEach(btn => {
                 btn.disabled = true;
-                btn.innerText = "PISTA " + btn.id.split('-').pop();
+                btn.innerText = "Pista " + btn.id.split('-').pop();
             });
-            document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear";
+            document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear pistas";
             document.getElementById('pista-status').style.color = "var(--accent)";
             document.getElementById('player-overlay').style.display = 'flex';
             audio.play();
@@ -376,7 +396,6 @@
             }
         }
 
-        // DESBLOQUEO SECUENCIAL (Cambio aquí)
         document.getElementById('audio-player').onended = function() {
             document.getElementById('btn-pista-1').disabled = false;
             document.getElementById('pista-status').innerText = "¡Pista 1 desbloqueada!";
@@ -391,15 +410,14 @@
             
             const currentBtn = document.getElementById(`btn-pista-${numero}`);
             currentBtn.disabled = true;
-            currentBtn.innerText = "USADA";
+            currentBtn.innerText = "Vista";
 
-            // Habilitar la siguiente pista si existe
             if (numero < 3) {
                 const nextNum = numero + 1;
                 document.getElementById(`btn-pista-${nextNum}`).disabled = false;
-                document.getElementById('pista-status').innerText = `¡Pista ${nextNum} desbloqueada!`;
+                document.getElementById('pista-status').innerText = `¡Pista ${nextNum} disponible!`;
             } else {
-                document.getElementById('pista-status').innerText = "Has usado todas las pistas.";
+                document.getElementById('pista-status').innerText = "Todas las pistas reveladas.";
             }
         }
 
@@ -411,14 +429,16 @@
         function updateHistoryUI() {
             const section = document.getElementById('history-section');
             const list = document.getElementById('history-list');
-            section.style.display = 'block';
-            list.innerHTML = '';
-            viewedHistory.forEach(id => {
-                const container = document.createElement('div');
-                container.className = 'history-item-container';
-                container.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" class="history-item"><div class="history-id-tag">${id}</div>`;
-                list.appendChild(container);
-            });
+            if(section) section.style.display = 'block';
+            if(list) {
+                list.innerHTML = '';
+                viewedHistory.forEach(id => {
+                    const container = document.createElement('div');
+                    container.className = 'history-item-container';
+                    container.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" class="history-item"><div class="history-id-tag">${id}</div>`;
+                    list.appendChild(container);
+                });
+            }
         }
 
         function closePlayer() {
