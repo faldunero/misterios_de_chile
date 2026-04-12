@@ -240,11 +240,55 @@
 </head>
 <body>
 
-    <div id="modal-bg" class="modal-overlay-bg"></div>
+    <div id="modal-bg" class="modal-overlay-bg" onclick="cerrarPista()"></div>
+
+    <!-- Modal Pista -->
     <div id="pista-modal">
-        <h2 style="color: var(--accent); margin-top: 0; font-size: 1.2rem;">Pista Revelada</h2>
-        <p id="pista-texto" style="line-height: 1.6; margin: 20px 0; font-size: 1rem;"></p>
-        <button onclick="cerrarPista()" style="padding: 10px 20px; background: var(--accent); border: none; color: white; border-radius: 8px; cursor: pointer; font-weight: bold;">ENTENDIDO</button>
+        <h2 style="color:var(--accent); margin-top:0; font-size:1.1rem;" id="pista-titulo">Pista Revelada</h2>
+        <p id="pista-texto" style="line-height:1.6; margin:16px 0; font-size:0.95rem; color:#e2e8f0;"></p>
+        <button onclick="cerrarPista()" style="padding:10px 24px; background:var(--accent); border:none; color:white; border-radius:8px; cursor:pointer; font-weight:bold;">ENTENDIDO</button>
+    </div>
+
+    <!-- Modal Evaluación 1 a 1 -->
+    <div id="eval-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
+         background:#1e293b; padding:28px; border-radius:20px; border:2px solid #3b82f6;
+         z-index:10000; width:90%; max-width:460px; box-shadow:0 20px 60px rgba(0,0,0,0.7);">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
+            <h2 style="color:#f1f5f9; margin:0; font-size:1.1rem;">¿Cuánto sabías?</h2>
+            <span id="eval-step-badge" style="background:#3b82f6; color:white; border-radius:999px;
+                  font-size:0.75rem; font-weight:bold; padding:4px 12px;">1 / 3</span>
+        </div>
+
+        <!-- Pregunta actual -->
+        <div id="eval-pregunta-wrap" style="background:#0f172a; border-radius:12px; padding:16px; margin-bottom:16px;">
+            <p id="eval-pregunta-label" style="font-size:0.75rem; color:#94a3b8; margin:0 0 6px 0; text-transform:uppercase; letter-spacing:1px;"></p>
+            <p id="eval-pregunta-texto" style="font-size:1rem; color:#f1f5f9; margin:0; font-weight:bold;"></p>
+        </div>
+
+        <!-- Respuesta (oculta hasta que presionen) -->
+        <div id="eval-respuesta-wrap" style="display:none; background:#0d2137; border:1px solid #3b82f6;
+             border-radius:12px; padding:16px; margin-bottom:16px;">
+            <p style="font-size:0.75rem; color:#3b82f6; margin:0 0 6px 0; text-transform:uppercase; letter-spacing:1px;">Respuesta correcta</p>
+            <p id="eval-respuesta-texto" style="font-size:1rem; color:#22c55e; margin:0; font-weight:bold;"></p>
+        </div>
+
+        <div style="display:flex; gap:10px; flex-wrap:wrap; justify-content:center;">
+            <button id="eval-btn-mostrar" onclick="mostrarRespuesta()"
+                style="padding:10px 20px; background:#f59e0b; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer; flex:1; min-width:120px;">
+                👁 Mostrar respuesta
+            </button>
+            <button id="eval-btn-siguiente" onclick="siguientePregunta()"
+                style="display:none; padding:10px 20px; background:#22c55e; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer; flex:1; min-width:120px;">
+                Siguiente →
+            </button>
+        </div>
+
+        <!-- Indicador de pasos -->
+        <div style="display:flex; gap:6px; justify-content:center; margin-top:16px;">
+            <div id="eval-dot-1" style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
+            <div id="eval-dot-2" style="width:8px; height:8px; border-radius:50%; background:#334155;"></div>
+            <div id="eval-dot-3" style="width:8px; height:8px; border-radius:50%; background:#334155;"></div>
+        </div>
     </div>
 
     <div id="view-generator" class="view active">
@@ -266,7 +310,7 @@
         <button onclick="showGallery()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Ver galería completa</button>
 
         <footer>
-            Autor: <strong>Felipe Ignacio Aldunate Romero</strong> (faldunate@gmail.com)<br>
+            Autor: <strong>Felipe Ignacio Aldunate Romero</strong> (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6204030e06170c03160722050f030b0e4c010d0f">[email&#160;protected]</a>)<br>
             <img src="logotipo_ludo_lab.svg" alt="Ludo Lab Logo" style="max-width: 200px; height: auto; margin-top: 20px; opacity: 1;">
         </footer>
     </div>
@@ -279,118 +323,501 @@
 
     <div id="player-overlay">
         <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo Misterios de Chile" class="main-logo">
-        
         <div class="mystery-content">
-            <img id="full-img" src="">
-            <p id="pista-status" style="font-size: 0.8rem; color: var(--accent); margin: 0;">Escucha el audio para desbloquear pistas</p>
+            <img id="full-img" src="" onerror="imgError(this)"
+                 style="width:100%; max-width:700px; height:380px; object-fit:cover; border-radius:15px; box-shadow:0 0 50px rgba(0,0,0,0.5); border:2px solid #334155;">
+            <p id="pista-status" style="font-size:0.8rem; color:var(--accent); margin:0;">Escucha el audio para desbloquear pistas</p>
             <div class="pistas-column">
                 <button class="btn-pista" id="btn-pista-1" onclick="mostrarPista(1)" disabled>Pista 1</button>
                 <button class="btn-pista" id="btn-pista-2" onclick="mostrarPista(2)" disabled>Pista 2</button>
                 <button class="btn-pista" id="btn-pista-3" onclick="mostrarPista(3)" disabled>Pista 3</button>
             </div>
         </div>
-
-        <div class="controls">
-            <span id="time-display" style="font-family: monospace; font-size: 0.9rem;">00:00 / 00:00</span>
-            <button onclick="toggleAudio()" id="btn-play" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
-            <button onclick="closePlayer()" style="padding:10px 20px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
+        <div class="controls" style="flex-direction:column; gap:12px;">
+            <div style="width:100%; display:flex; align-items:center; gap:12px;">
+                <span id="time-display" style="font-family:monospace; font-size:0.85rem; color:var(--text-dim); min-width:105px; text-align:center;">00:00 / 00:00</span>
+                <div style="flex:1; background:#1e293b; border-radius:999px; height:6px; overflow:hidden; cursor:pointer;" onclick="seekAudio(event,this)">
+                    <div id="progress-bar" style="height:100%; width:0%; background:var(--accent); border-radius:999px; transition:width 0.25s linear;"></div>
+                </div>
+            </div>
+            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
+                <button onclick="toggleAudio()" id="btn-play" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
+                <button onclick="terminarAudio()" id="btn-terminar" style="padding:10px 20px; background:#16a34a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">✓ TERMINAR</button>
+                <button onclick="abrirEvaluacion()" id="btn-evaluar" style="padding:10px 20px; background:#f59e0b; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📋 EVALUAR</button>
+                <button onclick="closePlayer()" style="padding:10px 20px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
+            </div>
         </div>
         <audio id="audio-player"></audio>
     </div>
 
+
     <script>
-        const baseNombres = {
-            "01": "id_01_expedicion_almagro", "02": "id_02_fundacion_de_santiago",
-            "03": "id_03_destruccion_de_santiago", "04": "id_04_fundacion_de_concepcion",
-            "05": "id_05_batalla_de_tucapel", "06": "id_06_batalla_de_lagunillas",
-            "07": "id_07_desastre_de_curalaba", "08": "id_08_real_situado",
-            "09": "id_09_esclavitud_indigena", "10": "id_10_parlamento_de_quilin",
-            "11": "id_11_el_terremoto_magno", "12": "id_12_el_inquilino",
-            "13": "id_13_expulsion_jesuita", "14": "id_14_abolicion_encomienda",
-            "15": "id_15_camino_santiago_valparaiso", "16": "id_16_primera_junta_de_gobierno",
-            "17": "id_17_primer_congreso_nacional", "18": "id_18_libertad_de_vientres", 
-            "19": "id_19_la_aurora_de_chile", "20": "id_20_reglamento_constitucional",
-            "21": "id_21_instituto_nacional", "22": "id_22_desastre_de_rancagua",
-            "23": "id_23_los_talavera", "24": "id_24_manuel_rodriguez",
-            "25": "id_25_batalla_de_chacabuco"
+        const baseNombres   = {
+            "01": "id_01_expedicion_almagro",
+            "02": "id_02_fundacion_de_santiago",
+            "03": "id_03_destruccion_de_santiago",
+            "04": "id_04_fundacion_de_concepcion",
+            "05": "id_05_batalla_de_tucapel",
+            "06": "id_06_batalla_de_lagunillas",
+            "07": "id_07_desastre_de_curalaba",
+            "08": "id_08_real_situado",
+            "09": "id_09_esclavitud_indigena",
+            "10": "id_10_parlamento_de_quilin",
+            "11": "id_11_el_terremoto_magno",
+            "12": "id_12_el_inquilino",
+            "13": "id_13_expulsion_jesuita",
+            "14": "id_14_abolicion_encomienda",
+            "15": "id_15_camino_santiago_valparaiso",
+            "16": "id_16_primera_junta_de_gobierno",
+            "17": "id_17_primer_congreso_nacional",
+            "18": "id_18_libertad_de_vientres",
+            "19": "id_19_la_aurora_de_chile",
+            "20": "id_20_reglamento_constitucional",
+            "21": "id_21_instituto_nacional",
+            "22": "id_22_desastre_de_rancagua",
+            "23": "id_23_los_talavera",
+            "24": "id_24_manuel_rodriguez",
+            "25": "id_25_batalla_de_chacabuco",
+            "26": "id_26_proclamacion_independencia",
+            "27": "id_27_batalla_de_maipu",
+            "28": "id_28_toma_de_valdivia",
+            "29": "id_29_abdicacion_de_ohiggins",
+            "30": "id_30_abolicion_esclavitud",
+            "31": "id_31_constitucion_moralista",
+            "32": "id_32_leyes_federales",
+            "33": "id_33_tratado_de_tantauco",
+            "34": "id_34_constitucion_liberal",
+            "35": "id_35_batalla_lircay",
+            "36": "id_36_el_peso_de_la_noche",
+            "37": "id_37_descubrimiento_chanarcillo",
+            "38": "id_38_constitucion_de_1833",
+            "39": "id_39_guerra_confederacion",
+            "40": "id_40_batalla_de_yungay",
+            "41": "id_41_ley_de_colonizacion",
+            "42": "id_42_toma_del_estrecho",
+            "43": "id_43_universidad_de_chile",
+            "44": "id_44_reconocimiento_espana",
+            "45": "id_45_codigo_civil",
+            "46": "id_46_primer_ferrocarril",
+            "47": "id_47_revolucion_1851",
+            "48": "id_48_el_telegrafo",
+            "49": "id_49_cuestion_del_sacristan",
+            "50": "id_50_ley_instruccion_primaria",
+            "51": "id_51_fusion_liberal_conservadora",
+            "52": "id_52_el_cuerpo_de_bomberos",
+            "53": "id_53_guerra_contra_espana",
+            "54": "id_54_fin_reeleccion_inmediata",
+            "55": "id_55_reforma_electoral",
+            "56": "id_56_decreto_amunategui",
+            "57": "id_57_guerra_del_pacifico",
+            "58": "id_58_combate_de_angamos",
+            "59": "id_59_tratado_de_limites",
+            "60": "id_60_toma_de_lima",
+            "61": "id_61_batalla_de_concepcion",
+            "62": "id_62_ley_de_cementerios",
+            "63": "id_63_ley_atrimonio_civil",
+            "64": "id_64_ley_registro_civil",
+            "65": "id_65_anexion_isla_de_pascua",
+            "66": "id_66_universidad_catolica",
+            "67": "id_67_el_viaducto_del_malleco",
+            "68": "id_68_guerra_civil_de_1981",
+            "69": "id_69_batalalla_de_placilla",
+            "70": "id_70_lacomuna_autonoma",
+            "71": "id_71_alumbrado_electrico",
+            "72": "id_72_cine_en_chile",
+            "73": "id_73_el_travia_electrico",
+            "74": "id_74_matanza_escuela_santa_maria",
+            "75": "id_75_centenario_de_chile"
         };
-
-        const pistasData = {
-            "01": ["Travesía que cruzó grandes montañas nevadas.", "El grupo venía desde la ciudad imperial del norte.", "Regresaron por el desierto al no encontrar riquezas."],
-            "02": ["Ubicado entre dos brazos de un río caudaloso.", "Se utilizó un cerro como punto de vigilancia.", "El diseño seguía una forma de tablero de ajedrez."],
-            "03": ["Tras el descontento de comunidades locales por el avance foráneo.", "La ciudad fue reducida a cenizas casi en su totalidad.", "Obligó a refugiarse en el centro de la plaza principal."],
-            "04": ["Establecido cerca de una bahía protegida en el sur.", "Punto de apoyo militar para la guerra en la frontera.", "Destruida y refundada en múltiples ocasiones."],
-            "05": ["Librada en una zona de ciénagas y humedales.", "Victoria decisiva para los defensores de la tierra.", "Marcó el fin del liderazgo del principal conquistador."],
-            "06": ["Ocurrió cerca de las orillas de un río fronterizo.", "Guerreros locales enfrentaron a tropas extranjeras.", "Valentía extrema mostrada a pesar de las heridas."],
-            "07": ["Emboscada nocturna en medio del bosque.", "Pérdida de la máxima autoridad del territorio.", "Retirada general de las ciudades del sur."],
-            "08": ["Dinero enviado desde las minas del norte.", "Servía para pagar sueldos del ejército permanente.", "Vital para la estabilidad económica de la zona."],
-            "09": ["Captura de mano de obra en zonas de guerra.", "Debate sobre la libertad de los pueblos originarios.", "Justificado como castigo por la rebelión."],
-            "10": ["Reunión diplomática en un campo abierto.", "Buscaba establecer condiciones de paz y límites.", "Intercambio de regalos y discursos de amistad."],
-            "11": ["Evento sísmico que destruyó la infraestructura colonial.", "Impacto en la ciudad portuaria más importante.", "Cambió la arquitectura de iglesias y casas."],
-            "12": ["Trabajaba la tierra a cambio de protección y vivienda.", "Vivía dentro de grandes propiedades rurales.", "Base de la sociedad campesina por siglos."],
-            "13": ["Orden religiosa expulsada de todos los territorios.", "Influyentes en educación y economía.", "Dejaron atrás bibliotecas y tierras de cultivo."],
-            "14": ["Fin del sistema de entrega de trabajadores a señores.", "Modernización de administración y derechos básicos.", "Resistencia entre dueños de grandes extensiones."],
-            "15": ["Ruta de transporte entre el centro y la costa.", "Comercio de productos que llegaban por mar.", "Obra de ingeniería compleja para la época."],
-            "16": ["Paso hacia la autonomía administrativa propia.", "Convocado por la ausencia del monarca.", "Ciudadanos influyentes reunidos en cabildo abierto."],
-            "17": ["Representantes de distintas zonas reunidos a legislar.", "Base de una nueva organización política.", "Debates entre cambios rápidos y lentos."],
-            "18": ["Ley que otorgaba libertad a hijos de esclavizados.", "Paso pionero hacia la justicia social.", "Buscaba extinguir la servidumbre forzada."],
-            "19": ["Primer medio impreso de ideas de autonomía.", "Educación sobre derechos ciudadanos.", "Textos circulaban sin permiso oficial."],
-            "20": ["Regrules para limitar el poder de gobernantes.", "Derechos y deberes de quienes habitaban el suelo.", "Antecesor de las cartas fundamentales modernas."],
-            "21": ["Se fundó un pilar para el pensamiento de la nueva nación.", "Concebida como un faro de luz para formar ciudadanos.", "La institución educativa más antigua del país."],
-            "22": ["Una resistencia tenaz que terminó en sacrificio extremo.", "Marcó el inicio de un periodo de restauración del poder foráneo.", "Obligó a un exilio doloroso tras la cordillera."],
-            "23": ["Regimiento extranjero de disciplina implacable.", "Famosos por su extrema crueldad en labores de represión.", "Simbolizaron el fin de la tolerancia en la capital."],
-            "24": ["Líder audaz que tejía una red de inteligencia en los valles.", "Se volvía invisible a plena vista usando diversos disfraces.", "Actuó como los ojos y oídos de las fuerzas libertadoras."],
-            "25": ["Carga decidida de caballería que desarticuló al enemigo.", "Primer gran triunfo tras el cruce de las altas cumbres.", "Despejó el camino definitivo hacia la capital."]
+        const eventosData   = {
+            "01": "Expedición de Almagro",
+            "02": "Fundación de Santiago",
+            "03": "Destrucción de Santiago",
+            "04": "Fundación de Concepción",
+            "05": "Batalla de Tucapel",
+            "06": "Batalla de Lagunillas",
+            "07": "Desastre de Curalaba",
+            "08": "Real Situado",
+            "09": "Esclavitud Indígena",
+            "10": "Parlamento de Quilín",
+            "11": "El Terremoto Magno",
+            "12": "El Inquilino",
+            "13": "Expulsión Jesuitas",
+            "14": "Abolición Encomienda",
+            "15": "Camino Santiago-Valparaíso",
+            "16": "Primera Junta de Gobierno",
+            "17": "Primer Congreso Nacional",
+            "18": "Libertad de Vientre",
+            "19": "La Aurora de Chile",
+            "20": "Reglamento Constitucional",
+            "21": "Fundación Inst. Nacional",
+            "22": "Desastre de Rancagua",
+            "23": "Los Talaveras",
+            "24": "Espionaje Patriota",
+            "25": "Batalla de Chacabuco",
+            "26": "Proclamación Independencia",
+            "27": "Batalla de Maipú",
+            "28": "Toma de Valdivia",
+            "29": "Abdicación de OHiggins",
+            "30": "Abolición Esclavitud",
+            "31": "Constitución Moralista",
+            "32": "Leyes Federales",
+            "33": "Tratado de Tantauco",
+            "34": "Constitución Liberal",
+            "35": "Batalla de Lircay",
+            "36": "El Peso de la Noche",
+            "37": "Descubrimiento Chañarcillo",
+            "38": "Constitución de 1833",
+            "39": "Guerra Confederación",
+            "40": "Batalla de Yungay",
+            "41": "Ley de Colonización",
+            "42": "Toma del Estrecho",
+            "43": "Universidad de Chile",
+            "44": "Reconocimiento España",
+            "45": "Código Civil",
+            "46": "Primer Ferrocarril",
+            "47": "Revolución de 1851",
+            "48": "El Telégrafo",
+            "49": "Cuestión del Sacristán",
+            "50": "Ley Instrucción Primaria",
+            "51": "Fusión Liberal-Conservadora",
+            "52": "El Cuerpo de Bomberos",
+            "53": "Guerra contra España",
+            "54": "Fin Reelección Inmediata",
+            "55": "Reforma Electoral",
+            "56": "Decreto Amunátegui",
+            "57": "Guerra del Pacífico",
+            "58": "Combate de Angamos",
+            "59": "Tratado de Límites",
+            "60": "Toma de Lima",
+            "61": "Batalla de la Concepción",
+            "62": "Ley de Cementerios",
+            "63": "Ley de Matrimonio Civil",
+            "64": "Ley Registro Civil",
+            "65": "Anexión Isla de Pascua",
+            "66": "Pontificia Univ. Católica",
+            "67": "El Viaducto del Malleco",
+            "68": "Guerra Civil de 1891",
+            "69": "Batalla de Placilla",
+            "70": "La Comuna Autónoma",
+            "71": "Alumbrado Eléctrico",
+            "72": "Cine en Chile",
+            "73": "El Tranvía Eléctrico",
+            "74": "Matanza Escuela Santa Maria",
+            "75": "Centenario de Chile"
         };
+        const pistasData    = {
+            "01": ["Primera incursión española masiva en Chile.", "La expedición vino directamente desde el Cusco.", "El objetivo era explorar el territorio por primera vez."],
+            "02": ["Ciudad fundada bajo el nombre de Santiago de la Nueva Extremadura.", "Es el hito que da inicio al asentamiento en el valle central.", "Se convirtió en el centro administrativo del país."],
+            "03": ["Ataque indígena que redujo la ciudad a cenizas meses tras su fundación.", "El asalto fue liderado por el cacique Michimalonco.", "Obligó a los habitantes a reconstruir todo desde cero."],
+            "04": ["Establecimiento de un fuerte militar clave en la zona del Biobío.", "Buscaba consolidar la presencia española hacia el sur.", "Fue una fundación estratégica para la guerra de Arauco."],
+            "05": ["Derrota española donde muere el gobernador Valdivia.", "El enfrentamiento ocurrió en la zona de Tucapel.", "Fue uno de los golpes más duros para la conquista española."],
+            "06": ["Combate donde el guerrero Galvarino es capturado y mutilado.", "Sucedió en las cercanías de las lagunas del sur.", "Es recordado por la resistencia física y valentía del guerrero."],
+            "07": ["Victoria mapuche que obliga a los españoles a abandonar el sur.", "Este evento marcó el fin de la expansión española hacia el territorio austral.", "Fijó una frontera que duraría por siglos."],
+            "08": ["Dinero enviado desde el Potosí para mantener al ejército profesional.", "Eran los recursos necesarios para financiar la guerra permanente.", "Venía de las minas de plata más ricas del continente."],
+            "09": ["Ley que permitía esclavizar a indígenas capturados en guerra.", "Fue una normativa aplicada durante los periodos de mayor conflicto.", "Trataba a los prisioneros como propiedad de sus captores."],
+            "10": ["Tratado de paz que reconoció la soberanía mapuche al sur del Biobío.", "Fue una reunión diplomática histórica entre ambos bandos.", "Se estableció un límite territorial respetado por el Rey."],
+            "11": ["Sismo que destruyó casi todo Santiago durante la Colonia.", "Es recordado como el terremoto más devastador de esa etapa.", "Cambió la arquitectura de la capital para siempre."],
+            "12": ["Sistema de trabajo agrícola en las grandes haciendas.", "Los trabajadores vivían y laboraban dentro de las tierras del patrón.", "Fue la base de la estructura social del campo chileno."],
+            "13": ["Salida forzosa de la orden religiosa más rica y educada de Chile.", "Sus bienes fueron confiscados por orden directa del Rey.", "Dejaron un vacío importante en la educación y la economía local."],
+            "14": ["Fin del sistema de servicio personal indígena.", "Marcó el cierre de una forma de tributo laboral muy antigua.", "Fue una reforma social importante antes de la independencia."],
+            "15": ["Mejora de la conectividad entre la capital y el puerto principal.", "Se enfocó en facilitar el tránsito de mercancías y personas al mar.", "Fue la obra vial más relevante del final de la colonia."],
+            "16": ["Organización de cabildo abierto tras la captura del Rey de España.", "Fue el primer paso formal hacia la autonomía nacional.", "Se formó un cuerpo de gobierno local por primera vez."],
+            "17": ["Creación del poder legislativo chileno.", "Fue la primera vez que se reunieron representantes para hacer leyes.", "Marcó el inicio de la institucionalidad republicana."],
+            "18": ["Ley que decretó que los hijos de esclavos nacen libres.", "Fue un paso fundamental hacia la dignidad humana en el país.", "Chile fue pionero en aplicar esta medida en la región."],
+            "19": ["Publicación del primer periódico nacional.", "Su objetivo era difundir las ideas de libertad y educación.", "Es el hito fundacional de la prensa escrita en Chile."],
+            "20": ["Primera carta fundamental que limitaba el poder del gobernante.", "Se redactó para organizar el país durante la Patria Vieja.", "Establecía reglas claras para quienes ejercían el mando."],
+            "21": ["Creación de la institución educativa más antigua del país.", "Se fundó para ser el foco de luz y conocimiento de la nación.", "Ha formado a los líderes más importantes de nuestra historia."],
+            "22": ["Derrota que da inicio al periodo de Reconquista Española.", "Los patriotas tuvieron que abandonar el territorio tras la batalla.", "Ocurrió en una ciudad del sur y fue un desastre militar."],
+            "23": ["Regimiento español famoso por su crueldad en la represión.", "Actuaron durante el tiempo en que el Rey recuperó el mando.", "Su nombre era sinónimo de miedo para los partidarios de la libertad."],
+            "24": ["Red de espías que enviaba información al Ejército de los Andes.", "Fue clave para preparar el regreso de los patriotas desde el exilio.", "Se basaba en el sigilo y la astucia de informantes locales."],
+            "25": ["Victoria que permite el regreso de los patriotas a Santiago.", "Ocurrió tras el cruce de la cordillera en los cerros de Chacabuco.", "Fue el triunfo que puso fin a la ocupación española."],
+            "26": ["Acta oficial firmada que declara a Chile como estado libre.", "Es el documento que formaliza la soberanía ante el mundo.", "Fue jurada con solemnidad para marcar el nacimiento de la nación."],
+            "27": ["Hito bélico definitivo que expulsa a los realistas de la zona central.", "Ocurrió en los llanos cercanos a la capital.", "Selló para siempre la independencia del corazón del país."],
+            "28": ["Operación naval para capturar los fuertes del sur.", "Buscaba expulsar a los españoles de sus últimos refugios costeros.", "Fue una hazaña marítima que aseguró el control del litoral."],
+            "29": ["Renuncia del Director Supremo para evitar guerra civil.", "Fue un gesto de desprendimiento del poder por el bien del país.", "Marcó el fin del gobierno de quien proclamó la independencia."],
+            "30": ["Chile se convierte en el primer país de América en prohibirla totalmente.", "Fue una medida que otorgó libertad absoluta a todos los habitantes.", "Terminó con la propiedad de una persona sobre otra."],
+            "31": ["Intento de ley que regulaba la vida privada de los ciudadanos.", "Era una constitución que buscaba premiar la virtud y el buen comportamiento.", "Fue abandonada por ser demasiado estricta e impracticable."],
+            "32": ["Intento de dividir a Chile en provincias autónomas.", "Se buscaba repartir el poder que estaba concentrado en Santiago.", "Fue una experiencia de organización política que duró poco tiempo."],
+            "33": ["Rendición española en Chiloé e incorporación de la isla a Chile.", "Marcó la expulsión definitiva de los últimos soldados del Rey.", "El territorio nacional se extendió oficialmente hacia el archipiélago."],
+            "34": ["Ley que buscaba un equilibrio de poderes y libertades individuales.", "Fue una carta fundamental que representaba el pensamiento liberal.", "Intentó dar más derechos a las personas frente al Estado."],
+            "35": ["Guerra civil que da la victoria definitiva a los conservadores.", "El enfrentamiento decisivo ocurrió en las cercanías del río Lircay.", "Cambió el rumbo político hacia un orden mucho más autoritario."],
+            "36": ["Concepto de orden y autoridad impuesto por el ministro Portales.", "Se refería a la necesidad de una mano dura para estabilizar el país.", "Fue la base del pensamiento político durante gran parte del siglo XIX."],
+            "37": ["Hallazgo de la mina de plata más grande del país.", "Fue el motor que enriqueció a la nación y modernizó el norte.", "El descubrimiento ocurrió en la zona de Chañarcillo."],
+            "38": ["Carta que definió la estructura autoritaria de Chile por décadas.", "Otorgó un poder casi total al Presidente de la República.", "Fue la constitución que trajo la mayor estabilidad política."],
+            "39": ["Conflicto contra Perú y Bolivia por el control del Pacífico.", "Se generó para evitar que la unión de los vecinos amenazara al país.", "Fue la primera gran guerra internacional de la república."],
+            "40": ["Victoria final que disuelve la Confederación Perú-Boliviana.", "Ocurrió en tierras extranjeras y fue celebrada con gran orgullo.", "Marcó el liderazgo de Chile en la región sur del continente."],
+            "41": ["Plan para traer inmigrantes europeos al sur de Chile.", "Se buscaba poblar y producir en tierras que estaban aisladas.", "Dio origen a la influencia cultural alemana en zonas como Valdivia."],
+            "42": ["Expedición de la Goleta Ancud para soberanía en el extremo sur.", "Fue la misión que permitió tomar posesión del Estrecho de Magallanes.", "Aseguró que la punta sur del continente fuera territorio chileno."],
+            "43": ["Refundación de la educación superior en Chile.", "Se creó para ser el centro de la investigación y las letras nacionales.", "Su sede principal es un edificio icónico en la Alameda."],
+            "44": ["Tratado donde España reconoce finalmente la independencia de Chile.", "Fue el reconocimiento diplomático oficial de la antigua metrópoli.", "Cerró formalmente el capítulo de la lucha contra el reino español."],
+            "45": ["Redacción de las leyes que regulan los contratos y la propiedad.", "Es el cuerpo legal que ordena la vida civil de todos los chilenos.", "Sigue siendo la base de nuestro sistema jurídico actual."],
+            "46": ["Inauguración de la vía Copiapó-Caldera.", "Fue el primer camino de hierro que funcionó en el país.", "Marcó el inicio de la era tecnológica del transporte a vapor."],
+            "47": ["Guerra civil tras la elección de Manuel Montt.", "Fue un conflicto interno donde se cuestionó el mando presidencial.", "Hubo enfrentamientos armados entre facciones de ciudadanos."],
+            "48": ["Primera línea de comunicación rápida entre Santiago y Valparaíso.", "Usaba señales eléctricas para enviar mensajes de forma inmediata.", "Fue la gran revolución tecnológica de mediados de siglo."],
+            "49": ["Conflicto entre la Iglesia y el Estado por un despido en la Catedral.", "Un problema administrativo menor terminó escalando a nivel político.", "Provocó el quiebre de los grupos que apoyaban al gobierno."],
+            "50": ["Estado garantiza educación básica gratuita para todos.", "Fue el compromiso legal para asegurar que cada niño aprenda a leer.", "Marcó el inicio de la instrucción primaria masiva en el país."],
+            "51": ["Alianza política para democratizar el país.", "Fue la unión de grupos opuestos para enfrentar al gobierno autoritario.", "Buscaba modernizar las leyes y dar más libertad política."],
+            "52": ["Fundación del primer cuerpo de voluntarios en Valparaíso/Santiago.", "Se organizó para combatir los incendios que asolaban las ciudades.", "Es una de las instituciones más respetadas por su servicio social."],
+            "53": ["Conflicto por la defensa de Perú; bombardeo de Valparaíso.", "Una flota extranjera atacó el puerto principal en un acto de agresión.", "Unió a los países del Pacífico contra una amenaza europea."],
+            "54": ["Reforma que prohíbe al presidente gobernar dos periodos seguidos.", "Se hizo para evitar que una sola persona se mantuviera mucho tiempo en el mando.", "Buscaba la alternancia en el poder y la renovación política."],
+            "55": ["Se elimina el requisito de riqueza para votar; voto censitario.", "Permitió que más ciudadanos participaran en las elecciones.", "Fue un paso adelante en la democratización del sistema electoral."],
+            "56": ["Permite el ingreso de las mujeres a la Universidad.", "Fue un hito histórico para la igualdad de género en la educación.", "Abrió las puertas de la ciencia y las letras a las chilenas."],
+            "57": ["Inicio del conflicto por el salitre contra Perú y Bolivia.", "Fue la guerra más extensa y transformadora del territorio norte.", "Se originó por el control de las minas del 'oro blanco'."],
+            "58": ["Captura del monitor Huáscar por la marina chilena.", "Fue un momento decisivo para ganar el control del mar en la guerra.", "Ocurrió frente a la costa de Angamos."],
+            "59": ["Acuerdo con Argentina para definir la frontera en la cordillera.", "Se pactó para evitar conflictos por los límites territoriales al este.", "Estableció que las altas cumbres dividirían a ambos países."],
+            "60": ["Ocupación de la capital peruana por tropas chilenas.", "Marcó una fase avanzada de la Guerra del Pacífico.", "El ejército nacional administró la ciudad durante la ocupación."],
+            "61": ["Heroica resistencia de 77 soldados chilenos en la sierra peruana.", "Defendieron su posición hasta el final sin rendirse ante un ejército superior.", "Se recuerda como el sacrificio máximo en el combate de La Concepción."],
+            "62": ["Permite enterrar a no católicos en cementerios públicos.", "Fue una de las leyes laicas que generó gran debate en la sociedad.", "Aseguró la dignidad en la muerte para personas de toda creencia."],
+            "63": ["El Estado reconoce el matrimonio legal fuera de la iglesia.", "Permitió que la validez del vínculo dependiera de la ley civil.", "Fue un cambio fundamental en la vida familiar del país."],
+            "64": ["El Estado asume el registro de nacimientos y defunciones.", "Quitó el control de estos datos a las instituciones religiosas.", "Creó la base de lo que hoy es la identidad oficial de cada ciudadano."],
+            "65": ["Incorporación de Rapa Nui a la soberanía nacional.", "El territorio polinésico pasó a ser oficialmente parte de Chile.", "Se realizó mediante un acuerdo de protección y posesión."],
+            "66": ["Fundación de la casa de estudios por parte de la Iglesia.", "Se creó para ofrecer una alternativa de educación superior católica.", "Es hoy una de las universidades más importantes de la capital."],
+            "67": ["Gran obra de ingeniería ferroviaria en el sur de Chile.", "Es un puente de hierro icónico que cruza un río profundo.", "Permitió conectar el territorio austral a través del tren."],
+            "68": ["Conflicto entre el Presidente y el Congreso por el poder.", "Terminó en una violenta guerra civil que dividió a la nación.", "Fue la lucha definitiva por quién debía mandar realmente en el país."],
+            "69": ["Victoria del Congreso que marca el fin de Balmaceda.", "Fue la batalla que decidió el desenlace de la guerra civil de 1891.", "Ocurrió en la localidad de Placilla."],
+            "70": ["Ley que dio independencia económica y política a los municipios.", "Buscaba descentralizar el mando que tenía el gobierno central.", "Permitió que las ciudades empezaran a gestionarse solas."],
+            "71": ["Santiago comienza a iluminarse con energía eléctrica.", "Fue el adiós definitivo a los antiguos faroles de gas.", "Cambió la vida nocturna y la seguridad de la capital."],
+            "72": ["Primera exhibición cinematográfica en Santiago.", "Las personas vieron por primera vez imágenes en movimiento.", "Fue el inicio de la era del cine en territorio nacional."],
+            "73": ["Modernización del transporte público en la capital.", "Se introdujeron carros eléctricos para mover a los pasajeros.", "Reemplazaron a los antiguos carros tirados por caballos."],
+            "74": ["Trágica represión contra huelguistas del salitre en Iquique.", "Cientos de trabajadores y sus familias fueron atacados en una escuela.", "Es uno de los episodios más tristes de la historia social chilena."],
+            "75": ["Grandes fiestas y monumentos para celebrar 100 años de libertad.", "Se conmemoró el primer siglo de la independencia nacional.", "La ciudad se llenó de obras y celebraciones masivas."]
+        };
+        const respuestasData = {
+            "01": {"anio": "1536", "evento": "Expedición de Almagro", "personajes": "Diego de Almagro"},
+            "02": {"anio": "1541", "evento": "Fundación de Santiago", "personajes": "Pedro de Valdivia"},
+            "03": {"anio": "1541", "evento": "Destrucción de Santiago", "personajes": "Michimalonco"},
+            "04": {"anio": "1550", "evento": "Fundación de Concepción", "personajes": "Pedro de Valdivia"},
+            "05": {"anio": "1553", "evento": "Batalla de Tucapel", "personajes": "Lautaro, Pedro de Valdivia"},
+            "06": {"anio": "1557", "evento": "Batalla de Lagunillas", "personajes": "Galvarino, Garcia Hurtado de Mendoza"},
+            "07": {"anio": "1598", "evento": "Desastre de Curalaba", "personajes": "Pelantaro, Martin Garcia Onez de Loyola"},
+            "08": {"anio": "1600", "evento": "Real Situado", "personajes": "Felipe III"},
+            "09": {"anio": "1608", "evento": "Esclavitud Indígena", "personajes": "Felipe III"},
+            "10": {"anio": "1641", "evento": "Parlamento de Quilín", "personajes": "Marques de Baides"},
+            "11": {"anio": "1647", "evento": "El Terremoto Magno", "personajes": "Obispo Gaspar de Villarroel"},
+            "12": {"anio": "1700", "evento": "El Inquilino", "personajes": "Patrones y Peones"},
+            "13": {"anio": "1767", "evento": "Expulsión Jesuitas", "personajes": "Rey Carlos III"},
+            "14": {"anio": "1791", "evento": "Abolición Encomienda", "personajes": "Ambrosio OHiggins"},
+            "15": {"anio": "1792", "evento": "Camino Santiago-Valparaíso", "personajes": "Ambrosio OHiggins"},
+            "16": {"anio": "1810", "evento": "Primera Junta de Gobierno", "personajes": "Mateo de Toro y Zambrano"},
+            "17": {"anio": "1811", "evento": "Primer Congreso Nacional", "personajes": "Juan Martinez de Rozas"},
+            "18": {"anio": "1811", "evento": "Libertad de Vientre", "personajes": "Manuel de Salas"},
+            "19": {"anio": "1812", "evento": "La Aurora de Chile", "personajes": "Fray Camilo Henriquez"},
+            "20": {"anio": "1812", "evento": "Reglamento Constitucional", "personajes": "Jose Miguel Carrera"},
+            "21": {"anio": "1813", "evento": "Fundación Inst. Nacional", "personajes": "Jose Miguel Carrera"},
+            "22": {"anio": "1814", "evento": "Desastre de Rancagua", "personajes": "Bernardo OHiggins"},
+            "23": {"anio": "1815", "evento": "Los Talaveras", "personajes": "Vicente San Bruno"},
+            "24": {"anio": "1816", "evento": "Espionaje Patriota", "personajes": "Manuel Rodriguez"},
+            "25": {"anio": "1817", "evento": "Batalla de Chacabuco", "personajes": "Jose de San Martin"},
+            "26": {"anio": "1818", "evento": "Proclamación Independencia", "personajes": "Bernardo OHiggins"},
+            "27": {"anio": "1818", "evento": "Batalla de Maipú", "personajes": "OHiggins y San Martin"},
+            "28": {"anio": "1820", "evento": "Toma de Valdivia", "personajes": "Lord Thomas Cochrane"},
+            "29": {"anio": "1823", "evento": "Abdicación de OHiggins", "personajes": "Bernardo OHiggins"},
+            "30": {"anio": "1823", "evento": "Abolición Esclavitud", "personajes": "Jose Miguel Infante"},
+            "31": {"anio": "1823", "evento": "Constitución Moralista", "personajes": "Juan Egana"},
+            "32": {"anio": "1826", "evento": "Leyes Federales", "personajes": "Jose Miguel Infante"},
+            "33": {"anio": "1826", "evento": "Tratado de Tantauco", "personajes": "Ramon Freire"},
+            "34": {"anio": "1828", "evento": "Constitución Liberal", "personajes": "Jose Joaquin de Mora"},
+            "35": {"anio": "1830", "evento": "Batalla de Lircay", "personajes": "Jose Joaquin Prieto"},
+            "36": {"anio": "1831", "evento": "El Peso de la Noche", "personajes": "Diego Portales"},
+            "37": {"anio": "1832", "evento": "Descubrimiento Chañarcillo", "personajes": "Juan Godoy"},
+            "38": {"anio": "1833", "evento": "Constitución de 1833", "personajes": "Mariano Egana"},
+            "39": {"anio": "1836", "evento": "Guerra Confederación", "personajes": "Diego Portales"},
+            "40": {"anio": "1839", "evento": "Batalla de Yungay", "personajes": "Manuel Bulnes"},
+            "41": {"anio": "1842", "evento": "Ley de Colonización", "personajes": "Manuel Bulnes"},
+            "42": {"anio": "1843", "evento": "Toma del Estrecho", "personajes": "Juan Williams"},
+            "43": {"anio": "1843", "evento": "Universidad de Chile", "personajes": "Andres Bello"},
+            "44": {"anio": "1844", "evento": "Reconocimiento España", "personajes": "Isabel II de Espana"},
+            "45": {"anio": "1848", "evento": "Código Civil", "personajes": "Andres Bello"},
+            "46": {"anio": "1851", "evento": "Primer Ferrocarril", "personajes": "William Wheelwright"},
+            "47": {"anio": "1851", "evento": "Revolución de 1851", "personajes": "Manuel Montt"},
+            "48": {"anio": "1852", "evento": "El Telégrafo", "personajes": "William Wheelwright"},
+            "49": {"anio": "1856", "evento": "Cuestión del Sacristán", "personajes": "Manuel Montt"},
+            "50": {"anio": "1860", "evento": "Ley Instrucción Primaria", "personajes": "Manuel Montt"},
+            "51": {"anio": "1861", "evento": "Fusión Liberal-Conservadora", "personajes": "Jose Joaquin Perez"},
+            "52": {"anio": "1863", "evento": "El Cuerpo de Bomberos", "personajes": "Ciudadania"},
+            "53": {"anio": "1866", "evento": "Guerra contra España", "personajes": "Jose Joaquin Perez"},
+            "54": {"anio": "1871", "evento": "Fin Reelección Inmediata", "personajes": "Federico Errazuriz Z."},
+            "55": {"anio": "1874", "evento": "Reforma Electoral", "personajes": "Federico Errazuriz Z."},
+            "56": {"anio": "1877", "evento": "Decreto Amunátegui", "personajes": "Miguel Luis Amunategui"},
+            "57": {"anio": "1879", "evento": "Guerra del Pacífico", "personajes": "Anibal Pinto"},
+            "58": {"anio": "1879", "evento": "Combate de Angamos", "personajes": "Juan Jose Latorre"},
+            "59": {"anio": "1881", "evento": "Tratado de Límites", "personajes": "Domingo Santa Maria"},
+            "60": {"anio": "1881", "evento": "Toma de Lima", "personajes": "Manuel Baquedano"},
+            "61": {"anio": "1882", "evento": "Batalla de la Concepción", "personajes": "Ignacio Carrera Pinto"},
+            "62": {"anio": "1883", "evento": "Ley de Cementerios", "personajes": "Domingo Santa Maria"},
+            "63": {"anio": "1884", "evento": "Ley de Matrimonio Civil", "personajes": "Domingo Santa Maria"},
+            "64": {"anio": "1884", "evento": "Ley Registro Civil", "personajes": "Domingo Santa Maria"},
+            "65": {"anio": "1888", "evento": "Anexión Isla de Pascua", "personajes": "Policarpo Toro"},
+            "66": {"anio": "1888", "evento": "Pontificia Univ. Católica", "personajes": "Joaquin Larrain G."},
+            "67": {"anio": "1890", "evento": "El Viaducto del Malleco", "personajes": "Jose Manuel Balmaceda"},
+            "68": {"anio": "1891", "evento": "Guerra Civil de 1891", "personajes": "Jose Manuel Balmaceda"},
+            "69": {"anio": "1891", "evento": "Batalla de Placilla", "personajes": "Estanislao del Canto"},
+            "70": {"anio": "1892", "evento": "La Comuna Autónoma", "personajes": "Manuel Jose Irarrazaval"},
+            "71": {"anio": "1895", "evento": "Alumbrado Eléctrico", "personajes": "Ciudadania"},
+            "72": {"anio": "1896", "evento": "Cine en Chile", "personajes": "Ciudadania"},
+            "73": {"anio": "1900", "evento": "El Tranvía Eléctrico", "personajes": "Ciudadania"},
+            "74": {"anio": "1907", "evento": "Matanza Escuela Santa Maria", "personajes": "Pedro Montt"},
+            "75": {"anio": "1910", "evento": "Centenario de Chile", "personajes": "Emiliano Figueroa"}
+        };
+        const idsConImagen  = new Set(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50"]);
+        const idsConAudio   = new Set(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75"]);
 
-        let availableIDs = Object.keys(baseNombres); 
+        let availableIDs    = [...idsConAudio];
         let currentActiveID = null;
         const viewedHistory = [];
+
+        // ── Evaluación 1 a 1 ──────────────────────────────────────────────
+        const evalPreguntas = [
+            {
+                label: "Pregunta 1 de 3 — Ubicación cronológica",
+                texto: "¿En qué año ocurrió este evento? (o ubícalo antes / entre / después de las cartas en la mesa)",
+                clave: "anio",
+                hint:  "Recuerda: la respuesta correcta es relativa a la línea de tiempo. Si entre tus cartas hay una de 1810 y una de 1900, debes decir si esta va antes, entre o después de ellas."
+            },
+            {
+                label: "Pregunta 2 de 3 — El Hecho",
+                texto: "¿De qué evento histórico se trata?",
+                clave: "evento",
+                hint:  ""
+            },
+            {
+                label: "Pregunta 3 de 3 — Los Protagonistas",
+                texto: "¿Quiénes fueron los personajes clave involucrados?",
+                clave: "personajes",
+                hint:  ""
+            }
+        ];
+        let evalPaso = 0;
+
+        function abrirEvaluacion() {
+            if(!currentActiveID) return;
+            evalPaso = 0;
+            renderEvalPaso();
+            document.getElementById('modal-bg').style.display  = 'block';
+            document.getElementById('eval-modal').style.display = 'block';
+        }
+
+        function renderEvalPaso() {
+            const q    = evalPreguntas[evalPaso];
+            const resp = respuestasData[currentActiveID];
+
+            // Badge y dots
+            document.getElementById('eval-step-badge').innerText = `${evalPaso+1} / 3`;
+            [1,2,3].forEach(i => {
+                document.getElementById(`eval-dot-${i}`).style.background = i === evalPaso+1 ? '#3b82f6' : '#334155';
+            });
+
+            // Pregunta
+            document.getElementById('eval-pregunta-label').innerText = q.label;
+            document.getElementById('eval-pregunta-texto').innerText  = q.texto + (q.hint ? '\n\n💡 ' + q.hint : '');
+
+            // Respuesta
+            document.getElementById('eval-respuesta-texto').innerText = resp[q.clave];
+            document.getElementById('eval-respuesta-wrap').style.display = 'none';
+
+            // Botones
+            document.getElementById('eval-btn-mostrar').style.display   = '';
+            const btnSig = document.getElementById('eval-btn-siguiente');
+            btnSig.style.display = 'none';
+            btnSig.innerText = evalPaso < 2 ? 'Siguiente →' : '✓ Finalizar';
+        }
+
+        function mostrarRespuesta() {
+            document.getElementById('eval-respuesta-wrap').style.display = 'block';
+            document.getElementById('eval-btn-mostrar').style.display    = 'none';
+            document.getElementById('eval-btn-siguiente').style.display  = '';
+        }
+
+        function siguientePregunta() {
+            if(evalPaso < 2) {
+                evalPaso++;
+                renderEvalPaso();
+            } else {
+                cerrarEvaluacion();
+            }
+        }
+
+        function cerrarEvaluacion() {
+            document.getElementById('modal-bg').style.display   = 'none';
+            document.getElementById('eval-modal').style.display = 'none';
+        }
+
+        // ── Pistas ────────────────────────────────────────────────────────
+        function imgError(el) { el.style.display = 'none'; }
+        function thumbError(el) {
+            el.style.display = 'none';
+            const ph = document.createElement('div');
+            ph.style.cssText = 'width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
+            ph.innerText = '🔊';
+            el.parentElement.insertBefore(ph, el.nextSibling);
+        }
 
         function updateCounter() {
             const info = document.getElementById('counter-info');
             if(info) info.innerText = `Misterios restantes: ${availableIDs.length}`;
-            if (availableIDs.length === 0) {
+            if(availableIDs.length === 0) {
                 const btn = document.getElementById('btn-generate');
                 if(btn) { btn.innerText = "PARTIDA COMPLETADA"; btn.disabled = true; }
             }
         }
 
         function generateRandomQR() {
-            if (availableIDs.length === 0) return;
-            const randomIndex = Math.floor(Math.random() * availableIDs.length);
-            currentActiveID = availableIDs[randomIndex];
-            availableIDs.splice(randomIndex, 1);
+            if(availableIDs.length === 0) return;
+            const idx = Math.floor(Math.random() * availableIDs.length);
+            currentActiveID = availableIDs[idx];
+            availableIDs.splice(idx, 1);
             const img = document.getElementById('qr-image');
-            const placeholder = document.getElementById('qr-placeholder');
-            img.src = `./qr/id_${currentActiveID}_qr.png`; 
+            img.src = `./qr/id_${currentActiveID}_qr.png`;
             img.style.display = 'block';
-            placeholder.style.display = 'none';
+            document.getElementById('qr-placeholder').style.display = 'none';
             updateCounter();
         }
 
         function clickToOpen() {
-            if (currentActiveID) openMystery(currentActiveID, true);
+            if(currentActiveID) openMystery(currentActiveID, true);
         }
 
-        function openMystery(id, addToHistory = false) {
-            const name = baseNombres[id];
-            currentActiveID = id;
-            document.getElementById('full-img').src = `./imagenes/${name}.png`;
-            const audio = document.getElementById('audio-player');
-            audio.src = `./audios/${name}.mp4`;
-            
+        function openMystery(id, addToHistory=false) {
+            currentActiveID   = id;
+            const nombre      = baseNombres[id];
+            const tieneImagen = idsConImagen.has(id);
+            const tieneAudio  = idsConAudio.has(id);
+
+            const imgEl = document.getElementById('full-img');
+            if(tieneImagen) {
+                imgEl.style.display = 'block';
+                imgEl.src = `./imagenes/${nombre}.png`;
+            } else {
+                imgEl.style.display = 'none';
+                imgEl.src = '';
+            }
+
             document.querySelectorAll('.btn-pista').forEach(btn => {
                 btn.disabled = true;
                 btn.innerText = "Pista " + btn.id.split('-').pop();
             });
-            document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear pistas";
-            document.getElementById('pista-status').style.color = "var(--accent)";
-            document.getElementById('player-overlay').style.display = 'flex';
-            audio.play();
-            document.getElementById('btn-play').innerText = "PAUSAR";
 
-            if (addToHistory && !viewedHistory.includes(id)) {
+            const audio = document.getElementById('audio-player');
+            if(tieneAudio) {
+                audio.src = `./audios/${nombre}.mp4`;
+                document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear pistas";
+                document.getElementById('pista-status').style.color = "var(--accent)";
+                document.getElementById('btn-play').style.display     = '';
+                document.getElementById('btn-terminar').style.display = '';
+                audio.play();
+                document.getElementById('btn-play').innerText = "PAUSAR";
+            } else {
+                audio.src = '';
+                document.getElementById('pista-status').innerText = "Audio en preparación — pistas disponibles directamente";
+                document.getElementById('pista-status').style.color = "#f59e0b";
+                document.getElementById('btn-play').style.display     = 'none';
+                document.getElementById('btn-terminar').style.display = 'none';
+                document.querySelectorAll('.btn-pista').forEach(btn => btn.disabled = false);
+            }
+
+            document.getElementById('player-overlay').style.display = 'flex';
+            if(addToHistory && !viewedHistory.includes(id)) {
                 viewedHistory.unshift(id);
                 updateHistoryUI();
             }
@@ -402,41 +829,64 @@
             document.getElementById('pista-status').style.color = "#22c55e";
         };
 
-        function mostrarPista(numero) {
-            const textoPista = pistasData[currentActiveID] ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
-            document.getElementById('pista-texto').innerText = textoPista;
-            document.getElementById('modal-bg').style.display = 'block';
-            document.getElementById('pista-modal').style.display = 'block';
-            
-            const currentBtn = document.getElementById(`btn-pista-${numero}`);
-            currentBtn.disabled = true;
-            currentBtn.innerText = "Vista";
+        function terminarAudio() {
+            document.getElementById('audio-player').pause();
+            document.getElementById('btn-play').innerText = "REPRODUCIR";
+            document.getElementById('btn-pista-1').disabled = false;
+            document.getElementById('pista-status').innerText = "¡Pista 1 desbloqueada!";
+            document.getElementById('pista-status').style.color = "#22c55e";
+        }
 
-            if (numero < 3) {
-                const nextNum = numero + 1;
-                document.getElementById(`btn-pista-${nextNum}`).disabled = false;
-                document.getElementById('pista-status').innerText = `¡Pista ${nextNum} disponible!`;
+        function mostrarPista(numero) {
+            const texto = pistasData[currentActiveID] ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
+            const titulos = ["", "Pista 1 — El Enigma", "Pista 2 — El Rastro", "Pista 3 — Los Rostros"];
+            document.getElementById('pista-titulo').innerText = titulos[numero];
+            document.getElementById('pista-texto').innerText  = texto;
+            document.getElementById('modal-bg').style.display    = 'block';
+            document.getElementById('pista-modal').style.display = 'block';
+            const btn = document.getElementById(`btn-pista-${numero}`);
+            btn.disabled = true; btn.innerText = "Vista";
+            if(numero < 3) {
+                document.getElementById(`btn-pista-${numero+1}`).disabled = false;
+                document.getElementById('pista-status').innerText = `¡Pista ${numero+1} disponible!`;
             } else {
                 document.getElementById('pista-status').innerText = "Todas las pistas reveladas.";
             }
         }
 
         function cerrarPista() {
-            document.getElementById('modal-bg').style.display = 'none';
+            document.getElementById('modal-bg').style.display    = 'none';
             document.getElementById('pista-modal').style.display = 'none';
+            document.getElementById('eval-modal').style.display  = 'none';
         }
 
         function updateHistoryUI() {
             const section = document.getElementById('history-section');
-            const list = document.getElementById('history-list');
+            const list    = document.getElementById('history-list');
             if(section) section.style.display = 'block';
             if(list) {
                 list.innerHTML = '';
                 viewedHistory.forEach(id => {
-                    const container = document.createElement('div');
-                    container.className = 'history-item-container';
-                    container.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" class="history-item"><div class="history-id-tag">${id}</div>`;
-                    list.appendChild(container);
+                    const div = document.createElement('div');
+                    div.className = 'history-item-container';
+                    if(idsConImagen.has(id)) {
+                        const img = document.createElement('img');
+                        img.src = `./imagenes/${baseNombres[id]}.png`;
+                        img.className = 'history-item';
+                        img.onerror = function() { this.style.display='none'; };
+                        div.appendChild(img);
+                    } else {
+                        const ph = document.createElement('div');
+                        ph.className = 'history-item';
+                        ph.style.cssText = 'background:#1e293b;display:flex;align-items:center;justify-content:center;font-size:1.2rem;';
+                        ph.innerText = '🔊';
+                        div.appendChild(ph);
+                    }
+                    const tag = document.createElement('div');
+                    tag.className = 'history-id-tag';
+                    tag.innerText = id;
+                    div.appendChild(tag);
+                    list.appendChild(div);
                 });
             }
         }
@@ -444,15 +894,15 @@
         function closePlayer() {
             document.getElementById('audio-player').pause();
             document.getElementById('player-overlay').style.display = 'none';
-            document.getElementById('qr-image').style.display = 'none';
-            document.getElementById('qr-placeholder').style.display = 'block';
+            document.getElementById('qr-image').style.display        = 'none';
+            document.getElementById('qr-placeholder').style.display  = 'block';
             currentActiveID = null;
         }
 
         function toggleAudio() {
             const audio = document.getElementById('audio-player');
-            if(audio.paused) { audio.play(); document.getElementById('btn-play').innerText = "PAUSAR"; }
-            else { audio.pause(); document.getElementById('btn-play').innerText = "REPRODUCIR"; }
+            if(audio.paused) { audio.play();  document.getElementById('btn-play').innerText = "PAUSAR"; }
+            else             { audio.pause(); document.getElementById('btn-play').innerText = "REPRODUCIR"; }
         }
 
         function showGallery() {
@@ -470,19 +920,65 @@
             const grid = document.getElementById('selection-grid');
             grid.innerHTML = '';
             Object.keys(baseNombres).sort().forEach(id => {
+                const tieneImg = idsConImagen.has(id);
+                const tieneAud = idsConAudio.has(id);
+                const activo   = tieneImg || tieneAud;
                 const div = document.createElement('div');
-                div.style.cssText = "background:#1e293b; border-radius:12px; overflow:hidden; cursor:pointer; border: 1px solid #334155;";
-                div.onclick = () => openMystery(id, false); 
-                div.innerHTML = `<img src="./imagenes/${baseNombres[id]}.png" style="width:100%; height:110px; object-fit:cover;"><div style="padding:10px; text-align:center;"><span style="font-size:0.75rem; color:var(--accent); font-weight:bold;">ID ${id}</span></div>`;
+                div.style.cssText = `background:#1e293b;border-radius:12px;overflow:hidden;` +
+                    `cursor:${activo?'pointer':'default'};` +
+                    `border:${tieneAud?'2px solid #3b82f6':'1px solid #334155'};` +
+                    `opacity:${activo?'1':'0.35'};position:relative;`;
+                if(activo) div.onclick = () => openMystery(id, false);
+
+                if(tieneAud) {
+                    const badge = document.createElement('span');
+                    badge.style.cssText = 'position:absolute;top:4px;right:4px;background:#3b82f6;border-radius:4px;font-size:9px;padding:2px 4px;font-weight:bold;z-index:1;';
+                    badge.innerText = '🔊';
+                    div.appendChild(badge);
+                }
+
+                if(tieneImg) {
+                    const img = document.createElement('img');
+                    img.src = `./imagenes/${baseNombres[id]}.png`;
+                    img.style.cssText = 'width:100%;height:110px;object-fit:cover;display:block;';
+                    img.onerror = function() { thumbError(this); };
+                    div.appendChild(img);
+                } else {
+                    const ph = document.createElement('div');
+                    ph.style.cssText = 'width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
+                    ph.innerText = '🔊';
+                    div.appendChild(ph);
+                }
+
+                const label = document.createElement('div');
+                label.style.cssText = 'padding:6px;text-align:center;';
+                label.innerHTML = `<span style="font-size:0.7rem;color:${tieneImg?'var(--accent)':'#94a3b8'};font-weight:bold;">ID ${id}</span>`;
+                div.appendChild(label);
                 grid.appendChild(div);
             });
         }
 
+        function fmtTime(s) {
+            if(isNaN(s)||!isFinite(s)) return '00:00';
+            return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+        }
+
         document.getElementById('audio-player').ontimeupdate = () => {
             const audio = document.getElementById('audio-player');
-            const f = (t) => Math.floor(t/60).toString().padStart(2,'0') + ":" + Math.floor(t%60).toString().padStart(2,'0');
-            document.getElementById('time-display').innerText = `${f(audio.currentTime)} / ${f(audio.duration || 0)}`;
+            const bar   = document.getElementById('progress-bar');
+            const time  = document.getElementById('time-display');
+            if(audio.duration) {
+                if(bar)  bar.style.width = (audio.currentTime/audio.duration*100)+'%';
+                if(time) time.innerText  = `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
+            }
         };
+
+        function seekAudio(event, barEl) {
+            const audio = document.getElementById('audio-player');
+            if(!audio.duration) return;
+            const rect = barEl.getBoundingClientRect();
+            audio.currentTime = ((event.clientX-rect.left)/rect.width)*audio.duration;
+        }
 
         updateCounter();
     </script>
