@@ -1,367 +1,488 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Misterios de Chile - Juego Histórico</title>
-    <style>
-        :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent: #3b82f6;
-            --text-main: #f1f5f9;
-            --text-dim: #94a3b8;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Misterios de Chile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#C9A84C; --gold-lt:#E8C97A; --cream:#F5F0E8; --ink:#0E0E0E;
+  --ink-soft:#1A1A2E; --slate:#1E2A3A; --slate-lt:#253548; --mist:#8A9BB0;
+  --red:#C0392B; --green:#27AE60; --blue:#2980B9; --r:.75rem; --r-lg:1.25rem;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink-soft);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100dvh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Roboto, sans-serif;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            min-height: 100vh;
-        }
+/* ── MAIN ── */
+#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:32px 20px 40px;position:relative;z-index:1}
+.main-header{text-align:center;margin-bottom:28px}
+.eyebrow{font-size:.62rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:6px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1.05;color:var(--cream);letter-spacing:-.02em}
+h1 span{color:var(--gold)}
+.subtitle{font-size:.72rem;color:var(--mist);margin-top:6px;letter-spacing:.04em}
+.period-badge{display:inline-block;margin-top:8px;padding:4px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:999px;font-size:.68rem;color:var(--gold);letter-spacing:.12em;font-weight:600}
+.eyebrow-stage{color:var(--gold-lt);font-weight:600}
+#counter-pill{display:inline-flex;align-items:center;gap:6px;background:var(--slate);border:1px solid rgba(201,168,76,.2);border-radius:999px;padding:6px 16px;font-size:.72rem;color:var(--mist);margin-bottom:24px}
+#counter-pill strong{color:var(--gold);font-size:.85rem}
 
-        .view { display: none; flex-direction: column; align-items: center; width: 100%; padding: 20px; box-sizing: border-box; }
-        .view.active { display: flex; }
+/* QR */
+.qr-zone{width:100%;max-width:300px;aspect-ratio:1;background:white;border-radius:var(--r-lg);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 0 0 1px rgba(201,168,76,.3),0 24px 64px rgba(0,0,0,.5);transition:transform .15s;margin-bottom:20px}
+.qr-zone:active{transform:scale(.98)}
+.qr-hint{color:#94a3b8;font-size:.78rem;text-align:center;padding:20px;font-style:italic;line-height:1.5}
+#qr-svg{width:85%;height:auto;display:none;image-rendering:pixelated}
+#qr-label{display:none;font-size:.58rem;color:#64748b;font-family:monospace;padding:0 8px 8px;text-align:center}
 
-        h1 { margin-top: 10px; color: var(--accent); text-transform: uppercase; letter-spacing: 2px; text-align: center; font-size: 1.8rem; }
+/* Buttons */
+#btn-generate{width:100%;max-width:300px;padding:15px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s;margin-bottom:10px}
+#btn-generate:hover{opacity:.9;transform:translateY(-1px)}
+#btn-generate:disabled{opacity:.35;cursor:not-allowed;transform:none}
+#btn-gallery{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:10px 20px;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+#btn-gallery:hover{border-color:var(--gold);color:var(--gold)}
 
-        .main-logo {
-            max-width: 420px; 
-            height: auto;
-            margin-top: 40px;
-        }
+/* History */
+#history-section{display:none;width:100%;max-width:560px;margin-top:28px}
+.history-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);margin-bottom:10px;padding-left:2px}
+.history-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.history-strip::-webkit-scrollbar{display:none}
+.h-thumb{flex-shrink:0;width:54px;height:40px;border-radius:6px;overflow:visible;position:relative;border:1px solid rgba(255,255,255,.08);transition:transform .2s,box-shadow .2s;cursor:zoom-in;background:var(--slate)}
+.h-thumb:hover{box-shadow:0 0 0 1.5px var(--gold)}
+#thumb-zoom-preview{position:fixed;display:none;z-index:9999;border-radius:8px;overflow:hidden;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.75),0 0 0 2px var(--gold);background:var(--slate);transition:opacity .12s}
+#thumb-zoom-preview img{width:140px;height:104px;object-fit:cover;display:block}
+.h-thumb img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block;transition:transform .2s}
+.h-thumb::after{content:'🔍';position:absolute;bottom:-4px;right:-4px;font-size:9px;opacity:0;transition:opacity .15s;pointer-events:none;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
+.h-thumb:hover::after{opacity:1}
+.h-thumb .h-id{position:absolute;bottom:1px;right:2px;font-size:6px;color:var(--gold);font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.h-audio{display:flex;align-items:center;justify-content:center;font-size:.9rem;width:100%;height:100%}
 
-        .qr-wrapper {
-            background: white;
-            padding: 20px;
-            border-radius: 20px;
-            margin: 30px 0;
-            width: 100%;
-            max-width: 280px; 
-            aspect-ratio: 1 / 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 0 40px rgba(59, 130, 246, 0.2);
-            cursor: pointer;
-        }
-        
-        #qr-image { width: 100%; height: auto; display: none; }
-        .placeholder-text { color: #64748b; font-style: italic; text-align: center; font-size: 0.9rem; }
+/* ── GALLERY ── */
+#screen-gallery{display:none;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 16px 40px;position:relative;z-index:1;background:transparent}
+.gallery-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin-bottom:20px}
+.gallery-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream)}
+#btn-back{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:8px 14px;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+#btn-back:hover{border-color:var(--gold);color:var(--gold)}
+#gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:100%;max-width:900px}
+.g-card{border-radius:var(--r);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.07);cursor:zoom-in;transition:transform .2s,border-color .2s,box-shadow .2s;background:var(--slate)}
+.g-card:hover{transform:translateY(-3px) scale(1.04);border-color:rgba(201,168,76,.6);box-shadow:0 10px 32px rgba(0,0,0,.55),0 0 0 1.5px rgba(201,168,76,.35)}
+.g-card img{width:100%;height:80px;object-fit:cover;display:block;transition:transform .3s ease}
+.g-card:hover img{transform:scale(1.12)}
+.g-card::after{content:'🔍';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:1.5rem;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));z-index:5}
+.g-card:hover::after{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.g-ph{width:100%;height:80px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--slate-lt)}
+.g-id{font-size:.62rem;font-weight:700;color:var(--gold);padding:4px 7px;font-family:monospace}
+.g-aud-badge{position:absolute;top:4px;right:4px;background:var(--blue);border-radius:3px;font-size:8px;padding:1px 4px;font-weight:700;color:#fff}
 
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-            color: white;
-            padding: 18px 30px;
-            border-radius: 50px;
-            font-weight: 800;
-            border: none;
-            cursor: pointer;
-            width: 100%;
-            max-width: 320px;
-        }
+/* ── PLAYER OVERLAY ── */
+#player-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,9,16,.97);flex-direction:column;align-items:center;overflow-y:auto}
+.player-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px;padding:14px 16px 24px;min-height:100dvh}
+.player-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:12px;flex-shrink:0}
+.player-logo{height:26px;width:auto}
+#btn-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--mist);border-radius:var(--r);padding:6px 12px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+#btn-close:hover{background:rgba(192,57,43,.2);color:#e74c3c;border-color:#e74c3c}
+.img-frame{width:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:6px 0 10px;position:relative}
+#full-img{display:block;width:auto;height:auto;max-width:100%;max-height:48dvh;object-fit:contain;border-radius:var(--r);border:1px solid rgba(201,168,76,.12)}
+.no-img-ph{display:none;width:100%;min-height:140px;background:var(--slate);border-radius:var(--r);align-items:center;justify-content:center;font-size:2.5rem;border:1px dashed rgba(138,155,176,.2)}
 
-        .btn-primary:disabled {
-            background: #334155;
-            cursor: not-allowed;
-            opacity: 0.6;
-        }
+/* Botón EVALUAR flotante sobre la foto */
+.btn-eval-overlay{position:absolute;top:10px;left:10px;display:none;padding:8px 13px;background:var(--gold);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.45);transition:opacity .15s,transform .1s}
+.btn-eval-overlay:hover{opacity:.88}
+.btn-eval-overlay:active{transform:scale(.96)}
 
-        #history-section { 
-            margin-top: 40px; 
-            width: 100%; 
-            max-width: 900px; 
-            text-align: center;
-            padding-bottom: 60px; 
-        }
-        .history-list { 
-            display: flex; 
-            gap: 15px; 
-            padding: 20px; 
-            justify-content: center; 
-            flex-wrap: wrap;
-        }
-        
-        .history-item-container { 
-            position: relative; 
-            flex: 0 0 80px; 
-            height: 60px; 
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            z-index: 1;
-        }
+/* Pistas section */
+.pistas-section{width:100%;flex-shrink:0}
+#pista-status{font-size:.7rem;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:.04em;min-height:16px}
+.pistas-row{display:flex;gap:8px;justify-content:center}
+.btn-pista{flex:1;max-width:130px;padding:9px 6px;background:var(--slate);border:1px solid rgba(201,168,76,.2);color:var(--gold-lt);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+.btn-pista:hover:not(:disabled){background:rgba(201,168,76,.12);border-color:var(--gold)}
+.btn-pista:disabled{opacity:.3;cursor:not-allowed;color:var(--mist);border-color:rgba(138,155,176,.1)}
+.btn-pista.vista{opacity:.45;color:var(--mist)}
 
-        .history-item-container:hover { 
-            transform: scale(3); 
-            z-index: 10; 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
-        }
-        
-        .history-item { 
-            width: 100%; 
-            height: 100%; 
-            border-radius: 6px; 
-            object-fit: cover; 
-            border: 2px solid #334155; 
-            display: block;
-        }
+/* Controls */
+.player-controls{width:100%;flex-shrink:0;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.progress-row{display:flex;align-items:center;gap:10px}
+#time-display{font-family:monospace;font-size:.7rem;color:var(--mist);white-space:nowrap;min-width:88px;text-align:center}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:999px;cursor:pointer;overflow:hidden}
+#progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-lt));border-radius:999px;transition:width .25s linear}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ctrl-btn{padding:10px 16px;border-radius:var(--r);border:none;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.04em;text-transform:uppercase}
+.ctrl-btn:active{transform:scale(.97)}
+.ctrl-blue{background:var(--blue);color:#fff}
+.ctrl-green{background:var(--green);color:#fff}
+.ctrl-ghost{background:transparent;color:var(--mist);border:1px solid rgba(138,155,176,.2)}
+.ctrl-ghost:hover{border-color:var(--mist);color:var(--cream)}
 
-        .history-id-tag {
-            position: absolute;
-            bottom: 2px;
-            right: 2px;
-            background: rgba(15, 23, 42, 0.9);
-            color: var(--accent);
-            font-size: 8px;
-            font-weight: bold;
-            padding: 1px 3px;
-            border-radius: 3px;
-            pointer-events: none;
-        }
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;align-items:flex-start;justify-content:flex-start;padding:16px}
+.modal-overlay.pista-open{justify-content:flex-end}
+.modal-overlay.open{display:flex}
+.modal-box{background:var(--slate);border:1px solid rgba(201,168,76,.18);border-radius:var(--r-lg);padding:22px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mIn .18s ease}
+@keyframes mIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cream)}
+.modal-close{background:none;border:none;color:var(--mist);font-size:1.3rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
+.modal-close:hover{color:var(--cream);background:rgba(255,255,255,.07)}
 
-        #player-overlay { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0, 0, 0, 0.97); 
-            z-index: 9000; 
-            flex-direction: column; 
-            justify-content: space-between;
-            align-items: center; 
-            overflow: hidden;
-            padding: 12px 16px 16px;
-            box-sizing: border-box;
-            gap: 0;
-        }
+/* Pista modal */
+.pista-name{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
+.pista-body{font-size:.9rem;line-height:1.65;color:var(--cream);margin-bottom:18px}
+.btn-entendido{width:100%;padding:11px;background:var(--gold);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;letter-spacing:.05em;text-transform:uppercase}
 
-        #player-overlay .main-logo {
-            margin-top: 0;
-            margin-bottom: 0;
-            max-width: 160px;
-            flex-shrink: 0;
-        }
+/* Eval modal */
+.q-text{font-size:.9rem;font-weight:500;color:var(--cream);margin-bottom:10px;line-height:1.55}
+.answer-box{display:none;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.35);border-radius:var(--r);padding:11px 13px;margin-bottom:10px}
+.answer-label{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:3px}
+.answer-text{font-size:.9rem;font-weight:600;color:#6FCF97}
+.eval-q-block{border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:12px;margin-bottom:12px}
+.eval-q-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.q-label-num{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;font-weight:600}
+.btn-show{width:100%;padding:9px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);color:var(--gold-lt);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-show:hover{background:rgba(201,168,76,.22)}
+.btn-show:disabled{opacity:.35;cursor:not-allowed}
 
-        .mystery-content { 
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            justify-content: center;
-            gap: 12px; 
-            width: 100%;
-            flex: 1;
-            min-height: 0;
-            overflow: hidden;
-        }
+/* ── FONDO HISTÓRICO (cubre TODAS las pantallas) ── */
+#bg-historico{position:fixed;inset:0;display:grid;grid-template-columns:repeat(4,25%);grid-template-rows:repeat(5,20%);gap:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0.022;filter:grayscale(65%) sepia(25%) brightness(0.9)}
+#bg-historico img{width:100%;height:100%;object-fit:cover;display:block}
+/* gradiente oscuro fijo para legibilidad en todas las pantallas */
+#bg-overlay-gradient{position:fixed;inset:0;background:linear-gradient(to bottom,rgba(26,26,46,.72) 0%,rgba(26,26,46,.55) 40%,rgba(26,26,46,.72) 100%);pointer-events:none;z-index:0}
+/* contenido del main por encima del fondo */
+#screen-main{position:relative;z-index:1}
+#screen-main > *{position:relative;z-index:1}
 
-        #full-img { 
-            display: block;
-            width: auto;
-            height: auto;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            border-radius: 12px; 
-            box-shadow: 0 0 30px rgba(0,0,0,0.4);
-            border: 2px solid #334155;
-        }
+/* ── MARCA DE AGUA LUDOLAB ── */
+#watermark-ludolab{position:fixed;bottom:16px;right:16px;z-index:500;pointer-events:auto;opacity:0.28;transform-origin:bottom right;transition:opacity .2s}
+#watermark-ludolab:hover{opacity:0.55}
+#watermark-ludolab a{display:block;cursor:pointer;text-decoration:none}
+#watermark-ludolab svg{width:140px;height:auto;filter:grayscale(100%) brightness(3)}
 
-        .pistas-column { 
-            display: flex; 
-            flex-direction: row; 
-            gap: 10px; 
-            width: 100%;
-            justify-content: center;
-        }
+/* ── LOGO MISTERIOS DE CHILE FIJO (todas las pantallas) ── */
+#logo-misterios-fijo{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;opacity:0.55;transition:opacity .2s}
+#logo-misterios-fijo img{height:32px;width:auto;filter:drop-shadow(0 1px 4px rgba(0,0,0,.7))}
+@media(max-width:480px){#logo-misterios-fijo img{height:24px}}
 
-        .btn-pista { 
-            background: #1e40af; 
-            color: white; 
-            padding: 12px 20px; 
-            border: none; 
-            border-radius: 10px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            flex: 1;
-            max-width: 120px;
-            font-size: 0.9rem;
-        }
+/* ── LOGO LUDOLAB EN PREGUNTAS ── */
+.ludolab-modal-logo{display:flex;justify-content:flex-end;margin-bottom:10px}
+.ludolab-modal-logo a{display:block;opacity:0.55;transition:opacity .2s;cursor:pointer}
+.ludolab-modal-logo a:hover{opacity:0.9}
+.ludolab-modal-logo img{height:22px;width:auto;filter:brightness(3) grayscale(1)}
 
-        .btn-pista:disabled { 
-            background: #1e293b; 
-            color: #475569; 
-            border: 1px solid #334155; 
-            cursor: not-allowed; 
-            opacity: 0.7; 
-        }
+/* ── BOTÓN REGLAS ── */
+#btn-reglas{background:none;border:1px solid rgba(138,155,176,.2);color:var(--mist);border-radius:var(--r);padding:7px 16px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+#btn-reglas:hover{border-color:var(--gold);color:var(--gold)}
 
-        .controls { 
-            background: #0b1120; 
-            padding: 12px 16px; 
-            display: flex; 
-            justify-content: center; 
-            align-items: center; 
-            gap: 20px; 
-            width: 100%; 
-            max-width: 500px; 
-            border-radius: 12px;
-            border: 1px solid #1e293b;
-            margin-top: 0;
-            flex-shrink: 0;
-        }
+/* ── MODAL REGLAS ── */
+#modal-reglas-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:3000;align-items:center;justify-content:center;padding:16px}
+#modal-reglas-overlay.open{display:flex}
+#modal-reglas-box{background:var(--slate-lt);border:1px solid rgba(201,168,76,.2);border-radius:var(--r-lg);width:100%;max-width:560px;max-height:88dvh;display:flex;flex-direction:column;box-shadow:0 32px 100px rgba(0,0,0,.8);animation:mIn .2s ease}
+.reglas-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.reglas-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--cream);display:flex;align-items:center;gap:8px}
+.reglas-title span{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:999px;padding:2px 9px;font-family:'DM Sans',sans-serif;font-weight:600}
+#btn-close-reglas{background:none;border:none;color:var(--mist);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
+#btn-close-reglas:hover{color:var(--cream);background:rgba(255,255,255,.07)}
+.reglas-body{overflow-y:auto;padding:22px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.25) transparent;flex:1}
+.reglas-body::-webkit-scrollbar{width:4px}
+.reglas-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:999px}
+.reglas-section{margin-bottom:22px}
+.reglas-section:last-child{margin-bottom:0}
+.reglas-h2{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--gold);margin-bottom:8px;border-bottom:1px solid rgba(201,168,76,.15);padding-bottom:6px}
+.reglas-h3{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-lt);margin:12px 0 5px}
+.reglas-p{font-size:.82rem;line-height:1.65;color:var(--cream);margin-bottom:6px}
+.reglas-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.76rem}
+.reglas-table th{background:rgba(201,168,76,.12);color:var(--gold);font-weight:600;text-align:left;padding:6px 10px;border:1px solid rgba(201,168,76,.15);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase}
+.reglas-table td{padding:6px 10px;border:1px solid rgba(255,255,255,.07);color:var(--cream);vertical-align:top;line-height:1.5}
+.reglas-table tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.reglas-callout{background:rgba(201,168,76,.06);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;margin:8px 0;font-size:.79rem;line-height:1.6;color:var(--cream)}
+.reglas-step{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+.reglas-step-num{flex-shrink:0;width:22px;height:22px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--gold);margin-top:1px}
+.reglas-step-text{font-size:.82rem;line-height:1.6;color:var(--cream)}
 
-        #pista-modal { 
-            display: none; 
-            position: fixed; 
-            top: 50%; left: 50%; 
-            transform: translate(-50%, -50%); 
-            background: var(--card-bg); 
-            padding: 30px; 
-            border-radius: 20px; 
-            border: 2px solid var(--accent); 
-            z-index: 10000; 
-            width: 85%; 
-            max-width: 400px; 
-            text-align: center; 
-        }
-
-        .modal-overlay-bg { 
-            display: none; 
-            position: fixed; 
-            top: 0; left: 0; width: 100%; height: 100%; 
-            background: rgba(0,0,0,0.8); 
-            z-index: 9999; 
-        }
-
-        footer { margin-top: auto; padding: 20px; color: var(--text-dim); font-size: 0.85rem; text-align: center; }
-
-        @media (max-width: 768px) {
-            h1 { font-size: 1.4rem; }
-            .main-logo { max-width: 280px; }
-            .pistas-column { flex-direction: column; align-items: center; }
-            .btn-pista { max-width: 280px; width: 100%; }
-            .controls { flex-direction: column; gap: 10px; width: 90%; }
-        }
-    </style>
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  h1{font-size:1.8rem}.qr-zone{max-width:260px}
+  #full-img{max-height:40dvh}.ctrl-btn{font-size:.7rem;padding:9px 10px}
+  .btn-pista{font-size:.7rem;padding:8px 4px}
+  #gallery-grid{grid-template-columns:repeat(auto-fill,minmax(85px,1fr))}
+  #watermark-ludolab{bottom:10px;right:10px;opacity:0.22}
+  #watermark-ludolab svg{width:110px}
+}
+@media(max-height:580px) and (orientation:landscape){
+  .player-logo{display:none}
+  .player-inner{padding:8px 14px 16px}
+  #full-img{max-height:36dvh}
+  .player-controls{margin-top:8px;gap:7px}
+  .pistas-section{margin-bottom:0}
+}
+</style>
 </head>
 <body>
 
-    <div id="modal-bg" class="modal-overlay-bg" onclick="cerrarPista()"></div>
-
-    <!-- Modal Pista -->
-    <div id="pista-modal">
-        <h2 style="color:var(--accent); margin-top:0; font-size:1.1rem;" id="pista-titulo">Pista Revelada</h2>
-        <p id="pista-texto" style="line-height:1.6; margin:16px 0; font-size:0.95rem; color:#e2e8f0;"></p>
-        <button onclick="cerrarPista()" style="padding:10px 24px; background:var(--accent); border:none; color:white; border-radius:8px; cursor:pointer; font-weight:bold;">ENTENDIDO</button>
+<!-- MODAL OVERLAY -->
+<div id="modal-overlay" class="modal-overlay">
+  <!-- Pista -->
+  <div id="modal-pista" class="modal-box" style="display:none">
+    <div class="modal-header">
+      <span class="modal-title">Pista Revelada</span>
+      <button class="modal-close" onclick="cerrarModal()">×</button>
     </div>
-
-    <!-- Modal Evaluación 1 a 1 -->
-    <div id="eval-modal" style="display:none; position:fixed; top:50%; left:50%; transform:translate(-50%,-50%);
-         background:#1e293b; padding:24px; border-radius:20px; border:2px solid #3b82f6;
-         z-index:10000; width:90%; max-width:420px; box-shadow:0 20px 60px rgba(0,0,0,0.7);">
-
-        <!-- Header -->
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px;">
-            <div style="display:flex; align-items:center; gap:10px;">
-                <span style="color:#f1f5f9; font-size:1rem; font-weight:bold;">Preguntas</span>
-                <span id="eval-step-badge" style="background:#3b82f6; color:white; border-radius:999px; font-size:0.72rem; font-weight:bold; padding:3px 10px;">1 / 3</span>
-            </div>
-            <button onclick="cerrarEvaluacion()" style="background:transparent; border:none; color:#94a3b8; font-size:1.5rem; cursor:pointer; line-height:1;">&times;</button>
-        </div>
-
-        <!-- Pregunta -->
-        <p id="eval-pregunta-texto" style="font-size:1rem; color:#f1f5f9; font-weight:bold; margin:0 0 16px 0;"></p>
-
-        <!-- Respuesta -->
-        <p id="eval-respuesta-texto" style="display:none; font-size:1rem; color:#22c55e; font-weight:bold; margin:0 0 20px 0; padding:14px; background:#0d2137; border-radius:10px; border:1px solid #3b82f6;"></p>
-
-        <!-- Botones -->
-        <div style="display:flex; gap:10px;">
-            <button id="eval-btn-mostrar" onclick="mostrarRespuesta()"
-                style="flex:1; padding:10px; background:#f59e0b; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-                👁 Mostrar respuesta
-            </button>
-            <button id="eval-btn-siguiente" onclick="siguientePregunta()"
-                style="display:none; flex:1; padding:10px; background:#22c55e; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">
-                Siguiente →
-            </button>
-        </div>
-
-        <!-- Dots -->
-        <div style="display:flex; gap:6px; justify-content:center; margin-top:16px;">
-            <div id="eval-dot-1" style="width:8px; height:8px; border-radius:50%; background:#3b82f6;"></div>
-            <div id="eval-dot-2" style="width:8px; height:8px; border-radius:50%; background:#334155;"></div>
-            <div id="eval-dot-3" style="width:8px; height:8px; border-radius:50%; background:#334155;"></div>
-        </div>
+    <p id="pista-nombre" class="pista-name"></p>
+    <p id="pista-body" class="pista-body"></p>
+    <button class="btn-entendido" onclick="cerrarModal()">Entendido</button>
+  </div>
+  <!-- Preguntas -->
+  <div id="modal-eval" class="modal-box" style="display:none">
+    <div class="modal-header">
+      <span class="modal-title">Preguntas</span>
+      <button class="modal-close" onclick="cerrarModal()">×</button>
     </div>
-
-    <div id="view-generator" class="view active">
-        <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo Misterios de Chile" class="main-logo">
-        
-        <div class="qr-wrapper" onclick="clickToOpen()">
-            <div id="qr-placeholder" class="placeholder-text">Genera un misterio para comenzar</div>
-            <div id="qr-image" style="display:none; width:100%; padding:8px; box-sizing:border-box;">
-                <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"
-                     style="width:100%;height:auto;display:block;image-rendering:pixelated;"></svg>
-                <p id="qr-id-label" style="text-align:center;font-size:0.7rem;color:#64748b;margin:6px 0 0 0;font-family:monospace;"></p>
-            </div>
-        </div>
-
-        <button class="btn-primary" id="btn-generate" onclick="generateRandomQR()">GENERAR MISTERIO (QR)</button>
-        <p id="counter-info" style="font-size: 0.7rem; color: var(--text-dim); margin-top: 10px;"></p>
-
-        <div id="history-section" style="display:none;">
-            <p style="font-size: 0.75rem; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Visto recientemente</p>
-            <div class="history-list" id="history-list"></div>
-        </div>
-
-        <button onclick="showGallery()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Ver galería completa</button>
-
-        <footer>
-            Autor: <strong>Felipe Ignacio Aldunate Romero</strong> (<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="6204030e06170c03160722050f030b0e4c010d0f">[email&#160;protected]</a>)<br>
-            <img src="logotipo_ludo_lab.svg" alt="Ludo Lab Logo" style="max-width: 200px; height: auto; margin-top: 20px; opacity: 1;">
-        </footer>
+    <div class="ludolab-modal-logo">
+      <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+        <img src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
+      </a>
     </div>
-
-    <div id="view-gallery" class="view">
-        <h1>Galería Completa</h1>
-        <div id="selection-grid" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 15px; width: 100%; max-width: 1000px;"></div>
-        <button onclick="showGenerator()" style="background: transparent; color: var(--text-dim); border: 1px solid #334155; padding: 10px 20px; border-radius: 8px; margin-top: 20px; cursor: pointer;">Volver al Generador</button>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 1</p>
+      <p id="eval-q-1" class="q-text"></p>
+      <div id="eval-ans-box-1" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-1" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-1" onclick="mostrarRespuesta(1)">👁 Mostrar respuesta</button>
     </div>
-
-    <div id="player-overlay">
-        <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo Misterios de Chile" class="main-logo">
-        <div class="mystery-content">
-            <img id="full-img" src="" onerror="imgError(this)">
-            <p id="pista-status" style="font-size:0.8rem; color:var(--accent); margin:0;">Escucha el audio para desbloquear pistas</p>
-            <div class="pistas-column">
-                <button class="btn-pista" id="btn-pista-1" onclick="mostrarPista(1)" disabled>Pista 1</button>
-                <button class="btn-pista" id="btn-pista-2" onclick="mostrarPista(2)" disabled>Pista 2</button>
-                <button class="btn-pista" id="btn-pista-3" onclick="mostrarPista(3)" disabled>Pista 3</button>
-            </div>
-        </div>
-        <div class="controls" style="flex-direction:column; gap:12px;">
-            <div style="width:100%; display:flex; align-items:center; gap:12px;">
-                <span id="time-display" style="font-family:monospace; font-size:0.85rem; color:var(--text-dim); min-width:105px; text-align:center;">00:00 / 00:00</span>
-                <div style="flex:1; background:#1e293b; border-radius:999px; height:6px; overflow:hidden; cursor:pointer;" onclick="seekAudio(event,this)">
-                    <div id="progress-bar" style="height:100%; width:0%; background:var(--accent); border-radius:999px; transition:width 0.25s linear;"></div>
-                </div>
-            </div>
-            <div style="display:flex; gap:10px; justify-content:center; flex-wrap:wrap;">
-                <button onclick="toggleAudio()" id="btn-play" style="padding:10px 20px; background:#3b82f6; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">PAUSAR</button>
-                <button onclick="terminarAudio()" id="btn-terminar" style="padding:10px 20px; background:#16a34a; color:white; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">✓ TERMINAR</button>
-                <button onclick="abrirEvaluacion()" id="btn-evaluar" style="display:none; padding:10px 20px; background:#f59e0b; color:#0f172a; border:none; border-radius:8px; font-weight:bold; cursor:pointer;">📋 EVALUAR</button>
-                <button onclick="closePlayer()" style="padding:10px 20px; background:transparent; color:white; border:1px solid #334155; border-radius:8px; cursor:pointer;">CERRAR</button>
-            </div>
-        </div>
-        <audio id="audio-player"></audio>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 2</p>
+      <p id="eval-q-2" class="q-text"></p>
+      <div id="eval-ans-box-2" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-2" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-2" onclick="mostrarRespuesta(2)">👁 Mostrar respuesta</button>
     </div>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 3</p>
+      <p id="eval-q-3" class="q-text"></p>
+      <div id="eval-ans-box-3" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-3" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-3" onclick="mostrarRespuesta(3)">👁 Mostrar respuesta</button>
+    </div>
+  </div>
+</div>
 
+<!-- FONDO HISTÓRICO GLOBAL: mosaico de imágenes (cubre todas las pantallas) -->
+<div id="bg-historico" aria-hidden="true">
+  <img src="imagenes/id_01_expedicion_almagro.png" alt="">
+  <img src="imagenes/id_05_batalla_de_tucapel.png" alt="">
+  <img src="imagenes/id_09_esclavitud_indigena.png" alt="">
+  <img src="imagenes/id_11_el_terremoto_magno.png" alt="">
+  <img src="imagenes/id_13_expulsion_jesuita.png" alt="">
+  <img src="imagenes/id_16_primera_junta_de_gobierno.png" alt="">
+  <img src="imagenes/id_25_batalla_de_chacabuco.png" alt="">
+  <img src="imagenes/id_26_proclamacion_independencia.png" alt="">
+  <img src="imagenes/id_27_batalla_de_maipu.png" alt="">
+  <img src="imagenes/id_35_batalla_lircay.png" alt="">
+  <img src="imagenes/id_38_constitucion_de_1833.png" alt="">
+  <img src="imagenes/id_40_batalla_de_yungay.png" alt="">
+  <img src="imagenes/id_43_universidad_de_chile.png" alt="">
+  <img src="imagenes/id_57_guerra_del_pacifico.png" alt="">
+  <img src="imagenes/id_67_el_viaducto_del_malleco.png" alt="">
+  <img src="imagenes/id_74_matanza_escuela_santa_maria.png" alt="">
+  <img src="imagenes/id_75_centenario_de_chile.png" alt="">
+  <img src="imagenes/id_46_primer_ferrocarril.png" alt="">
+  <img src="imagenes/id_07_desastre_de_curalaba.png" alt="">
+  <img src="imagenes/id_22_desastre_de_rancagua.png" alt="">
+</div>
+<div id="bg-overlay-gradient" aria-hidden="true"></div>
 
-    <script>
-        const baseNombres   = {
+<!-- MAIN SCREEN -->
+<div id="screen-main">
+  <header class="main-header">
+    <p class="eyebrow">Juego de historia · <span class="eyebrow-stage">Etapa 1 · Nivel Iniciado · Conquista → Centenario</span></p>
+    <h1>Misterios <span>de Chile</span></h1>
+    <p class="subtitle">75 cartas · Desde la Conquista hasta el Centenario</p>
+    <p class="period-badge">1536 – 1910</p>
+  </header>
+  <div id="counter-pill">Misterios restantes <strong id="counter-num">75</strong></div>
+  <div class="qr-zone" onclick="clickToOpen()">
+    <p class="qr-hint" id="qr-hint">Genera un misterio y toca aquí para abrirlo</p>
+    <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg"></svg>
+    <p id="qr-label"></p>
+  </div>
+  <button id="btn-generate" onclick="generateMystery()">Generar misterio</button>
+  <button id="btn-reglas" onclick="abrirReglas()">📖 Reglas del juego</button>
+  <button id="btn-gallery" onclick="showGallery()">Ver galería completa</button>
+  <div id="history-section">
+    <p class="history-label">Vistos recientemente</p>
+    <div class="history-strip" id="history-strip"></div>
+  </div>
+</div>
+
+<!-- GALLERY SCREEN -->
+<div id="screen-gallery">
+  <div class="gallery-header">
+    <h2>Galería completa</h2>
+    <button id="btn-back" onclick="showMain()">← Volver</button>
+  </div>
+  <div id="gallery-grid"></div>
+</div>
+
+<!-- MODAL REGLAS -->
+<div id="modal-reglas-overlay" onclick="if(event.target===this)cerrarReglas()">
+  <div id="modal-reglas-box">
+    <div class="reglas-header">
+      <div class="reglas-title">
+        📖 Reglamento Oficial
+        <span>Nivel Iniciado</span>
+      </div>
+      <button id="btn-close-reglas" onclick="cerrarReglas()" title="Cerrar">×</button>
+    </div>
+    <div class="reglas-body">
+
+      <div class="reglas-section">
+        <div class="reglas-h2">¿De qué trata el juego?</div>
+        <p class="reglas-p">Chile en el Tiempo es un juego de cartas interactivo donde los jugadores compiten por ubicar hitos históricos en orden cronológico. Usando un código QR, cada carta activa una imagen de época y un relato de audio que describe el momento histórico sin revelar nombres ni fechas. El desafío: adivinar qué sucedió, cuándo ocurrió y quiénes fueron sus protagonistas.</p>
+        <p class="reglas-p"><strong>2 a 4 jugadores · 75 cartas · Desde la Conquista hasta el Centenario</strong></p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Preparación</div>
+        <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (reverso visible) en el centro de la mesa. Es el punto de partida de la línea de tiempo.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">El Turno</div>
+        <div class="reglas-h3">Fase 1 — Activar el QR</div>
+        <p class="reglas-p">El jugador activo escanea el QR de su carta. Todos los jugadores ven la imagen y escuchan el relato de audio.</p>
+        <div class="reglas-h3">Fase 2 — Las Pistas (Opcional)</div>
+        <p class="reglas-p">El jugador activo puede solicitar hasta 3 pistas adicionales desbloqueables en la app. Cada pista tiene un costo en fichas que se paga al pozo:</p>
+        <table class="reglas-table">
+          <thead><tr><th>Pista</th><th>Contenido</th><th>Costo</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pista 1 — El Enigma</strong></td><td>Describe qué pasó, el contexto o el lugar.</td><td>1 ficha</td></tr>
+            <tr><td><strong>Pista 2 — El Rastro</strong></td><td>¿Cuándo ocurrió? Pista temporal indirecta.</td><td>2 fichas</td></tr>
+            <tr><td><strong>Pista 3 — Los Rostros</strong></td><td>Pista sobre los protagonistas del evento.</td><td>3 fichas</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">Las pistas son exclusivas del jugador activo. Un jugador que roba no tiene acceso a ellas. El costo se descuenta independientemente del resultado final.</div>
+        <div class="reglas-h3">Fase 3 — Declarar o Rendirse</div>
+        <p class="reglas-p">El jugador activo responde las tres preguntas de la <strong>Triple Intuición</strong>: (1) Ubicación cronológica, (2) El evento histórico, (3) Los protagonistas. O puede rendirse formalmente sin declarar (sin costo extra), abriendo la Fase de Robo.</p>
+        <div class="reglas-h3">Fase 4 — El Robo (solo si el activo se rindió)</div>
+        <p class="reglas-p">Cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo intenta la Triple Intuición sin acceso a pistas.</p>
+        <table class="reglas-table">
+          <thead><tr><th>Resultado del Robo</th><th>Consecuencia</th></tr></thead>
+          <tbody>
+            <tr><td>Acierta (1, 2 o 3 aciertos)</td><td>Gana fichas según tabla de aciertos</td></tr>
+            <tr><td>Falla (0 aciertos)</td><td>Paga 2 fichas al pozo</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">Si nadie grita «¡Robo!», la carta igual entra a la línea de tiempo. Se voltea, todos conocen el evento, y el turno pasa al siguiente. Nadie gana ni pierde fichas.</div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Resolución y Recompensas</div>
+        <table class="reglas-table">
+          <thead><tr><th>Aciertos</th><th>Consecuencia</th></tr></thead>
+          <tbody>
+            <tr><td>0 — Olvido</td><td>Pierdes 1 ficha (+ fichas de pistas usadas)</td></tr>
+            <tr><td>1 — Conocimiento</td><td>Sin ganancia ni pérdida (+ pistas descontadas)</td></tr>
+            <tr><td>2 — Erudito</td><td>Ganas 1 ficha del oponente (o del pozo)</td></tr>
+            <tr><td>3 — Maestro del Tiempo</td><td>Ganas 2 fichas de tus oponentes</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">La carta <strong>siempre</strong> entra a la línea de tiempo en su posición cronológica correcta, independientemente del resultado.</div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Fin del Juego</div>
+        <p class="reglas-p">El juego termina cuando se agota el mazo. El jugador con más fichas gana. Si un jugador se queda sin fichas, no se elimina: no puede apostar y pierde su turno hasta que algún resultado le devuelva fichas. En caso de empate, gana quien tenga más cartas correctamente ubicadas en la línea de tiempo.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Glosario Rápido</div>
+        <table class="reglas-table">
+          <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Línea de Tiempo</strong></td><td>Secuencia de cartas visibles en la mesa, ordenadas de izquierda a derecha.</td></tr>
+            <tr><td><strong>Triple Intuición</strong></td><td>Las tres preguntas: ubicación + evento + protagonistas.</td></tr>
+            <tr><td><strong>Robo</strong></td><td>Mecanismo por el cual un contrincante toma el turno tras la rendición del activo.</td></tr>
+            <tr><td><strong>Pozo</strong></td><td>Reserva común de fichas acumuladas por penalizaciones y pistas pagadas.</td></tr>
+            <tr><td><strong>Modo Expansión</strong></td><td>Partida que combina mazos de dos o más cajas del sistema.</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER OVERLAY -->
+<div id="player-overlay">
+  <div class="player-inner">
+    <div class="player-topbar">
+      <img class="player-logo" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo" onerror="this.style.display='none'">
+      <button id="btn-close" onclick="closePlayer()">✕ Cerrar</button>
+    </div>
+    <div class="img-frame">
+      <img id="full-img" src="" alt="" onerror="imgErr(this)">
+      <div class="no-img-ph" id="no-img-ph">🔊</div>
+      <!-- Botón EVALUAR flotante sobre la foto, esquina superior izquierda -->
+      <button id="btn-evaluar" class="btn-eval-overlay" onclick="abrirEval()">📋 PREGUNTAS</button>
+    </div>
+    <div class="pistas-section">
+      <p id="pista-status"></p>
+      <div class="pistas-row">
+        <button class="btn-pista" id="btn-p1" onclick="mostrarPista(1)" disabled>Pista 1</button>
+        <button class="btn-pista" id="btn-p2" onclick="mostrarPista(2)" disabled>Pista 2</button>
+        <button class="btn-pista" id="btn-p3" onclick="mostrarPista(3)" disabled>Pista 3</button>
+      </div>
+    </div>
+    <div class="player-controls">
+      <div class="progress-row">
+        <span id="time-display">00:00 / 00:00</span>
+        <div class="progress-track" onclick="seekAudio(event,this)">
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button id="btn-play"    class="ctrl-btn ctrl-blue"  onclick="toggleAudio()">PAUSAR</button>
+        <button id="btn-end"     class="ctrl-btn ctrl-green" onclick="terminarAudio()">✓ TERMINAR</button>
+      </div>
+    </div>
+    <audio id="audio-player"></audio>
+  </div>
+</div>
+
+<!-- LOGO MISTERIOS DE CHILE (todas las páginas) -->
+<div id="logo-misterios-fijo">
+  <img src="./logotipo_misterios_de_chile/logotipo_misterios_de_chile.svg" alt="Misterios de Chile" onerror="this.src='./logotipo_misterios_de_chile/logo_misterios_de_chile.svg'">
+</div>
+
+<!-- MARCA DE AGUA LUDOLAB -->
+<div id="watermark-ludolab">
+  <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+  <svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="gradWM" x1="0%" y1="0%" x2="100%" y2="0%">
+        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
+        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1"/>
+      </linearGradient>
+    </defs>
+    <g transform="translate(20, 20) scale(0.35)">
+      <path d="M150 400 L210 150 L210 100 L290 100 L290 150 L350 400 Z" stroke="url(#gradWM)" stroke-width="30" stroke-linejoin="round" fill="none"/>
+      <path d="M225 280 H255 A15 15 0 0 1 270 295 V310 A15 15 0 0 0 285 325 H300 V355 H270 A15 15 0 0 1 255 340 V325 A15 15 0 0 0 240 310 H225 V280 Z" fill="url(#gradWM)"/>
+    </g>
+    <text x="180" y="110" font-family="Arial, sans-serif" font-weight="900" font-size="85" fill="white">ludolab.cl</text>
+    <text x="185" y="155" font-family="Arial, sans-serif" font-size="26" letter-spacing="5" fill="white">contacto@ludolab.cl</text>
+  </svg>
+  </a>
+</div>
+
+<script>
+
+const baseNombres   = {
             "01": "id_01_expedicion_almagro",
             "02": "id_02_fundacion_de_santiago",
             "03": "id_03_destruccion_de_santiago",
@@ -672,361 +793,293 @@
         const idsConImagen  = new Set(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75"]);
         const idsConAudio   = new Set(["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "70", "71", "72", "73", "74", "75"]);
 
-        let availableIDs    = [...idsConAudio];
-        let currentActiveID = null;
-        const viewedHistory = [];
+  // ── STATE
+  let availableIDs = [...idsConAudio], currentID = null;
+  const viewedHistory = [];
+  const evalQs = [
+    {text:"¿En qué año ocurrió este evento?", key:"anio"},
+    {text:"¿De qué evento histórico se trata?", key:"evento"},
+    {text:"¿Quiénes fueron los protagonistas?", key:"personajes"}
+  ];
 
-        // ── Evaluación 1 a 1 ──────────────────────────────────────────────
-        const evalPreguntas = [
-            {
-                label: "Pregunta 1 de 3 — Ubicación cronológica",
-                texto: "¿En qué año ocurrió este evento?",
-                clave: "anio",
-                hint:  "Recuerda: la respuesta correcta es relativa a la línea de tiempo. Si entre tus cartas hay una de 1810 y una de 1900, debes decir si esta va antes, entre o después de ellas."
-            },
-            {
-                label: "Pregunta 2 de 3 — El Hecho",
-                texto: "¿De qué evento histórico se trata?",
-                clave: "evento",
-                hint:  ""
-            },
-            {
-                label: "Pregunta 3 de 3 — Los Protagonistas",
-                texto: "¿Quiénes fueron los personajes clave involucrados?",
-                clave: "personajes",
-                hint:  ""
-            }
-        ];
-        let evalPaso = 0;
+  // ── QR
+  function drawQR(id) {
+    const svg=document.getElementById('qr-svg'), size=21;
+    let seed=parseInt(id)*7919;
+    const rnd=()=>{seed=(seed*1664525+1013904223)&0xffffffff;return(seed>>>0)/0xffffffff};
+    let r='';
+    for(let y=0;y<size;y++) for(let x=0;x<size;x++){
+      const fin=(x<8&&y<8)||(x>=size-8&&y<8)||(x<8&&y>=size-8);
+      let d=false;
+      if(fin){const fx=x<8?x:x-(size-8),fy=y<8?y:y-(size-8);d=fx===0||fx===6||fy===0||fy===6||(fx>=2&&fx<=4&&fy>=2&&fy<=4)}
+      else if((x%2===0&&y===6)||(y%2===0&&x===6)){d=(x+y)%2===0}
+      else if(x===7||x===size-8||y===7){d=false}
+      else{d=rnd()>0.45}
+      if(d) r+=`<rect x="${x}" y="${y}" width="1" height="1" fill="#000"/>`;
+    }
+    svg.innerHTML=r; svg.style.display='block';
+    const lbl=document.getElementById('qr-label');
+    lbl.textContent=`ID ${id} · ${eventosData[id]||''}`;
+    lbl.style.display='block';
+    document.getElementById('qr-hint').style.display='none';
+  }
+  function resetQR(){
+    document.getElementById('qr-svg').style.display='none';
+    document.getElementById('qr-svg').innerHTML='';
+    document.getElementById('qr-label').style.display='none';
+    document.getElementById('qr-hint').style.display='block';
+  }
 
-        function abrirEvaluacion() {
-            if(!currentActiveID) return;
-            evalPaso = 0;
-            renderEvalPaso();
-            document.getElementById('modal-bg').style.display  = 'block';
-            document.getElementById('eval-modal').style.display = 'block';
-        }
+  // ── COUNTER
+  function updateCounter(){
+    document.getElementById('counter-num').textContent=availableIDs.length;
+    const b=document.getElementById('btn-generate');
+    if(!availableIDs.length){b.textContent='PARTIDA COMPLETADA';b.disabled=true}
+  }
 
-        function renderEvalPaso() {
-            const q    = evalPreguntas[evalPaso];
-            const resp = respuestasData[currentActiveID];
+  // ── MAIN
+  function generateMystery(){
+    if(!availableIDs.length) return;
+    const i=Math.floor(Math.random()*availableIDs.length);
+    currentID=availableIDs[i]; availableIDs.splice(i,1);
+    drawQR(currentID); updateCounter();
+  }
+  function clickToOpen(){if(currentID) openMystery(currentID,true)}
+  function showGallery(){
+    document.getElementById('screen-main').style.display='none';
+    document.getElementById('screen-gallery').style.display='flex';
+    renderGallery();
+  }
+  function showMain(){
+    document.getElementById('screen-gallery').style.display='none';
+    document.getElementById('screen-main').style.display='flex';
+  }
 
-            document.getElementById('eval-step-badge').innerText = `${evalPaso+1} / 3`;
-            [1,2,3].forEach(i => {
-                document.getElementById(`eval-dot-${i}`).style.background = i === evalPaso+1 ? '#3b82f6' : '#334155';
-            });
+  // ── GALLERY
+  function renderGallery(){
+    const g=document.getElementById('gallery-grid'); g.innerHTML='';
+    Object.keys(baseNombres).sort().forEach(id=>{
+      const hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
+      const c=document.createElement('div'); c.className='g-card';
+      c.onclick=()=>openMystery(id,false);
+      if(hasAud){const b=document.createElement('div');b.className='g-aud-badge';b.textContent='🔊';c.appendChild(b)}
+      if(hasImg){
+        const img=document.createElement('img');
+        img.src=`./imagenes/${baseNombres[id]}.png`;
+        img.onerror=function(){this.style.display='none';const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.insertBefore(p,c.querySelector('.g-id')||c.firstChild)};
+        c.appendChild(img);
+      } else {const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.appendChild(p)}
+      const d=document.createElement('div');d.className='g-id';d.textContent=`ID ${id}`;c.appendChild(d);
+      g.appendChild(c);
+    });
+  }
 
-            document.getElementById('eval-pregunta-texto').innerText        = q.texto;
-            document.getElementById('eval-respuesta-texto').innerText       = resp[q.clave];
-            document.getElementById('eval-respuesta-texto').style.display   = 'none';
-            document.getElementById('eval-btn-mostrar').style.display       = '';
-            const btnSig = document.getElementById('eval-btn-siguiente');
-            btnSig.style.display = 'none';
-            btnSig.innerText = evalPaso < 2 ? 'Siguiente →' : '✓ Finalizar';
-        }
+  // ── PLAYER
+  function setStatus(txt,col){
+    const el=document.getElementById('pista-status');
+    el.textContent=txt;
+    el.style.color=col==='gold'?'var(--gold)':col==='green'?'var(--green)':'var(--mist)';
+  }
+  function unlockPista(n){document.getElementById(`btn-p${n}`).disabled=false}
 
-        function mostrarRespuesta() {
-            document.getElementById('eval-respuesta-texto').style.display = 'block';
-            document.getElementById('eval-btn-mostrar').style.display     = 'none';
-            document.getElementById('eval-btn-siguiente').style.display   = '';
-        }
+  let isHistoryReplay = false;
 
-        function siguientePregunta() {
-            if(evalPaso < 2) {
-                evalPaso++;
-                renderEvalPaso();
-            } else {
-                cerrarEvaluacion();
-            }
-        }
+  function openMystery(id, addHistory=false){
+    currentID=id;
+    isHistoryReplay = !addHistory && viewedHistory.includes(id);
+    const nom=baseNombres[id], hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
+    const imgEl=document.getElementById('full-img'), phEl=document.getElementById('no-img-ph');
+    if(hasImg){imgEl.src=`./imagenes/${nom}.png`;imgEl.style.display='block';phEl.style.display='none'}
+    else{imgEl.style.display='none';phEl.style.display='flex'}
 
-        function cerrarEvaluacion() {
-            document.getElementById('modal-bg').style.display   = 'none';
-            document.getElementById('eval-modal').style.display = 'none';
-        }
+    // Pistas y preguntas: solo visibles en partida nueva (no desde miniaturas)
+    const pistasSection = document.querySelector('.pistas-section');
+    if(isHistoryReplay){
+      pistasSection.style.display='none';
+      document.getElementById('btn-evaluar').style.display='none';
+    } else {
+      pistasSection.style.display='';
+      ['btn-p1','btn-p2','btn-p3'].forEach((b,i)=>{
+        const el=document.getElementById(b);
+        el.disabled=true;el.className='btn-pista';el.textContent=`Pista ${i+1}`;
+      });
+      setStatus('Escucha el audio para desbloquear pistas','gold');
+      document.getElementById('btn-evaluar').style.display='none';
+    }
 
-        // ── Pistas ────────────────────────────────────────────────────────
-        function imgError(el) { el.style.display = 'none'; }
-        function thumbError(el) {
-            el.style.display = 'none';
-            const ph = document.createElement('div');
-            ph.style.cssText = 'width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
-            ph.innerText = '🔊';
-            el.parentElement.insertBefore(ph, el.nextSibling);
-        }
+    document.getElementById('progress-bar').style.width='0%';
+    document.getElementById('time-display').textContent='00:00 / 00:00';
+    const audio=document.getElementById('audio-player');
+    if(hasAud){
+      audio.src=`./audios/${nom}.mp4`;
+      document.getElementById('btn-play').style.display='';
+      document.getElementById('btn-end').style.display= isHistoryReplay ? 'none' : '';
+      audio.play(); document.getElementById('btn-play').textContent='PAUSAR';
+    } else {
+      audio.src='';
+      document.getElementById('btn-play').style.display='none';
+      document.getElementById('btn-end').style.display='none';
+      if(!isHistoryReplay){
+        setStatus('Audio en preparación — pistas disponibles','mist');
+        unlockPista(1);
+      }
+    }
+    document.getElementById('player-overlay').style.display='flex';
+    if(addHistory&&!viewedHistory.includes(id)){viewedHistory.unshift(id);updateHistory()}
+  }
 
-        function updateCounter() {
-            const info = document.getElementById('counter-info');
-            if(info) info.innerText = `Misterios restantes: ${availableIDs.length}`;
-            if(availableIDs.length === 0) {
-                const btn = document.getElementById('btn-generate');
-                if(btn) { btn.innerText = "PARTIDA COMPLETADA"; btn.disabled = true; }
-            }
-        }
+  function imgErr(el){el.style.display='none';document.getElementById('no-img-ph').style.display='flex'}
 
-        // Genera una matriz QR visual pseudo-aleatoria basada en el ID
-        function drawFakeQR(id) {
-            const svg = document.getElementById('qr-svg');
-            const size = 21;
-            let rects = '';
-            // Seed determinista basada en id
-            let seed = parseInt(id) * 7919;
-            function rand() { seed = (seed * 1664525 + 1013904223) & 0xffffffff; return (seed >>> 0) / 0xffffffff; }
+  document.getElementById('audio-player').onended=function(){
+    document.getElementById('btn-play').textContent='REPRODUCIR';
+    if(!isHistoryReplay){
+      unlockPista(1); setStatus('¡Pista 1 desbloqueada!','green');
+      document.getElementById('btn-evaluar').style.display='block';
+    }
+  };
+  function terminarAudio(){
+    document.getElementById('audio-player').pause();
+    document.getElementById('btn-play').textContent='REPRODUCIR';
+    if(!isHistoryReplay){
+      unlockPista(1); setStatus('¡Pista 1 desbloqueada!','green');
+      document.getElementById('btn-evaluar').style.display='block';
+    }
+  }
+  function toggleAudio(){
+    const a=document.getElementById('audio-player'),b=document.getElementById('btn-play');
+    if(a.paused){a.play();b.textContent='PAUSAR'}else{a.pause();b.textContent='REPRODUCIR'}
+  }
+  function closePlayer(){
+    document.getElementById('audio-player').pause();
+    document.getElementById('player-overlay').style.display='none';
+    resetQR(); currentID=null;
+  }
+  const fmt=s=>isNaN(s)||!isFinite(s)?'00:00':`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  document.getElementById('audio-player').ontimeupdate=()=>{
+    const a=document.getElementById('audio-player');
+    if(!a.duration) return;
+    document.getElementById('progress-bar').style.width=(a.currentTime/a.duration*100)+'%';
+    document.getElementById('time-display').textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;
+  };
+  function seekAudio(e,el){
+    const a=document.getElementById('audio-player');
+    if(!a.duration) return;
+    const r=el.getBoundingClientRect();
+    a.currentTime=((e.clientX-r.left)/r.width)*a.duration;
+  }
 
-            for(let y = 0; y < size; y++) {
-                for(let x = 0; x < size; x++) {
-                    // Esquinas fijas (finder patterns) — simula QR real
-                    const inFinder = (
-                        (x < 8 && y < 8) ||
-                        (x >= size-8 && y < 8) ||
-                        (x < 8 && y >= size-8)
-                    );
-                    let fill = '#000000';
-                    let draw = false;
+  // ── PISTAS
+  function mostrarPista(n){
+    if(!currentID||!pistasData[currentID]) return;
+    const names=['','Pista 1 — El Enigma','Pista 2 — El Rastro','Pista 3 — Los Rostros'];
+    document.getElementById('pista-nombre').textContent=names[n];
+    document.getElementById('pista-body').textContent=pistasData[currentID][n-1];
+    const btn=document.getElementById(`btn-p${n}`);
+    btn.disabled=true; btn.classList.add('vista'); btn.textContent='✓ Vista';
+    if(n<3){unlockPista(n+1);setStatus(`¡Pista ${n+1} disponible!`,'gold')}
+    else setStatus('Todas las pistas reveladas.','mist');
+    document.getElementById('modal-pista').style.display='block';
+    document.getElementById('modal-eval').style.display='none';
+    document.getElementById('modal-overlay').classList.add('open','pista-open');
+  }
 
-                    if(inFinder) {
-                        // Finder pattern: cuadrado exterior + interior
-                        const fx = x < 8 ? x : x - (size-8);
-                        const fy = y < 8 ? y : y - (size-8);
-                        if(fx === 0 || fx === 6 || fy === 0 || fy === 6) draw = true;
-                        else if(fx >= 2 && fx <= 4 && fy >= 2 && fy <= 4) draw = true;
-                    } else if(x === 7 || x === size-8 || y === 7) {
-                        draw = false; // separador
-                    } else if((x % 2 === 0 && y === 6) || (y % 2 === 0 && x === 6)) {
-                        draw = (x + y) % 2 === 0; // timing pattern
-                    } else {
-                        draw = rand() > 0.45;
-                    }
-                    if(draw) rects += `<rect x="${x}" y="${y}" width="1" height="1" fill="${fill}"/>`;
-                }
-            }
-            svg.innerHTML = rects;
-            document.getElementById('qr-id-label').innerText = `ID ${id} — ${eventosData[id] || ''}`;
-        }
+  // ── EVALUACIÓN
+  function abrirEval(){
+    if(!currentID) return;
+    const r=respuestasData[currentID];
+    evalQs.forEach((q,i)=>{
+      const n=i+1;
+      document.getElementById(`eval-q-${n}`).textContent=q.text;
+      document.getElementById(`eval-ans-${n}`).textContent=r[q.key];
+      document.getElementById(`eval-ans-box-${n}`).style.display='none';
+      const btn=document.getElementById(`btn-show-${n}`);
+      btn.style.display=''; btn.disabled=false;
+    });
+    document.getElementById('modal-eval').style.display='block';
+    document.getElementById('modal-pista').style.display='none';
+    document.getElementById('modal-overlay').classList.remove('pista-open');
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+  function mostrarRespuesta(n){
+    document.getElementById(`eval-ans-box-${n}`).style.display='block';
+    const btn=document.getElementById(`btn-show-${n}`);
+    btn.textContent='✓ Respuesta vista'; btn.disabled=true;
+  }
+  function cerrarModal(){
+    document.getElementById('modal-overlay').classList.remove('open','pista-open');
+    document.getElementById('modal-pista').style.display='none';
+    document.getElementById('modal-eval').style.display='none';
+  }
 
-        function generateRandomQR() {
-            if(availableIDs.length === 0) return;
-            const idx = Math.floor(Math.random() * availableIDs.length);
-            currentActiveID = availableIDs[idx];
-            availableIDs.splice(idx, 1);
-            drawFakeQR(currentActiveID);
-            document.getElementById('qr-image').style.display = 'block';
-            document.getElementById('qr-placeholder').style.display = 'none';
-            updateCounter();
-        }
+  // ── REGLAS
+  function abrirReglas(){
+    document.getElementById('modal-reglas-overlay').classList.add('open');
+  }
+  function cerrarReglas(){
+    document.getElementById('modal-reglas-overlay').classList.remove('open');
+  }
 
-        function clickToOpen() {
-            if(currentActiveID) openMystery(currentActiveID, true);
-        }
+  // ── HISTORY
+  function updateHistory(){
+    document.getElementById('history-section').style.display='block';
+    const strip=document.getElementById('history-strip'); strip.innerHTML='';
+    viewedHistory.forEach(id=>{
+      const div=document.createElement('div'); div.className='h-thumb'; div.onclick=()=>openMystery(id,false);
+      if(idsConImagen.has(id)){
+        const img=document.createElement('img'); img.src=`./imagenes/${baseNombres[id]}.png`;
+        img.style.cssText='width:100%;height:100%;object-fit:cover';
+        img.onerror=function(){this.remove();const a=document.createElement('div');a.className='h-audio';a.textContent='🔊';div.appendChild(a)};
+        div.appendChild(img);
+      } else {const a=document.createElement('div');a.className='h-audio';a.textContent='🔊';div.appendChild(a)}
+      const id_tag=document.createElement('div'); id_tag.className='h-id'; id_tag.textContent=id; div.appendChild(id_tag);
+      strip.appendChild(div);
+    });
+  }
 
-        function openMystery(id, addToHistory=false) {
-            currentActiveID   = id;
-            const nombre      = baseNombres[id];
-            const tieneImagen = idsConImagen.has(id);
-            const tieneAudio  = idsConAudio.has(id);
+  updateCounter();
 
-            const imgEl = document.getElementById('full-img');
-            if(tieneImagen) {
-                imgEl.style.display = 'block';
-                imgEl.src = `./imagenes/${nombre}.png`;
-            } else {
-                imgEl.style.display = 'none';
-                imgEl.src = '';
-            }
+  // ── THUMB ZOOM PREVIEW (lupa flotante para el historial)
+  (function(){
+    const pv = document.createElement('div');
+    pv.id = 'thumb-zoom-preview';
+    const pvImg = document.createElement('img');
+    pv.appendChild(pvImg);
+    document.body.appendChild(pv);
 
-            document.querySelectorAll('.btn-pista').forEach(btn => {
-                btn.disabled = true;
-                btn.innerText = "Pista " + btn.id.split('-').pop();
-            });
-            document.getElementById('btn-evaluar').style.display = 'none';
+    const strip = document.getElementById('history-strip');
 
-            const audio = document.getElementById('audio-player');
-            if(tieneAudio) {
-                audio.src = `./audios/${nombre}.mp4`;
-                document.getElementById('pista-status').innerText = "Escucha el audio para desbloquear pistas";
-                document.getElementById('pista-status').style.color = "var(--accent)";
-                document.getElementById('btn-play').style.display     = '';
-                document.getElementById('btn-terminar').style.display = '';
-                audio.play();
-                document.getElementById('btn-play').innerText = "PAUSAR";
-            } else {
-                audio.src = '';
-                document.getElementById('pista-status').innerText = "Audio en preparación — pistas disponibles directamente";
-                document.getElementById('pista-status').style.color = "#f59e0b";
-                document.getElementById('btn-play').style.display     = 'none';
-                document.getElementById('btn-terminar').style.display = 'none';
-                document.querySelectorAll('.btn-pista').forEach(btn => btn.disabled = false);
-            }
+    strip.addEventListener('mouseover', function(e){
+      const thumb = e.target.closest('.h-thumb');
+      if(!thumb) return;
+      const img = thumb.querySelector('img');
+      if(!img) return;
 
-            document.getElementById('player-overlay').style.display = 'flex';
-            if(addToHistory && !viewedHistory.includes(id)) {
-                viewedHistory.unshift(id);
-                updateHistoryUI();
-            }
-        }
+      pvImg.src = img.src;
+      pv.style.display = 'block';
 
-        document.getElementById('audio-player').onended = function() {
-            document.getElementById('btn-pista-1').disabled = false;
-            document.getElementById('pista-status').innerText = "¡Pista 1 desbloqueada!";
-            document.getElementById('pista-status').style.color = "#22c55e";
-            document.getElementById('btn-evaluar').style.display = '';
-        };
+      const rect = thumb.getBoundingClientRect();
+      const pw = 140, ph = 104;
+      let x = rect.left + rect.width / 2 - pw / 2;
+      let y = rect.top - ph - 10;
 
-        function terminarAudio() {
-            document.getElementById('audio-player').pause();
-            document.getElementById('btn-play').innerText = "REPRODUCIR";
-            document.getElementById('btn-pista-1').disabled = false;
-            document.getElementById('pista-status').innerText = "¡Pista 1 desbloqueada!";
-            document.getElementById('pista-status').style.color = "#22c55e";
-            document.getElementById('btn-evaluar').style.display = '';
-        }
+      // Si no hay espacio arriba, mostrar abajo
+      if(y < 8) y = rect.bottom + 10;
+      // Ajustar para no salir por los lados
+      if(x < 8) x = 8;
+      if(x + pw > window.innerWidth - 8) x = window.innerWidth - pw - 8;
 
-        function mostrarPista(numero) {
-            const texto = pistasData[currentActiveID] ? pistasData[currentActiveID][numero-1] : "Pista no disponible.";
-            const titulos = ["", "Pista 1 — El Enigma", "Pista 2 — El Rastro", "Pista 3 — Los Rostros"];
-            document.getElementById('pista-titulo').innerText = titulos[numero];
-            document.getElementById('pista-texto').innerText  = texto;
-            document.getElementById('modal-bg').style.display    = 'block';
-            document.getElementById('pista-modal').style.display = 'block';
-            const btn = document.getElementById(`btn-pista-${numero}`);
-            btn.disabled = true; btn.innerText = "Vista";
-            if(numero < 3) {
-                document.getElementById(`btn-pista-${numero+1}`).disabled = false;
-                document.getElementById('pista-status').innerText = `¡Pista ${numero+1} disponible!`;
-            } else {
-                document.getElementById('pista-status').innerText = "Todas las pistas reveladas.";
-            }
-        }
+      pv.style.left = x + 'px';
+      pv.style.top  = y + 'px';
+    });
 
-        function cerrarPista() {
-            document.getElementById('modal-bg').style.display    = 'none';
-            document.getElementById('pista-modal').style.display = 'none';
-            document.getElementById('eval-modal').style.display  = 'none';
-        }
-
-        function updateHistoryUI() {
-            const section = document.getElementById('history-section');
-            const list    = document.getElementById('history-list');
-            if(section) section.style.display = 'block';
-            if(list) {
-                list.innerHTML = '';
-                viewedHistory.forEach(id => {
-                    const div = document.createElement('div');
-                    div.className = 'history-item-container';
-                    if(idsConImagen.has(id)) {
-                        const img = document.createElement('img');
-                        img.src = `./imagenes/${baseNombres[id]}.png`;
-                        img.className = 'history-item';
-                        img.onerror = function() { this.style.display='none'; };
-                        div.appendChild(img);
-                    } else {
-                        const ph = document.createElement('div');
-                        ph.className = 'history-item';
-                        ph.style.cssText = 'background:#1e293b;display:flex;align-items:center;justify-content:center;font-size:1.2rem;';
-                        ph.innerText = '🔊';
-                        div.appendChild(ph);
-                    }
-                    const tag = document.createElement('div');
-                    tag.className = 'history-id-tag';
-                    tag.innerText = id;
-                    div.appendChild(tag);
-                    list.appendChild(div);
-                });
-            }
-        }
-
-        function closePlayer() {
-            document.getElementById('audio-player').pause();
-            document.getElementById('player-overlay').style.display = 'none';
-            document.getElementById('qr-image').style.display       = 'none';
-            document.getElementById('qr-placeholder').style.display = 'block';
-            document.getElementById('qr-svg').innerHTML = '';
-            document.getElementById('qr-id-label').innerText = '';
-            currentActiveID = null;
-        }
-
-        function toggleAudio() {
-            const audio = document.getElementById('audio-player');
-            if(audio.paused) { audio.play();  document.getElementById('btn-play').innerText = "PAUSAR"; }
-            else             { audio.pause(); document.getElementById('btn-play').innerText = "REPRODUCIR"; }
-        }
-
-        function showGallery() {
-            document.getElementById('view-generator').classList.remove('active');
-            document.getElementById('view-gallery').classList.add('active');
-            renderGrid();
-        }
-
-        function showGenerator() {
-            document.getElementById('view-gallery').classList.remove('active');
-            document.getElementById('view-generator').classList.add('active');
-        }
-
-        function renderGrid() {
-            const grid = document.getElementById('selection-grid');
-            grid.innerHTML = '';
-            Object.keys(baseNombres).sort().forEach(id => {
-                const tieneImg = idsConImagen.has(id);
-                const tieneAud = idsConAudio.has(id);
-                const activo   = tieneImg || tieneAud;
-                const div = document.createElement('div');
-                div.style.cssText = `background:#1e293b;border-radius:12px;overflow:hidden;` +
-                    `cursor:${activo?'pointer':'default'};` +
-                    `border:${tieneAud?'2px solid #3b82f6':'1px solid #334155'};` +
-                    `opacity:${activo?'1':'0.35'};position:relative;`;
-                if(activo) div.onclick = () => openMystery(id, false);
-
-                if(tieneAud) {
-                    const badge = document.createElement('span');
-                    badge.style.cssText = 'position:absolute;top:4px;right:4px;background:#3b82f6;border-radius:4px;font-size:9px;padding:2px 4px;font-weight:bold;z-index:1;';
-                    badge.innerText = '🔊';
-                    div.appendChild(badge);
-                }
-
-                if(tieneImg) {
-                    const img = document.createElement('img');
-                    img.src = `./imagenes/${baseNombres[id]}.png`;
-                    img.style.cssText = 'width:100%;height:110px;object-fit:cover;display:block;';
-                    img.onerror = function() { thumbError(this); };
-                    div.appendChild(img);
-                } else {
-                    const ph = document.createElement('div');
-                    ph.style.cssText = 'width:100%;height:110px;display:flex;align-items:center;justify-content:center;font-size:1.5rem;';
-                    ph.innerText = '🔊';
-                    div.appendChild(ph);
-                }
-
-                const label = document.createElement('div');
-                label.style.cssText = 'padding:6px;text-align:center;';
-                label.innerHTML = `<span style="font-size:0.7rem;color:${tieneImg?'var(--accent)':'#94a3b8'};font-weight:bold;">ID ${id}</span>`;
-                div.appendChild(label);
-                grid.appendChild(div);
-            });
-        }
-
-        function fmtTime(s) {
-            if(isNaN(s)||!isFinite(s)) return '00:00';
-            return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
-        }
-
-        document.getElementById('audio-player').ontimeupdate = () => {
-            const audio = document.getElementById('audio-player');
-            const bar   = document.getElementById('progress-bar');
-            const time  = document.getElementById('time-display');
-            if(audio.duration) {
-                if(bar)  bar.style.width = (audio.currentTime/audio.duration*100)+'%';
-                if(time) time.innerText  = `${fmtTime(audio.currentTime)} / ${fmtTime(audio.duration)}`;
-            }
-        };
-
-        function seekAudio(event, barEl) {
-            const audio = document.getElementById('audio-player');
-            if(!audio.duration) return;
-            const rect = barEl.getBoundingClientRect();
-            audio.currentTime = ((event.clientX-rect.left)/rect.width)*audio.duration;
-        }
-
-        updateCounter();
-    </script>
+    strip.addEventListener('mouseout', function(e){
+      const thumb = e.target.closest('.h-thumb');
+      if(!thumb) return;
+      if(!thumb.contains(e.relatedTarget)){
+        pv.style.display = 'none';
+      }
+    });
+  })();
+</script>
 </body>
 </html>
