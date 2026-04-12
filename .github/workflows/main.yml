@@ -1,0 +1,21 @@
+name: Delete all audios files
+
+on:
+  workflow_dispatch:
+
+jobs:
+  delete-audios:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Remove audios folder
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git rm -rf audios
+          git commit -m "Delete all files in audios folder" --allow-empty
+          git push origin main
