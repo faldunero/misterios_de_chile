@@ -17,8 +17,10 @@ body{background:var(--ink-soft);color:var(--cream);font-family:'DM Sans',sans-se
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 
 /* ── MAIN ── */
-#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:32px 20px 40px;position:relative;z-index:1}
+#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 20px 80px;position:relative;z-index:1}
 .main-header{text-align:center;margin-bottom:28px}
+.main-logo-img{height:72px;width:auto;margin-bottom:14px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+@media(max-width:480px){.main-logo-img{height:56px}}
 .eyebrow{font-size:.62rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:6px}
 h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1.05;color:var(--cream);letter-spacing:-.02em}
 h1 span{color:var(--gold)}
@@ -58,7 +60,7 @@ h1 span{color:var(--gold)}
 .h-audio{display:flex;align-items:center;justify-content:center;font-size:.9rem;width:100%;height:100%}
 
 /* ── GALLERY ── */
-#screen-gallery{display:none;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 16px 40px;position:relative;z-index:1;background:transparent}
+#screen-gallery{display:none;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 16px 80px;position:relative;z-index:1;background:transparent}
 .gallery-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin-bottom:20px}
 .gallery-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream)}
 #btn-back{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:8px 14px;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
@@ -75,38 +77,57 @@ h1 span{color:var(--gold)}
 .g-aud-badge{position:absolute;top:4px;right:4px;background:var(--blue);border-radius:3px;font-size:8px;padding:1px 4px;font-weight:700;color:#fff}
 
 /* ── PLAYER OVERLAY ── */
-#player-overlay{display:none;position:fixed;inset:0;z-index:1000;background:rgba(6,9,16,.97);flex-direction:column;align-items:center;overflow-y:auto}
+#player-overlay{display:none;position:fixed;inset:0;z-index:1000;background:var(--ink-soft);flex-direction:column;align-items:center;overflow-y:auto}
 .player-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px;padding:14px 16px 24px;min-height:100dvh}
 .player-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:12px;flex-shrink:0}
-.player-logo{height:26px;width:auto}
+.topbar-spacer{flex:0 0 90px}
+.player-logo{height:36px;width:auto;filter:drop-shadow(0 1px 6px rgba(0,0,0,.6))}
+.player-topbar-center{flex:1;display:flex;justify-content:center}
 #btn-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--mist);border-radius:var(--r);padding:6px 12px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
 #btn-close:hover{background:rgba(192,57,43,.2);color:#e74c3c;border-color:#e74c3c}
-.img-frame{width:100%;flex-shrink:0;display:flex;align-items:center;justify-content:center;margin:6px 0 10px;position:relative}
-#full-img{display:block;width:auto;height:auto;max-width:100%;max-height:48dvh;object-fit:contain;border-radius:var(--r);border:1px solid rgba(201,168,76,.12)}
+/* ── PLAYER CONTENT ROW: 3 columnas [PREGUNTAS | IMAGEN | PISTAS] ── */
+.player-content-row{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px}
+.player-side{display:flex;flex-direction:column;gap:7px;flex-shrink:0;width:76px;align-items:stretch}
+.img-frame{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;position:relative}
+#full-img{display:block;width:auto;height:auto;max-width:100%;max-height:52dvh;object-fit:contain;border-radius:var(--r);border:1px solid rgba(201,168,76,.12)}
 .no-img-ph{display:none;width:100%;min-height:140px;background:var(--slate);border-radius:var(--r);align-items:center;justify-content:center;font-size:2.5rem;border:1px dashed rgba(138,155,176,.2)}
 
-/* Botón EVALUAR flotante sobre la foto */
-.btn-eval-overlay{position:absolute;top:10px;left:10px;display:none;padding:8px 13px;background:var(--gold);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;letter-spacing:.04em;text-transform:uppercase;z-index:10;box-shadow:0 2px 10px rgba(0,0,0,.45);transition:opacity .15s,transform .1s}
-.btn-eval-overlay:hover{opacity:.88}
-.btn-eval-overlay:active{transform:scale(.96)}
+/* ── LENGUAJE VISUAL UNIFICADO DE BOTONES ── */
+/* Base compartida: misma forma y tipografía para todos los botones del player */
+#btn-evaluar,.btn-pista,.ctrl-btn{
+  border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  cursor:pointer;
+  transition:opacity .15s,transform .1s;
+  text-align:center;
+  border:none;
+}
+#btn-evaluar,.ctrl-btn{box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#btn-evaluar:active,.btn-pista:active,.ctrl-btn:active{transform:scale(.96)}
 
-/* Pistas section */
-.pistas-section{width:100%;flex-shrink:0}
-#pista-status{font-size:.7rem;color:var(--gold);text-align:center;margin-bottom:8px;letter-spacing:.04em;min-height:16px}
-.pistas-row{display:flex;gap:8px;justify-content:center}
-.btn-pista{flex:1;max-width:130px;padding:9px 6px;background:var(--slate);border:1px solid rgba(201,168,76,.2);color:var(--gold-lt);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:500;cursor:pointer;transition:background .15s,border-color .15s}
+/* Botón PREGUNTAS (columna izquierda) */
+#btn-evaluar{display:none;padding:8px 7px;background:var(--gold);color:var(--ink);font-size:.64rem;line-height:1.4;width:100%}
+#btn-evaluar:hover{opacity:.88}
+
+/* Pistas (columna derecha) */
+.pistas-section{display:flex;flex-direction:column;gap:7px;width:76px;flex-shrink:0}
+#pista-status{font-size:.56rem;color:var(--gold);text-align:center;letter-spacing:.03em;min-height:12px;line-height:1.3}
+.btn-pista{width:100%;padding:8px 5px;background:var(--slate-lt);border:1px solid rgba(201,168,76,.18);color:var(--gold-lt);font-size:.64rem}
 .btn-pista:hover:not(:disabled){background:rgba(201,168,76,.12);border-color:var(--gold)}
-.btn-pista:disabled{opacity:.3;cursor:not-allowed;color:var(--mist);border-color:rgba(138,155,176,.1)}
-.btn-pista.vista{opacity:.45;color:var(--mist)}
+.btn-pista:disabled{opacity:.28;cursor:not-allowed;color:var(--mist);border-color:rgba(138,155,176,.08)}
+.btn-pista.vista{opacity:.55;color:var(--mist);font-size:.6rem}
 
 /* Controls */
-.player-controls{width:100%;flex-shrink:0;margin-top:14px;display:flex;flex-direction:column;gap:10px}
+.player-controls{width:100%;flex-shrink:0;margin-top:10px;display:flex;flex-direction:column;gap:8px}
 .progress-row{display:flex;align-items:center;gap:10px}
-#time-display{font-family:monospace;font-size:.7rem;color:var(--mist);white-space:nowrap;min-width:88px;text-align:center}
+#time-display{font-family:monospace;font-size:.65rem;color:var(--mist);white-space:nowrap;min-width:80px;text-align:center}
 .progress-track{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:999px;cursor:pointer;overflow:hidden}
 #progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-lt));border-radius:999px;transition:width .25s linear}
 .action-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
-.ctrl-btn{padding:10px 16px;border-radius:var(--r);border:none;font-family:'DM Sans',sans-serif;font-size:.76rem;font-weight:700;cursor:pointer;transition:opacity .15s,transform .1s;letter-spacing:.04em;text-transform:uppercase}
+.ctrl-btn{padding:9px 16px;font-size:.7rem}
 .ctrl-btn:active{transform:scale(.97)}
 .ctrl-blue{background:var(--blue);color:#fff}
 .ctrl-green{background:var(--green);color:#fff}
@@ -114,20 +135,19 @@ h1 span{color:var(--gold)}
 .ctrl-ghost:hover{border-color:var(--mist);color:var(--cream)}
 
 /* ── MODALS ── */
-.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:2000;align-items:flex-start;justify-content:flex-start;padding:16px}
-.modal-overlay.pista-open{justify-content:flex-end}
-.modal-overlay.open{display:flex}
-.modal-box{background:var(--slate);border:1px solid rgba(201,168,76,.18);border-radius:var(--r-lg);padding:22px;width:100%;max-width:400px;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mIn .18s ease}
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:flex-start;justify-content:center;padding:14px;gap:12px;overflow-y:auto}
+.modal-overlay.open{display:flex;flex-direction:row;flex-wrap:wrap}
+@media(max-width:680px){.modal-overlay.open{flex-direction:column;align-items:center}}
+.modal-box{background:var(--slate);border:1px solid rgba(201,168,76,.18);border-radius:var(--r-lg);padding:22px;width:100%;max-width:390px;flex:1 1 320px;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mIn .18s ease;overflow-y:auto;max-height:90dvh}
 @keyframes mIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
 .modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
 .modal-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cream)}
 .modal-close{background:none;border:none;color:var(--mist);font-size:1.3rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
 .modal-close:hover{color:var(--cream);background:rgba(255,255,255,.07)}
 
-/* Pista modal */
-.pista-name{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:8px}
-.pista-body{font-size:.9rem;line-height:1.65;color:var(--cream);margin-bottom:18px}
-.btn-entendido{width:100%;padding:11px;background:var(--gold);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.8rem;font-weight:700;cursor:pointer;letter-spacing:.05em;text-transform:uppercase}
+/* Pista modal — locked state */
+.pista-block-locked .btn-show{opacity:.38;cursor:not-allowed}
+.pista-block-locked .q-text{opacity:.55}
 
 /* Eval modal */
 .q-text{font-size:.9rem;font-weight:500;color:var(--cream);margin-bottom:10px;line-height:1.55}
@@ -150,16 +170,17 @@ h1 span{color:var(--gold)}
 #screen-main{position:relative;z-index:1}
 #screen-main > *{position:relative;z-index:1}
 
-/* ── MARCA DE AGUA LUDOLAB ── */
-#watermark-ludolab{position:fixed;bottom:16px;right:16px;z-index:500;pointer-events:auto;opacity:0.28;transform-origin:bottom right;transition:opacity .2s}
-#watermark-ludolab:hover{opacity:0.55}
-#watermark-ludolab a{display:block;cursor:pointer;text-decoration:none}
-#watermark-ludolab svg{width:140px;height:auto;filter:grayscale(100%) brightness(3)}
+/* ── LOGO LUDOLAB ABAJO AL CENTRO ── */
+#watermark-ludolab{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.6;transition:opacity .2s;white-space:nowrap}
+#watermark-ludolab:hover{opacity:1}
+#watermark-ludolab a{display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none}
+#watermark-ludolab .wm-icon{flex-shrink:0}
+#watermark-ludolab .wm-text{display:flex;flex-direction:column;line-height:1.2}
+#watermark-ludolab .wm-name{font-size:.72rem;font-weight:900;font-family:'DM Sans',sans-serif;background:linear-gradient(90deg,#4facfe,#43c6ac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.02em}
+#watermark-ludolab .wm-tagline{font-size:.5rem;color:var(--mist);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif}
 
-/* ── LOGO MISTERIOS DE CHILE FIJO (todas las pantallas) ── */
-#logo-misterios-fijo{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:none;opacity:0.55;transition:opacity .2s}
-#logo-misterios-fijo img{height:32px;width:auto;filter:drop-shadow(0 1px 4px rgba(0,0,0,.7))}
-@media(max-width:480px){#logo-misterios-fijo img{height:24px}}
+/* ── LOGO MISTERIOS FIJO oculto (movido al header principal) ── */
+#logo-misterios-fijo{display:none}
 
 /* ── LOGO LUDOLAB EN PREGUNTAS ── */
 .ludolab-modal-logo{display:flex;justify-content:flex-end;margin-bottom:10px}
@@ -200,11 +221,15 @@ h1 span{color:var(--gold)}
 /* ── RESPONSIVE ── */
 @media(max-width:480px){
   h1{font-size:1.8rem}.qr-zone{max-width:260px}
-  #full-img{max-height:40dvh}.ctrl-btn{font-size:.7rem;padding:9px 10px}
-  .btn-pista{font-size:.7rem;padding:8px 4px}
   #gallery-grid{grid-template-columns:repeat(auto-fill,minmax(85px,1fr))}
-  #watermark-ludolab{bottom:10px;right:10px;opacity:0.22}
-  #watermark-ludolab svg{width:110px}
+  #watermark-ludolab{bottom:8px;opacity:0.38}
+  /* Player móvil: columnas laterales se convierten en fila bajo la imagen */
+  .player-content-row{flex-direction:column;gap:8px}
+  .player-side,.pistas-section{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
+  .btn-pista{width:auto;flex:1;max-width:100px;padding:7px 6px}
+  #btn-evaluar{padding:8px 18px;font-size:.65rem}
+  #full-img{max-height:38dvh}
+  .ctrl-btn{font-size:.68rem;padding:8px 10px}
 }
 @media(max-height:580px) and (orientation:landscape){
   .player-logo{display:none}
@@ -219,21 +244,50 @@ h1 span{color:var(--gold)}
 
 <!-- MODAL OVERLAY -->
 <div id="modal-overlay" class="modal-overlay">
-  <!-- Pista -->
+  <!-- Pistas -->
   <div id="modal-pista" class="modal-box" style="display:none">
     <div class="modal-header">
-      <span class="modal-title">Pista Revelada</span>
-      <button class="modal-close" onclick="cerrarModal()">×</button>
+      <span class="modal-title">Pistas</span>
+      <button class="modal-close" onclick="cerrarModalPista()">×</button>
     </div>
-    <p id="pista-nombre" class="pista-name"></p>
-    <p id="pista-body" class="pista-body"></p>
-    <button class="btn-entendido" onclick="cerrarModal()">Entendido</button>
+    <div class="ludolab-modal-logo">
+      <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+        <img src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-1">
+      <p class="q-label-num">Pista 1 — El Enigma</p>
+      <p class="q-text">Contexto, lugar o qué pasó.</p>
+      <div id="pista-ans-box-1" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-1" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-1" disabled onclick="revelarPista(1)">👁 Revelar pista</button>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-2">
+      <p class="q-label-num">Pista 2 — El Rastro</p>
+      <p class="q-text">Pista temporal indirecta.</p>
+      <div id="pista-ans-box-2" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-2" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-2" disabled onclick="revelarPista(2)">👁 Revelar pista</button>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-3" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
+      <p class="q-label-num">Pista 3 — Los Rostros</p>
+      <p class="q-text">Protagonistas del evento.</p>
+      <div id="pista-ans-box-3" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-3" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-3" disabled onclick="revelarPista(3)">👁 Revelar pista</button>
+    </div>
   </div>
   <!-- Preguntas -->
   <div id="modal-eval" class="modal-box" style="display:none">
     <div class="modal-header">
       <span class="modal-title">Preguntas</span>
-      <button class="modal-close" onclick="cerrarModal()">×</button>
+      <button class="modal-close" onclick="cerrarModalEval()">×</button>
     </div>
     <div class="ludolab-modal-logo">
       <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
@@ -298,8 +352,8 @@ h1 span{color:var(--gold)}
 <!-- MAIN SCREEN -->
 <div id="screen-main">
   <header class="main-header">
-    <p class="eyebrow">Juego de historia · <span class="eyebrow-stage">Etapa 1 · Nivel Iniciado · Conquista → Centenario</span></p>
-    <h1>Misterios <span>de Chile</span></h1>
+    <img class="main-logo-img" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Misterios de Chile" onerror="this.src='./logotipo_misterios_de_chile/logotipo_misterios_de_chile.svg'">
+    <p class="eyebrow">Juego de historia · <span class="eyebrow-stage">Nivel Iniciado · Conquista → Centenario</span></p>
     <p class="subtitle">75 cartas · Desde la Conquista hasta el Centenario</p>
     <p class="period-badge">1536 – 1910</p>
   </header>
@@ -341,23 +395,54 @@ h1 span{color:var(--gold)}
 
       <div class="reglas-section">
         <div class="reglas-h2">¿De qué trata el juego?</div>
-        <p class="reglas-p">Chile en el Tiempo es un juego de cartas interactivo donde los jugadores compiten por ubicar hitos históricos en orden cronológico. Usando un código QR, cada carta activa una imagen de época y un relato de audio que describe el momento histórico sin revelar nombres ni fechas. El desafío: adivinar qué sucedió, cuándo ocurrió y quiénes fueron sus protagonistas.</p>
+        <p class="reglas-p">Misterios de Chile es un juego de cartas interactivo donde los jugadores compiten por ubicar hitos históricos en orden cronológico. Usando un código QR, cada carta activa una imagen de época y un relato de audio que describe el momento histórico sin revelar nombres ni fechas. El desafío: adivinar qué sucedió, cuándo ocurrió y quiénes fueron sus protagonistas.</p>
         <p class="reglas-p"><strong>2 a 4 jugadores · 75 cartas · Desde la Conquista hasta el Centenario</strong></p>
       </div>
 
       <div class="reglas-section">
+        <div class="reglas-h2">Inspiración</div>
+        <p class="reglas-p">La mecánica principal es similar al juego Hitster: los jugadores escuchan un fragmento de audio y deben ubicar la carta en la línea de tiempo correcta, antes o después de los hitos ya revelados en la mesa. Misterios de Chile agrega dos dimensiones adicionales: identificar el evento y sus protagonistas.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Las Expansiones</div>
+        <p class="reglas-p">Misterios de Chile es un sistema modular. Cada caja es un juego independiente, pero todas comparten las mismas reglas y se pueden combinar para crear una línea de tiempo extendida (Modo Expansión).</p>
+        <table class="reglas-table">
+          <thead><tr><th>Nivel</th><th>Curso</th><th>Contenido</th></tr></thead>
+          <tbody>
+            <tr><td>🟢 Iniciado</td><td>5°-6° Básico</td><td>Desde la Conquista hasta el Centenario (esta caja)</td></tr>
+            <tr><td>🔵 Explorador</td><td>7°-8° Básico</td><td>Antigüedad, Edad Media y Raíces de la Modernidad</td></tr>
+            <tr><td>🔴 Crítico</td><td>I-II Medio</td><td>El Siglo XIX, XX y la conformación del Estado Moderno</td></tr>
+            <tr><td>🟡 Ciudadano</td><td>III-IV Medio</td><td>Actualidad, Economía, Globalización y Derechos Civiles</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Diseño de la Carta</div>
+        <div class="reglas-h3">Anverso — Código QR</div>
+        <p class="reglas-p">Al escanear el QR con cualquier dispositivo, se activan dos elementos:</p>
+        <p class="reglas-p"><strong>Imagen de Época:</strong> Pintura, portada de diario o infografía que entrega pistas visuales del evento.</p>
+        <p class="reglas-p"><strong>Relato de Fondo:</strong> Audio narrado que describe el ambiente, clima social o conflicto del momento sin revelar nombres propios ni fechas exactas.</p>
+        <div class="reglas-h3">Reverso — Los Datos</div>
+        <p class="reglas-p">Contiene la información que valida o refuta la jugada: año exacto del evento, nombre del hito histórico, descripción breve de su impacto y protagonistas clave involucrados.</p>
+      </div>
+
+      <div class="reglas-section">
         <div class="reglas-h2">Preparación</div>
-        <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (reverso visible) en el centro de la mesa. Es el punto de partida de la línea de tiempo.</div></div>
-        <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta.</div></div>
-        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text">Elige el modo: Una sola caja o combina expansiones para una línea de tiempo extendida.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (Reverso visible) en el centro de la mesa. Esta carta es el punto de partida de la línea de tiempo.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">4</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
       </div>
 
       <div class="reglas-section">
         <div class="reglas-h2">El Turno</div>
+        <p class="reglas-p">El jugador activo elige una carta de su mano y sigue este flujo:</p>
         <div class="reglas-h3">Fase 1 — Activar el QR</div>
         <p class="reglas-p">El jugador activo escanea el QR de su carta. Todos los jugadores ven la imagen y escuchan el relato de audio.</p>
         <div class="reglas-h3">Fase 2 — Las Pistas (Opcional)</div>
-        <p class="reglas-p">El jugador activo puede solicitar hasta 3 pistas adicionales desbloqueables en la app. Cada pista tiene un costo en fichas que se paga al pozo:</p>
+        <p class="reglas-p">Antes de declarar su respuesta, el jugador activo puede solicitar hasta 3 pistas adicionales que se desbloquean en la aplicación. Cada pista tiene un costo en fichas que se paga al pozo:</p>
         <table class="reglas-table">
           <thead><tr><th>Pista</th><th>Contenido</th><th>Costo</th></tr></thead>
           <tbody>
@@ -366,30 +451,34 @@ h1 span{color:var(--gold)}
             <tr><td><strong>Pista 3 — Los Rostros</strong></td><td>Pista sobre los protagonistas del evento.</td><td>3 fichas</td></tr>
           </tbody>
         </table>
-        <div class="reglas-callout">Las pistas son exclusivas del jugador activo. Un jugador que roba no tiene acceso a ellas. El costo se descuenta independientemente del resultado final.</div>
+        <div class="reglas-callout">Las pistas son exclusivas del jugador activo. Un jugador que roba no tiene acceso a ellas. El costo de las pistas se descuenta independientemente del resultado final.</div>
         <div class="reglas-h3">Fase 3 — Declarar o Rendirse</div>
-        <p class="reglas-p">El jugador activo responde las tres preguntas de la <strong>Triple Intuición</strong>: (1) Ubicación cronológica, (2) El evento histórico, (3) Los protagonistas. O puede rendirse formalmente sin declarar (sin costo extra), abriendo la Fase de Robo.</p>
+        <p class="reglas-p">Tras escuchar el audio (y usar las pistas que estime necesarias), el jugador activo tiene dos opciones:</p>
+        <p class="reglas-p"><strong>Declarar su respuesta</strong> respondiendo las tres preguntas — (1) Ubicación Cronológica, (2) El Evento, (3) Los Protagonistas.</p>
+        <p class="reglas-p"><strong>Rendirse formalmente</strong> sin declarar respuesta. Rendirse no tiene costo de fichas adicional. Al rendirse, se abre la Fase de Robo.</p>
         <div class="reglas-h3">Fase 4 — El Robo (solo si el activo se rindió)</div>
-        <p class="reglas-p">Cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo intenta la Triple Intuición sin acceso a pistas.</p>
+        <p class="reglas-p">Cuando el jugador activo se rinde, cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo tiene el derecho a intentar la Triple Intuición respondiendo las mismas tres preguntas, pero sin acceso a las pistas.</p>
         <table class="reglas-table">
           <thead><tr><th>Resultado del Robo</th><th>Consecuencia</th></tr></thead>
           <tbody>
             <tr><td>Acierta (1, 2 o 3 aciertos)</td><td>Gana fichas según tabla de aciertos</td></tr>
-            <tr><td>Falla (0 aciertos)</td><td>Paga 2 fichas al pozo</td></tr>
+            <tr><td>Falla (0 aciertos)</td><td>Paga 2 fichas al pozo (penalización por interrumpir)</td></tr>
           </tbody>
         </table>
-        <div class="reglas-callout">Si nadie grita «¡Robo!», la carta igual entra a la línea de tiempo. Se voltea, todos conocen el evento, y el turno pasa al siguiente. Nadie gana ni pierde fichas.</div>
+        <div class="reglas-callout">Si nadie grita «¡Robo!», la carta igual entra a la línea de tiempo. Se voltea, todos conocen el evento, y el turno pasa al siguiente jugador. Nadie gana ni pierde fichas.</div>
       </div>
 
       <div class="reglas-section">
         <div class="reglas-h2">Resolución y Recompensas</div>
+        <p class="reglas-p">Se voltea la carta y se cuentan los aciertos (máximo 3: ubicación + evento + protagonistas). Las fichas pagadas por pistas se descuentan del resultado neto.</p>
         <table class="reglas-table">
-          <thead><tr><th>Aciertos</th><th>Consecuencia</th></tr></thead>
+          <thead><tr><th>Aciertos</th><th>Situación</th><th>Consecuencia</th></tr></thead>
           <tbody>
-            <tr><td>0 — Olvido</td><td>Pierdes 1 ficha (+ fichas de pistas usadas)</td></tr>
-            <tr><td>1 — Conocimiento</td><td>Sin ganancia ni pérdida (+ pistas descontadas)</td></tr>
-            <tr><td>2 — Erudito</td><td>Ganas 1 ficha del oponente (o del pozo)</td></tr>
-            <tr><td>3 — Maestro del Tiempo</td><td>Ganas 2 fichas de tus oponentes</td></tr>
+            <tr><td>0 — Olvido</td><td>Sin pistas</td><td>Pierdes 1 ficha. La carta igual entra a la línea.</td></tr>
+            <tr><td>0 — Olvido</td><td>Con pistas</td><td>Pierdes fichas pagadas por pistas + 1 ficha adicional.</td></tr>
+            <tr><td>1 — Conocimiento</td><td>—</td><td>Sin ganancia ni pérdida (más las pistas usadas). Carta a la línea.</td></tr>
+            <tr><td>2 — Erudito</td><td>—</td><td>Ganas 1 ficha del oponente (o del pozo). Carta a la línea.</td></tr>
+            <tr><td>3 — Maestro del Tiempo</td><td>—</td><td>Ganas 2 fichas de tus oponentes. Carta a la línea.</td></tr>
           </tbody>
         </table>
         <div class="reglas-callout">La carta <strong>siempre</strong> entra a la línea de tiempo en su posición cronológica correcta, independientemente del resultado.</div>
@@ -397,7 +486,12 @@ h1 span{color:var(--gold)}
 
       <div class="reglas-section">
         <div class="reglas-h2">Fin del Juego</div>
-        <p class="reglas-p">El juego termina cuando se agota el mazo. El jugador con más fichas gana. Si un jugador se queda sin fichas, no se elimina: no puede apostar y pierde su turno hasta que algún resultado le devuelva fichas. En caso de empate, gana quien tenga más cartas correctamente ubicadas en la línea de tiempo.</p>
+        <p class="reglas-p">El juego termina cuando se agota el mazo. El jugador con más fichas al final gana. Si un jugador se queda sin fichas, no se elimina: simplemente no puede apostar en las rondas siguientes y pierde su turno hasta que algún resultado le devuelva fichas. En caso de empate al finalizar, gana quien tenga más cartas correctamente ubicadas en la línea de tiempo.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Modo Expansión</div>
+        <p class="reglas-p">Para partidas más largas, mezcla los mazos de múltiples expansiones. Las reglas son idénticas. La línea de tiempo se extiende desde la época más antigua hasta la más reciente, haciendo la ubicación cada vez más desafiante.</p>
       </div>
 
       <div class="reglas-section">
@@ -405,13 +499,15 @@ h1 span{color:var(--gold)}
         <table class="reglas-table">
           <thead><tr><th>Término</th><th>Definición</th></tr></thead>
           <tbody>
-            <tr><td><strong>Línea de Tiempo</strong></td><td>Secuencia de cartas visibles en la mesa, ordenadas de izquierda a derecha.</td></tr>
-            <tr><td><strong>Triple Intuición</strong></td><td>Las tres preguntas: ubicación + evento + protagonistas.</td></tr>
-            <tr><td><strong>Robo</strong></td><td>Mecanismo por el cual un contrincante toma el turno tras la rendición del activo.</td></tr>
+            <tr><td><strong>Línea de Tiempo</strong></td><td>Secuencia de cartas visibles en la mesa, ordenadas cronológicamente de izquierda a derecha.</td></tr>
+            <tr><td><strong>Triple Intuición</strong></td><td>Las tres preguntas que debe responder el jugador activo (o el robador): ubicación + evento + protagonistas.</td></tr>
+            <tr><td><strong>Robo</strong></td><td>Mecanismo por el cual un contrincante toma el turno después de que el jugador activo se rinde.</td></tr>
             <tr><td><strong>Pozo</strong></td><td>Reserva común de fichas acumuladas por penalizaciones y pistas pagadas.</td></tr>
-            <tr><td><strong>Modo Expansión</strong></td><td>Partida que combina mazos de dos o más cajas del sistema.</td></tr>
+            <tr><td><strong>Pistas</strong></td><td>Ayudas opcionales disponibles solo para el jugador activo, desbloqueadas en la aplicación a cambio de fichas.</td></tr>
+            <tr><td><strong>Modo Expansión</strong></td><td>Partida que combina los mazos de dos o más cajas del sistema Misterios de Chile.</td></tr>
           </tbody>
         </table>
+        <p class="reglas-p" style="margin-top:14px;font-size:.72rem;color:var(--mist);text-align:center">Misterios de Chile — Diseño: Felipe Ignacio Aldunate Romero</p>
       </div>
 
     </div>
@@ -422,18 +518,26 @@ h1 span{color:var(--gold)}
 <div id="player-overlay">
   <div class="player-inner">
     <div class="player-topbar">
-      <img class="player-logo" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo" onerror="this.style.display='none'">
+      <div class="topbar-spacer"></div>
+      <div class="player-topbar-center">
+        <img class="player-logo" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo" onerror="this.style.display='none'">
+      </div>
       <button id="btn-close" onclick="closePlayer()">✕ Cerrar</button>
     </div>
-    <div class="img-frame">
-      <img id="full-img" src="" alt="" onerror="imgErr(this)">
-      <div class="no-img-ph" id="no-img-ph">🔊</div>
-      <!-- Botón EVALUAR flotante sobre la foto, esquina superior izquierda -->
-      <button id="btn-evaluar" class="btn-eval-overlay" onclick="abrirEval()">📋 PREGUNTAS</button>
-    </div>
-    <div class="pistas-section">
-      <p id="pista-status"></p>
-      <div class="pistas-row">
+    <!-- 3 columnas: PREGUNTAS | imagen | PISTAS -->
+    <div class="player-content-row">
+      <!-- Izquierda: Preguntas -->
+      <div class="player-side player-side-left">
+        <button id="btn-evaluar" onclick="abrirEval()">📋<br>Preguntas</button>
+      </div>
+      <!-- Centro: Imagen -->
+      <div class="img-frame">
+        <img id="full-img" src="" alt="" onerror="imgErr(this)">
+        <div class="no-img-ph" id="no-img-ph">🔊</div>
+      </div>
+      <!-- Derecha: Pistas -->
+      <div class="player-side pistas-section">
+        <p id="pista-status"></p>
         <button class="btn-pista" id="btn-p1" onclick="mostrarPista(1)" disabled>Pista 1</button>
         <button class="btn-pista" id="btn-p2" onclick="mostrarPista(2)" disabled>Pista 2</button>
         <button class="btn-pista" id="btn-p3" onclick="mostrarPista(3)" disabled>Pista 3</button>
@@ -460,23 +564,27 @@ h1 span{color:var(--gold)}
   <img src="./logotipo_misterios_de_chile/logotipo_misterios_de_chile.svg" alt="Misterios de Chile" onerror="this.src='./logotipo_misterios_de_chile/logo_misterios_de_chile.svg'">
 </div>
 
-<!-- MARCA DE AGUA LUDOLAB -->
+<!-- LOGO LUDOLAB ABAJO AL CENTRO -->
 <div id="watermark-ludolab">
   <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
-  <svg width="800" height="200" viewBox="0 0 800 200" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <linearGradient id="gradWM" x1="0%" y1="0%" x2="100%" y2="0%">
-        <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1"/>
-        <stop offset="100%" style="stop-color:#ffffff;stop-opacity:1"/>
-      </linearGradient>
-    </defs>
-    <g transform="translate(20, 20) scale(0.35)">
-      <path d="M150 400 L210 150 L210 100 L290 100 L290 150 L350 400 Z" stroke="url(#gradWM)" stroke-width="30" stroke-linejoin="round" fill="none"/>
-      <path d="M225 280 H255 A15 15 0 0 1 270 295 V310 A15 15 0 0 0 285 325 H300 V355 H270 A15 15 0 0 1 255 340 V325 A15 15 0 0 0 240 310 H225 V280 Z" fill="url(#gradWM)"/>
-    </g>
-    <text x="180" y="110" font-family="Arial, sans-serif" font-weight="900" font-size="85" fill="white">ludolab.cl</text>
-    <text x="185" y="155" font-family="Arial, sans-serif" font-size="26" letter-spacing="5" fill="white">contacto@ludolab.cl</text>
-  </svg>
+    <div class="wm-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4facfe"/>
+            <stop offset="100%" stop-color="#43c6ac"/>
+          </linearGradient>
+        </defs>
+        <circle cx="10" cy="10" r="8.5" stroke="url(#wm-grad)" stroke-width="1.4" fill="none"/>
+        <path d="M10 2.5 L10 17.5" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M2.5 10 L17.5 10" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M5 5 L15 15 M15 5 L5 15" stroke="url(#wm-grad)" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="wm-text">
+      <span class="wm-name">ludolab.cl</span>
+      <span class="wm-tagline">Juega · Aprende · Explora</span>
+    </div>
   </a>
 </div>
 
@@ -880,7 +988,14 @@ const baseNombres   = {
     el.textContent=txt;
     el.style.color=col==='gold'?'var(--gold)':col==='green'?'var(--green)':'var(--mist)';
   }
-  function unlockPista(n){document.getElementById(`btn-p${n}`).disabled=false}
+  function unlockPista(n){
+    document.getElementById(`btn-p${n}`).disabled=false;
+    // Unlock en el modal de pistas
+    const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+    if(revBtn) revBtn.disabled=false;
+    const block=document.getElementById(`pista-block-${n}`);
+    if(block) block.classList.remove('pista-block-locked');
+  }
 
   let isHistoryReplay = false;
 
@@ -894,18 +1009,35 @@ const baseNombres   = {
 
     // Pistas y preguntas: solo visibles en partida nueva (no desde miniaturas)
     const pistasSection = document.querySelector('.pistas-section');
+    const leftSide = document.querySelector('.player-side-left');
     if(isHistoryReplay){
       pistasSection.style.display='none';
+      if(leftSide) leftSide.style.display='none';
       document.getElementById('btn-evaluar').style.display='none';
     } else {
       pistasSection.style.display='';
+      if(leftSide) leftSide.style.display='';
       ['btn-p1','btn-p2','btn-p3'].forEach((b,i)=>{
         const el=document.getElementById(b);
-        el.disabled=true;el.className='btn-pista';el.textContent=`Pista ${i+1}`;
+        el.disabled=true; // reset: bloqueado hasta que audio libere pista 1
+        el.className='btn-pista';el.textContent=`Pista ${i+1}`;
       });
+      // Reset modal pistas
+      for(let n=1;n<=3;n++){
+        const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+        if(revBtn){revBtn.disabled=true;revBtn.textContent='👁 Revelar pista';}
+        const ansBox=document.getElementById(`pista-ans-box-${n}`);
+        if(ansBox) ansBox.style.display='none';
+        const block=document.getElementById(`pista-block-${n}`);
+        if(block) block.classList.add('pista-block-locked');
+      }
       setStatus('Escucha el audio para desbloquear pistas','gold');
       document.getElementById('btn-evaluar').style.display='none';
     }
+    // Cerrar paneles si estaban abiertos
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.getElementById('modal-pista').style.display='none';
+    document.getElementById('modal-eval').style.display='none';
 
     document.getElementById('progress-bar').style.width='0%';
     document.getElementById('time-display').textContent='00:00 / 00:00';
@@ -971,16 +1103,31 @@ const baseNombres   = {
   // ── PISTAS
   function mostrarPista(n){
     if(!currentID||!pistasData[currentID]) return;
-    const names=['','Pista 1 — El Enigma','Pista 2 — El Rastro','Pista 3 — Los Rostros'];
-    document.getElementById('pista-nombre').textContent=names[n];
-    document.getElementById('pista-body').textContent=pistasData[currentID][n-1];
-    const btn=document.getElementById(`btn-p${n}`);
-    btn.disabled=true; btn.classList.add('vista'); btn.textContent='✓ Vista';
-    if(n<3){unlockPista(n+1);setStatus(`¡Pista ${n+1} disponible!`,'gold')}
-    else setStatus('Todas las pistas reveladas.','mist');
+    // Pre-cargar contenido en el modal
+    for(let i=1;i<=3;i++){
+      document.getElementById(`pista-ans-${i}`).textContent=pistasData[currentID][i-1];
+    }
+    // Abrir SOLO el panel de pistas
     document.getElementById('modal-pista').style.display='block';
-    document.getElementById('modal-eval').style.display='none';
-    document.getElementById('modal-overlay').classList.add('open','pista-open');
+    document.getElementById('modal-overlay').classList.add('open');
+    // Solo revelar si no fue ya revelada (evitar resetear estado)
+    const alreadyShown=document.getElementById(`pista-ans-box-${n}`).style.display==='block';
+    if(!alreadyShown) revelarPista(n);
+  }
+
+  function revelarPista(n){
+    if(!currentID||!pistasData[currentID]) return;
+    document.getElementById(`pista-ans-${n}`).textContent=pistasData[currentID][n-1];
+    document.getElementById(`pista-ans-box-${n}`).style.display='block';
+    const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+    revBtn.textContent='✓ Pista vista'; revBtn.disabled=true;
+    // Marcar el botón del player: cambia texto y estilo pero QUEDA HABILITADO
+    // (para poder reabrir el modal aunque ya esté vista)
+    const pBtn=document.getElementById(`btn-p${n}`);
+    pBtn.classList.add('vista'); pBtn.textContent='✓ Vista';
+    // Desbloquear siguiente pista
+    if(n<3){unlockPista(n+1);setStatus(`¡Pista ${n+1} disponible!`,'gold');}
+    else setStatus('Todas las pistas reveladas.','mist');
   }
 
   // ── EVALUACIÓN
@@ -993,20 +1140,32 @@ const baseNombres   = {
       document.getElementById(`eval-ans-${n}`).textContent=r[q.key];
       document.getElementById(`eval-ans-box-${n}`).style.display='none';
       const btn=document.getElementById(`btn-show-${n}`);
-      btn.style.display=''; btn.disabled=false;
+      btn.style.display=''; btn.disabled=false; btn.textContent='👁 Mostrar respuesta';
     });
+    // Abrir SOLO el panel de preguntas (derecha)
     document.getElementById('modal-eval').style.display='block';
-    document.getElementById('modal-pista').style.display='none';
-    document.getElementById('modal-overlay').classList.remove('pista-open');
     document.getElementById('modal-overlay').classList.add('open');
   }
+
   function mostrarRespuesta(n){
     document.getElementById(`eval-ans-box-${n}`).style.display='block';
     const btn=document.getElementById(`btn-show-${n}`);
     btn.textContent='✓ Respuesta vista'; btn.disabled=true;
   }
+
+  // Cierre individual por modal
+  function cerrarModalPista(){
+    document.getElementById('modal-pista').style.display='none';
+    if(document.getElementById('modal-eval').style.display==='none')
+      document.getElementById('modal-overlay').classList.remove('open');
+  }
+  function cerrarModalEval(){
+    document.getElementById('modal-eval').style.display='none';
+    if(document.getElementById('modal-pista').style.display==='none')
+      document.getElementById('modal-overlay').classList.remove('open');
+  }
   function cerrarModal(){
-    document.getElementById('modal-overlay').classList.remove('open','pista-open');
+    document.getElementById('modal-overlay').classList.remove('open');
     document.getElementById('modal-pista').style.display='none';
     document.getElementById('modal-eval').style.display='none';
   }
