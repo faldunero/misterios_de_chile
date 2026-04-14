@@ -590,8 +590,9 @@ h1 span{color:var(--gold)}
 
 <!-- Firebase SDK -->
 <script type="module">
-  import { initializeApp }                      from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
-  import { getFirestore, collection, getDocs }  from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs }      from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app-check.js";
 
   const firebaseConfig = {
     apiKey:            "AIzaSyCB6CvFW6K2tMhR3JC7sRf6teADM0WhcC8",
@@ -604,7 +605,11 @@ h1 span{color:var(--gold)}
   };
 
   const fbApp = initializeApp(firebaseConfig);
-  const db    = getFirestore(fbApp);
+  initializeAppCheck(fbApp, {
+    provider: new ReCaptchaV3Provider("6Leu4LcsAAAAAAdBufaKQT6mObx4MRdoHLuk8Ix4"),
+    isTokenAutoRefreshEnabled: true
+  });
+  const db = getFirestore(fbApp);
 
   async function cargarDatos() {
     try {
@@ -652,6 +657,12 @@ h1 span{color:var(--gold)}
     availableIDs = [...idsConAudio];
     updateCounter();
     document.getElementById('btn-generate').disabled = false;
+    // Abrir carta si viene ?id=XX en la URL (desde QR físico)
+    const params = new URLSearchParams(window.location.search);
+    const idParam = params.get('id');
+    if (idParam && idsConAudio.has(idParam)) {
+      openMystery(idParam, true);
+    }
   };
 
   // ── STATE
