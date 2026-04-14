@@ -162,10 +162,7 @@ h1 span{color:var(--gold)}
 .btn-show:disabled{opacity:.35;cursor:not-allowed}
 
 /* ── FONDO HISTÓRICO (cubre TODAS las pantallas) ── */
-#bg-historico{position:fixed;inset:0;display:grid;grid-template-columns:repeat(4,25%);grid-template-rows:repeat(5,20%);gap:0;pointer-events:none;z-index:0;overflow:hidden;opacity:0.022;filter:grayscale(65%) sepia(25%) brightness(0.9)}
-#bg-historico img{width:100%;height:100%;object-fit:cover;display:block}
 /* gradiente oscuro fijo para legibilidad en todas las pantallas */
-#bg-overlay-gradient{position:fixed;inset:0;background:linear-gradient(to bottom,rgba(26,26,46,.72) 0%,rgba(26,26,46,.55) 40%,rgba(26,26,46,.72) 100%);pointer-events:none;z-index:0}
 /* contenido del main por encima del fondo */
 #screen-main{position:relative;z-index:1}
 #screen-main > *{position:relative;z-index:1}
@@ -325,29 +322,6 @@ h1 span{color:var(--gold)}
 </div>
 
 <!-- FONDO HISTÓRICO GLOBAL: mosaico de imágenes (cubre todas las pantallas) -->
-<div id="bg-historico" aria-hidden="true">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_01_expedicion_almagro.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_05_batalla_de_tucapel.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_09_esclavitud_indigena.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_11_el_terremoto_magno.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_13_expulsion_jesuita.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_16_primera_junta_de_gobierno.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_25_batalla_de_chacabuco.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_26_proclamacion_independencia.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_27_batalla_de_maipu.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_35_batalla_lircay.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_38_constitucion_de_1833.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_40_batalla_de_yungay.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_43_universidad_de_chile.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_57_guerra_del_pacifico.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_67_el_viaducto_del_malleco.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_74_matanza_escuela_santa_maria.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_75_centenario_de_chile.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_46_primer_ferrocarril.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_07_desastre_de_curalaba.png?alt=media" alt="">
-  <img src="https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2Fid_22_desastre_de_rancagua.png?alt=media" alt="">
-</div>
-<div id="bg-overlay-gradient" aria-hidden="true"></div>
 
 <!-- MAIN SCREEN -->
 <div id="screen-main">
