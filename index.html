@@ -802,7 +802,7 @@ h1 span{color:var(--gold)}
     document.getElementById('time-display').textContent='00:00 / 00:00';
     const audio=document.getElementById('audio-player');
     if(hasAud){
-      audio.src=`./audios/${nom}.mp4`;
+      audio.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/audios%2F${nom}.mp4?alt=media`;
       document.getElementById('btn-play').style.display='';
       document.getElementById('btn-end').style.display= isHistoryReplay ? 'none' : '';
       audio.play(); document.getElementById('btn-play').textContent='PAUSAR';
