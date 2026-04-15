@@ -763,9 +763,8 @@ img{max-width:100%}
       sesion.availableIDs.forEach(id => availableIDs.push(id));
       viewedHistory.length = 0;
       sesion.viewedHistory.forEach(id => viewedHistory.push(id));
-      currentID = sesion.currentID || null;
+      currentID = null;  // no auto-mostrar QR al cargar
       if (viewedHistory.length > 0) updateHistory();
-      if (currentID && idsConAudio.has(currentID)) drawQR(currentID);
       updateCounter();
     } else {
       // Sesión nueva
@@ -775,9 +774,10 @@ img{max-width:100%}
     }
 
     // Habilitar input de carta
-    document.getElementById('input-carta-id').disabled = false;
+    const inputEl = document.getElementById('input-carta-id');
+    inputEl.disabled = false;
+    inputEl.placeholder = 'Ingresa el ID de tu carta (ej: 04 o ID 04)';
     document.getElementById('btn-abrir').disabled = false;
-    document.getElementById('input-carta-id').focus();
 
     // Si viene ?id=XX desde QR físico, mostrar splash
     const params = new URLSearchParams(window.location.search);
@@ -800,8 +800,7 @@ img{max-width:100%}
   document.addEventListener('DOMContentLoaded', () => {
     const inp = document.getElementById('input-carta-id');
     const btn = document.getElementById('btn-abrir');
-    if (inp) inp.disabled = true;
-    if (inp) inp.placeholder = 'Preparando…';
+    if (inp){ inp.disabled = true; inp.placeholder = 'Preparando el juego…'; }
     if (btn) btn.disabled = true;
   });
 
