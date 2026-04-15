@@ -812,12 +812,11 @@ img{max-width:100%}
   });
 
   // ── CARTA CANVAS ────────────────────────────────────────────────────────
-  function drawQR(id) {
+  function drawQR(id, modo='random') {
     document.getElementById('qr-hint').style.display='none';
     const canvas = document.getElementById('carta-canvas');
     canvas.style.display = 'block';
-    dibujarCarta(canvas, id);
-    // Mostrar botón refresh
+    dibujarCarta(canvas, id, modo);
     const rb = document.getElementById('btn-refresh-qr');
     if(rb){ rb.style.display='flex'; }
   }
@@ -839,8 +838,8 @@ img{max-width:100%}
   // Detecta si una carta es edición especial (IDs 76-80)
   function esPremium(id) { const n = parseInt(id); return n >= 76 && n <= 80; }
 
-  function dibujarCarta(canvas, id) {
-    if (esPremium(id)) { dibujarCartaPremium(canvas, id); return; }
+  function dibujarCarta(canvas, id, modo='random') {
+    if (esPremium(id)) { dibujarCartaPremium(canvas, id, modo); return; }
 
     // Proporciones carta poker 63x88mm
     const W = 315, H = 440;
@@ -907,12 +906,18 @@ img{max-width:100%}
     ctx.beginPath(); ctx.moveTo(28, H-108); ctx.lineTo(W-28, H-108); ctx.stroke();
     dibujarDiamante(ctx, W/2, H-108, 5, GOLD);
 
-    // Texto ESCANEA PARA / EL RELATO
+    // Texto según modo
     ctx.fillStyle = GOLD_LT;
-    ctx.font = 'bold 22px Times New Roman, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('ESCANEA PARA', W/2, H-76);
-    ctx.fillText('EL RELATO', W/2, H-50);
+    if(modo === 'random'){
+      ctx.font = 'bold 17px Times New Roman, serif';
+      ctx.fillText('TOCA O ESCANEA', W/2, H-80);
+      ctx.fillText('PARA EL RELATO', W/2, H-56);
+    } else {
+      ctx.font = 'bold 22px Times New Roman, serif';
+      ctx.fillText('ESCANEA PARA', W/2, H-76);
+      ctx.fillText('EL RELATO', W/2, H-50);
+    }
 
     // Línea y footer
     ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
@@ -923,7 +928,7 @@ img{max-width:100%}
   }
 
   // ── CARTA PREMIUM (IDs 76-80) ────────────────────────────────────────────
-  function dibujarCartaPremium(canvas, id) {
+  function dibujarCartaPremium(canvas, id, modo='random') {
     const W = 315, H = 440;
     canvas.width = W; canvas.height = H;
     const ctx = canvas.getContext('2d');
@@ -1008,12 +1013,18 @@ img{max-width:100%}
     dibujarDiamante(ctx, W/2-22, sepY, 3, GOLD_DIM);
     dibujarDiamante(ctx, W/2+22, sepY, 3, GOLD_DIM);
 
-    // ESCANEA PARA / EL RELATO
+    // Texto según modo
     ctx.fillStyle = GOLD_HI;
-    ctx.font = 'bold 21px Times New Roman, serif';
     ctx.textAlign = 'center';
-    ctx.fillText('ESCANEA PARA', W/2, H-82);
-    ctx.fillText('EL RELATO', W/2, H-56);
+    if(modo === 'random'){
+      ctx.font = 'bold 17px Times New Roman, serif';
+      ctx.fillText('TOCA O ESCANEA', W/2, H-84);
+      ctx.fillText('PARA EL RELATO', W/2, H-60);
+    } else {
+      ctx.font = 'bold 21px Times New Roman, serif';
+      ctx.fillText('ESCANEA PARA', W/2, H-82);
+      ctx.fillText('EL RELATO', W/2, H-56);
+    }
 
     // Línea + footer
     ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
@@ -1194,7 +1205,7 @@ img{max-width:100%}
 
     // Solo mostramos el QR — NO se descuenta del contador hasta que abra el audio/imagen
     currentID = id;
-    drawQR(id);
+    drawQR(id, 'id');
     guardarSesion();
   }
   function tocarZona(){
