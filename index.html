@@ -395,8 +395,8 @@ img{max-width:100%}
     <p class="period-badge">1536 – 1910</p>
   </header>
   <div id="counter-pill">Misterios restantes <strong id="counter-num">80</strong></div>
-  <div class="qr-zone" onclick="clickToOpen()" id="qr-zone-wrap">
-    <p class="qr-hint" id="qr-hint">Ingresa el ID de tu carta abajo<br>y toca aquí para jugar</p>
+  <div class="qr-zone" onclick="tocarZona()" id="qr-zone-wrap">
+    <p class="qr-hint" id="qr-hint">Toca aquí para jugar</p>
     <canvas id="carta-canvas" style="display:none"></canvas>
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
@@ -1084,29 +1084,23 @@ img{max-width:100%}
   }
 
   function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
+    // Diseño igual al de las cartas físicas: módulos dorados sobre fondo oscuro
     const url = `https://misteriosdechile.com?id=${id}`;
     try {
-      const qr = qrcode(0, 'H');
+      const qr = qrcode(0, 'H');   // error correction H = máxima robustez
       qr.addData(url);
       qr.make();
-      const cells = qr.getModuleCount();
-
-      // Quiet zone: 4 módulos de margen (estándar QR)
-      const MARGIN = Math.round(size * 0.07);
+      const cells  = qr.getModuleCount();
+      const MARGIN = Math.round(size * 0.06);
       const inner  = size - MARGIN * 2;
       const cell   = inner / cells;
 
-      // Fondo del diseño (slate oscuro)
+      // Fondo oscuro (igual al de las cartas físicas)
       ctx.fillStyle = bg;
       ctx.fillRect(x, y, size, size);
 
-      // Fondo blanco SOLO bajo los módulos (para escaneabilidad)
-      ctx.fillStyle = '#F8F4EC';
-      ctx.fillRect(x + MARGIN - cell, y + MARGIN - cell,
-                   inner + cell * 2,  inner + cell * 2);
-
-      // Módulos en navy oscuro sobre fondo claro
-      ctx.fillStyle = '#12192A';
+      // Módulos dorados
+      ctx.fillStyle = fg;
       for (let r = 0; r < cells; r++) {
         for (let c = 0; c < cells; c++) {
           if (qr.isDark(r, c)) {
@@ -1189,6 +1183,15 @@ img{max-width:100%}
     drawQR(id);
     updateCounter();
     guardarSesion();
+  }
+  function tocarZona(){
+    if(currentID){
+      // Ya hay un QR generado → abrir el misterio
+      openMystery(currentID, true);
+    } else {
+      // Sin QR → generar uno aleatorio
+      generateMystery();
+    }
   }
   function clickToOpen(){if(currentID) openMystery(currentID,true)}
   function showGallery(){
