@@ -791,7 +791,7 @@ img{max-width:100%}
       if (cartaAnterior && idsConAudio.has(cartaAnterior)) {
         // Había una carta activa — mostrar modal de recuperación
         const era = eraData[cartaAnterior] || `ID ${cartaAnterior}`;
-        document.getElementById('modal-recuperada-carta').textContent = `Era: ${era}`;
+        document.getElementById('modal-recuperada-carta').textContent = era;
         window._cartaRecuperar = cartaAnterior;
         const modal = document.getElementById('modal-sesion-recuperada');
         modal.style.display = 'flex';
