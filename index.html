@@ -752,14 +752,14 @@ img{max-width:100%}
     const id = window._cartaRecuperar;
     if(id && idsConAudio.has(id)){
       currentID = id;
-      drawQR(id, 'id');
+      openMystery(id, true);  // va directo a imagen y audio
     }
   }
 
   function descartarSesion() {
     document.getElementById('modal-sesion-recuperada').style.display = 'none';
     window._cartaRecuperar = null;
-    // No hacer nada más — el usuario genera una carta nueva normalmente
+    generateMystery();  // genera QR aleatorio automáticamente
   }
 
   function confirmarReinicio() {
