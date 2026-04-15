@@ -1081,42 +1081,43 @@ img{max-width:100%}
   }
 
   function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
-    // QR real y escaneable — siempre negro sobre blanco para máxima compatibilidad
+    // QR real con diseño original del juego (fondo oscuro, módulos dorados)
+    // La zona QR lleva un fondo blanco interno para que sea escaneable
     const url = `https://misteriosdechile.com?id=${id}`;
-    const PADDING = Math.round(size * 0.05);   // quiet zone interior
+    const PAD = Math.round(size * 0.06); // margen interior blanco (quiet zone)
 
     try {
       const qr = qrcode(0, 'H');
       qr.addData(url);
       qr.make();
-      const cells   = qr.getModuleCount();
-      const qrArea  = size - PADDING * 2;
-      const cell    = qrArea / cells;
+      const cells  = qr.getModuleCount();
+      const inner  = size - PAD * 2;
+      const cell   = inner / cells;
 
-      // Fondo blanco/crema para que cualquier lector lo detecte
-      ctx.fillStyle = '#F5F0E8';
+      // Fondo del color del diseño
+      ctx.fillStyle = bg;
       ctx.fillRect(x, y, size, size);
 
-      // Módulos oscuros (negro puro para máximo contraste)
-      ctx.fillStyle = '#0D0D0D';
+      // Zona interior blanca (quiet zone) para que los lectores lo detecten
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(x + PAD * 0.3, y + PAD * 0.3, size - PAD * 0.6, size - PAD * 0.6);
+
+      // Módulos del QR en dorado oscuro sobre blanco
+      ctx.fillStyle = '#1A1200';
       for (let row = 0; row < cells; row++) {
         for (let col = 0; col < cells; col++) {
           if (qr.isDark(row, col)) {
             ctx.fillRect(
-              x + PADDING + col * cell,
-              y + PADDING + row * cell,
+              x + PAD + col * cell,
+              y + PAD + row * cell,
               cell, cell
             );
           }
         }
       }
     } catch(e) {
-      ctx.fillStyle = '#F5F0E8';
+      ctx.fillStyle = bg;
       ctx.fillRect(x, y, size, size);
-      ctx.fillStyle = '#0D0D0D';
-      ctx.font = `bold ${size * 0.08}px monospace`;
-      ctx.textAlign = 'center';
-      ctx.fillText('QR', x + size / 2, y + size / 2);
     }
   }
 
