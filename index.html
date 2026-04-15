@@ -480,14 +480,15 @@ img{max-width:100%}
         <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text">Elige el modo: Una sola caja o combina expansiones para una línea de tiempo extendida.</div></div>
         <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (Reverso visible) en el centro de la mesa. Esta carta es el punto de partida de la línea de tiempo.</div></div>
         <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta (50 fichas en total repartidas entre todos los jugadores).</div></div>
-        <div class="reglas-step"><div class="reglas-step-num">4</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">4</div><div class="reglas-step-text"><strong>El Pozo:</strong> Coloca las fichas sobrantes (si las hay) en el centro de la mesa. Este es el Pozo inicial. Las fichas de pistas y penalizaciones se acumulan aquí durante la partida.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">5</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
       </div>
 
       <div class="reglas-section">
         <div class="reglas-h2">El Turno</div>
         <p class="reglas-p">El jugador activo elige una carta de su mano y sigue este flujo:</p>
         <div class="reglas-h3">Fase 1 — Activar el QR</div>
-        <p class="reglas-p">El jugador activo escanea el QR de su carta. Todos los jugadores ven la imagen y escuchan el relato de audio.</p>
+        <p class="reglas-p">El jugador activo ingresa el ID de su carta en la aplicación (o escanea el QR con su celular). Todos los jugadores ven la imagen y escuchan el relato de audio en el dispositivo compartido. <strong>Nota:</strong> se recomienda un dispositivo central visible para todos; el jugador activo lo opera durante su turno.</p>
         <div class="reglas-h3">Fase 2 — Las Pistas (Opcional)</div>
         <p class="reglas-p">Antes de declarar su respuesta, el jugador activo puede solicitar hasta 3 pistas adicionales que se desbloquean en la aplicación. Cada pista tiene un costo en fichas que se paga al pozo:</p>
         <table class="reglas-table">
@@ -501,15 +502,15 @@ img{max-width:100%}
         <div class="reglas-callout">Las pistas son exclusivas del jugador activo. Un jugador que roba no tiene acceso a ellas. El costo de las pistas se descuenta independientemente del resultado final.</div>
         <div class="reglas-h3">Fase 3 — Declarar o Rendirse</div>
         <p class="reglas-p">Tras escuchar el audio (y usar las pistas que estime necesarias), el jugador activo tiene dos opciones:</p>
-        <p class="reglas-p"><strong>Declarar su respuesta</strong> respondiendo las tres preguntas — (1) Ubicación Cronológica, (2) El Evento, (3) Los Protagonistas.</p>
+        <p class="reglas-p"><strong>Declarar su Triple Intuición:</strong> responde las tres preguntas — (1) Ubicación Cronológica, (2) El Evento, (3) Los Protagonistas. Puede responder las tres, dos o solo una.</p>
         <p class="reglas-p"><strong>Rendirse formalmente</strong> sin declarar respuesta. Rendirse no tiene costo de fichas adicional. Al rendirse, se abre la Fase de Robo.</p>
         <div class="reglas-h3">Fase 4 — El Robo (solo si el activo se rindió)</div>
-        <p class="reglas-p">Cuando el jugador activo se rinde, cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo tiene el derecho a intentar la Triple Intuición respondiendo las mismas tres preguntas, pero sin acceso a las pistas.</p>
+        <p class="reglas-p">Cuando el jugador activo se rinde, cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo intenta la Triple Intuición respondiendo las mismas tres preguntas, <strong>sin acceso a las pistas</strong> y sin costo por usarlas (ya que no las usó). Se aplica la misma tabla de aciertos, pero sin descuento de pistas.</p>
         <table class="reglas-table">
           <thead><tr><th>Resultado del Robo</th><th>Consecuencia</th></tr></thead>
           <tbody>
-            <tr><td>Acierta (1, 2 o 3 aciertos)</td><td>Gana fichas según tabla de aciertos</td></tr>
-            <tr><td>Falla (0 aciertos)</td><td>Paga 2 fichas al pozo (penalización por interrumpir)</td></tr>
+            <tr><td>1, 2 o 3 aciertos</td><td>Gana fichas según tabla de aciertos (sin descuento de pistas)</td></tr>
+            <tr><td>0 aciertos</td><td>Paga 2 fichas al pozo — penalización por interrumpir</td></tr>
           </tbody>
         </table>
         <div class="reglas-callout">Si nadie grita «¡Robo!», la carta igual entra a la línea de tiempo. Se voltea, todos conocen el evento, y el turno pasa al siguiente jugador. Nadie gana ni pierde fichas.</div>
@@ -521,11 +522,11 @@ img{max-width:100%}
         <table class="reglas-table">
           <thead><tr><th>Aciertos</th><th>Situación</th><th>Consecuencia</th></tr></thead>
           <tbody>
-            <tr><td>0 — Olvido</td><td>Sin pistas</td><td>Pierdes 1 ficha. La carta igual entra a la línea.</td></tr>
-            <tr><td>0 — Olvido</td><td>Con pistas</td><td>Pierdes fichas pagadas por pistas + 1 ficha adicional.</td></tr>
-            <tr><td>1 — Conocimiento</td><td>—</td><td>Sin ganancia ni pérdida (más las pistas usadas). Carta a la línea.</td></tr>
-            <tr><td>2 — Erudito</td><td>—</td><td>Ganas 1 ficha del oponente (o del pozo). Carta a la línea.</td></tr>
-            <tr><td>3 — Maestro del Tiempo</td><td>—</td><td>Ganas 2 fichas de tus oponentes. Carta a la línea.</td></tr>
+            <tr><td>0 — Olvido</td><td>Sin pistas</td><td>Pagas 1 ficha al pozo. Carta a la línea.</td></tr>
+            <tr><td>0 — Olvido</td><td>Con pistas</td><td>Pagas al pozo las fichas de pistas usadas + 1 ficha adicional. Carta a la línea.</td></tr>
+            <tr><td>1 — Conocimiento</td><td>—</td><td>Sin ganancia ni pérdida neta. Si usaste pistas, ya las pagaste. Carta a la línea.</td></tr>
+            <tr><td>2 — Erudito</td><td>—</td><td>Cada oponente te paga 1 ficha. Si alguno no tiene fichas, la diferencia sale del pozo. Carta a la línea.</td></tr>
+            <tr><td>3 — Maestro del Tiempo</td><td>—</td><td>Cada oponente te paga 2 fichas + te llevas todo el pozo. Carta a la línea.</td></tr>
           </tbody>
         </table>
         <div class="reglas-callout">La carta <strong>siempre</strong> entra a la línea de tiempo en su posición cronológica correcta, independientemente del resultado.</div>
@@ -533,7 +534,10 @@ img{max-width:100%}
 
       <div class="reglas-section">
         <div class="reglas-h2">Fin del Juego</div>
-        <p class="reglas-p">El juego termina cuando se agota el mazo. El jugador con más fichas al final gana. Si un jugador se queda sin fichas, no se elimina: simplemente no puede apostar en las rondas siguientes y pierde su turno hasta que algún resultado le devuelva fichas. En caso de empate al finalizar, gana quien tenga más cartas correctamente ubicadas en la línea de tiempo.</p>
+        <p class="reglas-p">El juego termina cuando se agota el mazo. Gana el jugador con más fichas.</p>
+        <p class="reglas-p"><strong>Reposición de cartas:</strong> al terminar su turno, el jugador activo roba una carta del mazo para mantener su mano en 5 cartas. Si el mazo se agota, se juega hasta que todos los jugadores hayan gastado las cartas restantes en su mano.</p>
+        <p class="reglas-p"><strong>Jugador sin fichas:</strong> no se elimina. En su turno no puede pedir pistas ni participar en el Robo, pero sí puede declarar su Triple Intuición normalmente. Puede recuperar fichas si obtiene 2 o 3 aciertos y los demás jugadores le pagan.</p>
+        <p class="reglas-p"><strong>Empate:</strong> gana quien tenga más cartas correctamente ubicadas en la línea de tiempo. Si persiste el empate, comparten la victoria.</p>
       </div>
 
       <div class="reglas-section">
