@@ -769,9 +769,18 @@ img{max-width:100%}
       sesion.availableIDs.forEach(id => availableIDs.push(id));
       viewedHistory.length = 0;
       sesion.viewedHistory.forEach(id => viewedHistory.push(id));
-      currentID = null;  // no auto-mostrar QR al cargar
+      // Si había una carta activa cuando se cerró el browser, restaurarla
+      const cartaAnterior = sesion.currentID || null;
+      currentID = null;
       if (viewedHistory.length > 0) updateHistory();
       updateCounter();
+      if (cartaAnterior && idsConAudio.has(cartaAnterior)) {
+        // Mostrar el QR de la carta que estaba abierta
+        drawQR(cartaAnterior, 'id');
+        currentID = cartaAnterior;
+        // Mensaje sutil en el hint indicando que es una restauración
+        document.getElementById('qr-hint').textContent = '↩ Toca para continuar la carta anterior';
+      }
     } else {
       // Sesión nueva
       availableIDs.length = 0;
