@@ -650,6 +650,7 @@ img{max-width:100%}
         window._eventosData[id]    = d.evento;
         window._pistasData[id]     = d.pistas;
         window._respuestasData[id] = { anio: d.anio, evento: d.evento, personajes: d.personajes };
+        window._eraData[id]        = d.era || '';
         if (d.tiene_imagen) window._idsConImagen.add(id);
         if (d.tiene_audio)  window._idsConAudio.add(id);
       });
@@ -670,6 +671,7 @@ img{max-width:100%}
   window._eventosData    = {};
   window._pistasData     = {};
   window._respuestasData = {};
+  window._eraData        = {};
   window._idsConImagen   = new Set();
   window._idsConAudio    = new Set();
 
@@ -678,6 +680,7 @@ img{max-width:100%}
   const eventosData    = window._eventosData;
   const pistasData     = window._pistasData;
   const respuestasData = window._respuestasData;
+  const eraData        = window._eraData;
   const idsConImagen   = window._idsConImagen;
   const idsConAudio    = window._idsConAudio;
 
@@ -1415,7 +1418,7 @@ img{max-width:100%}
     const titulo = document.getElementById('splash-titulo');
     const idTag  = document.getElementById('splash-id');
     const badge  = document.getElementById('splash-premium-badge');
-    titulo.textContent = eventosData[id] || 'Misterio Histórico';
+    titulo.textContent = eraData[id] || 'Misterio Histórico';
 
     if (esPremium(id)) {
       idTag.textContent = `★  EDICIÓN ESPECIAL  ·  ID ${id}  ·  Volumen I  ★`;

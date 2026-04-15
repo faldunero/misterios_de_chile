@@ -355,6 +355,36 @@ const respuestasData = {
   "80": { anio: "1833", evento: "Constitución de 1833", personajes: "Diego Portales, Mariano Egaña, Manuel José Gandarillas" },
 };
 
+const eraData = {
+  "01": "Conquista",       "02": "Conquista",       "03": "Conquista",
+  "04": "Conquista",       "05": "Conquista",       "06": "Conquista",
+  "07": "Conquista",       "08": "Colonia",         "09": "Colonia",
+  "10": "Colonia",         "11": "Colonia",         "12": "Colonia",
+  "13": "Colonia",         "14": "Colonia",         "15": "Colonia",
+  "16": "Independencia",   "17": "Independencia",   "18": "Independencia",
+  "19": "Independencia",   "20": "Independencia",   "21": "Independencia",
+  "22": "Independencia",   "23": "Reconquista",     "24": "Reconquista",
+  "25": "Independencia",   "26": "Independencia",   "27": "Independencia",
+  "28": "Independencia",   "29": "Independencia",   "30": "Independencia",
+  "31": "Organización",    "32": "Organización",    "33": "Organización",
+  "34": "Organización",    "35": "Organización",    "36": "Rep. Conservadora",
+  "37": "Rep. Conservadora","38": "Rep. Conservadora","39": "Rep. Conservadora",
+  "40": "Rep. Conservadora","41": "Rep. Conservadora","42": "Rep. Conservadora",
+  "43": "Rep. Conservadora","44": "Rep. Conservadora","45": "Rep. Conservadora",
+  "46": "Rep. Conservadora","47": "Rep. Conservadora","48": "Rep. Conservadora",
+  "49": "Rep. Conservadora","50": "Rep. Conservadora","51": "Rep. Liberal",
+  "52": "Rep. Liberal",    "53": "Rep. Liberal",    "54": "Rep. Liberal",
+  "55": "Rep. Liberal",    "56": "Rep. Liberal",    "57": "Rep. Liberal",
+  "58": "Rep. Liberal",    "59": "Rep. Liberal",    "60": "Rep. Liberal",
+  "61": "Rep. Liberal",    "62": "Rep. Liberal",    "63": "Rep. Liberal",
+  "64": "Rep. Liberal",    "65": "Rep. Liberal",    "66": "Rep. Liberal",
+  "67": "Rep. Liberal",    "68": "Rep. Liberal",    "69": "Rep. Liberal",
+  "70": "Parlamentarismo", "71": "Parlamentarismo", "72": "Parlamentarismo",
+  "73": "Parlamentarismo", "74": "Parlamentarismo", "75": "Parlamentarismo",
+  "76": "Rep. Liberal",    "77": "Rep. Liberal",    "78": "Organización",
+  "79": "Organización",    "80": "Organización",
+};
+
 // ── SEED ─────────────────────────────────────────────────────────────────────
 
 async function seed() {
@@ -368,9 +398,10 @@ async function seed() {
       id,
       nombre_archivo: baseNombres[id],
       evento: eventosData[id],
+      era: eraData[id],
       anio: respuestasData[id].anio,
       personajes: respuestasData[id].personajes,
-      pistas: pistasData[id],          // array de 3 strings
+      pistas: pistasData[id],
       tiene_imagen: true,
       tiene_audio: true,
     });
