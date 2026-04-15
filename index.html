@@ -389,7 +389,7 @@ img{max-width:100%}
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
   </div>
-  <button id="btn-generate" onclick="generateMystery()">Generar misterio</button>
+  <button id="btn-generate" onclick="generateMystery()">¡A Jugar!</button>
   <button id="btn-reglas" onclick="abrirReglas()">📖 Reglas del juego</button>
   <button id="btn-gallery" onclick="showGallery()">Ver galería completa</button>
   <button id="btn-reinicio" onclick="confirmarReinicio()" title="Nueva partida">↺ Nueva partida</button>
@@ -423,7 +423,8 @@ img{max-width:100%}
       <div class="reglas-section">
         <div class="reglas-h2">¿De qué trata el juego?</div>
         <p class="reglas-p">Misterios de Chile es un juego de cartas interactivo donde los jugadores compiten por ubicar hitos históricos en orden cronológico. Usando un código QR, cada carta activa una imagen de época y un relato de audio que describe el momento histórico sin revelar nombres ni fechas. El desafío: adivinar qué sucedió, cuándo ocurrió y quiénes fueron sus protagonistas.</p>
-        <p class="reglas-p"><strong>2 a 4 jugadores · 80 cartas · Desde la Conquista hasta el Centenario</strong></p>
+        <p class="reglas-p"><strong>2 a 5 jugadores · 80 cartas (5 Deluxe) · Desde la Conquista hasta el Centenario</strong></p>
+        <p class="reglas-p">El mazo incluye <strong>5 Cartas Deluxe</strong> (edición especial, identificadas con fondo negro y corona dorada). Funcionan exactamente igual que las demás cartas — su diseño diferenciado no otorga ni quita ventajas durante el juego.</p>
       </div>
 
       <div class="reglas-section">
@@ -433,7 +434,7 @@ img{max-width:100%}
 
       <div class="reglas-section">
         <div class="reglas-h2">Las Expansiones</div>
-        <p class="reglas-p">Misterios de Chile es un sistema modular. Cada caja es un juego independiente, pero todas comparten las mismas reglas y se pueden combinar para crear una línea de tiempo extendida (Modo Expansión).</p>
+        <p class="reglas-p">Misterios de Chile es un sistema modular de 2 a 5 jugadores. Cada caja es un juego independiente, pero todas comparten las mismas reglas y se pueden combinar para crear una línea de tiempo extendida (Modo Expansión).</p>
         <table class="reglas-table">
           <thead><tr><th>Nivel</th><th>Curso</th><th>Contenido</th></tr></thead>
           <tbody>
@@ -459,7 +460,7 @@ img{max-width:100%}
         <div class="reglas-h2">Preparación</div>
         <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text">Elige el modo: Una sola caja o combina expansiones para una línea de tiempo extendida.</div></div>
         <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (Reverso visible) en el centro de la mesa. Esta carta es el punto de partida de la línea de tiempo.</div></div>
-        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 50 fichas de apuesta.</div></div>
         <div class="reglas-step"><div class="reglas-step-num">4</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
       </div>
 
@@ -753,7 +754,9 @@ img{max-width:100%}
       updateCounter();
     }
 
-    document.getElementById('btn-generate').disabled = false;
+    const btnGen = document.getElementById('btn-generate');
+    btnGen.disabled = false;
+    btnGen.textContent = '¡A Jugar!';
 
     // Si viene ?id=XX desde QR físico, mostrar splash
     const params = new URLSearchParams(window.location.search);
@@ -775,7 +778,7 @@ img{max-width:100%}
   // Deshabilitar botón mientras carga
   document.addEventListener('DOMContentLoaded', () => {
     const btn = document.getElementById('btn-generate');
-    if (btn) { btn.disabled = true; btn.textContent = 'Cargando cartas…'; }
+    if (btn) { btn.disabled = true; btn.textContent = 'Preparando…'; }
   });
 
   // ── CARTA CANVAS ────────────────────────────────────────────────────────
