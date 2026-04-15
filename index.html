@@ -191,11 +191,10 @@ h1 span{color:var(--gold)}
 #screen-main > *{position:relative;z-index:1}
 
 /* ── LOGO LUDOLAB ABAJO AL CENTRO ── */
-#watermark-ludolab{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.7;transition:opacity .25s;white-space:nowrap}
+#watermark-ludolab{position:fixed;bottom:8px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.75;transition:opacity .25s;white-space:nowrap}
 #watermark-ludolab:hover{opacity:1}
-#watermark-ludolab a{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 14px 5px 10px;backdrop-filter:blur(6px)}
-#watermark-ludolab .wm-logo{height:22px;width:auto;filter:brightness(0) invert(1);opacity:.85}
-#watermark-ludolab .wm-tagline{font-size:.58rem;color:var(--mist);letter-spacing:.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:500}
+#watermark-ludolab a{display:flex;align-items:center;cursor:pointer;text-decoration:none}
+#watermark-ludolab .wm-logo{height:36px;width:auto}
 
 /* ── LOGO MISTERIOS FIJO oculto (movido al header principal) ── */
 #logo-misterios-fijo{display:none}
@@ -240,7 +239,7 @@ h1 span{color:var(--gold)}
 @media(max-width:480px){
   h1{font-size:1.8rem}.qr-zone{max-width:260px}
   #gallery-grid{grid-template-columns:repeat(auto-fill,minmax(85px,1fr))}
-  #watermark-ludolab{bottom:6px;opacity:0.65}
+  #watermark-ludolab{bottom:8px;opacity:0.75}
   /* Player móvil: columnas laterales se convierten en fila bajo la imagen */
   .player-content-row{flex-direction:column;gap:8px}
   .player-side,.pistas-section{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
@@ -616,7 +615,6 @@ img{max-width:100%}
 <div id="watermark-ludolab">
   <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
     <img class="wm-logo" src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
-    <span class="wm-tagline">Juega · Aprende · Explora</span>
   </a>
 </div>
 
