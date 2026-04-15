@@ -617,6 +617,7 @@ img{max-width:100%}
 </div>
 
 <!-- Firebase SDK -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
 <script type="module">
   import { initializeApp }                          from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
   import { getFirestore, collection, getDocs }      from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
@@ -1058,35 +1059,40 @@ img{max-width:100%}
   }
 
   function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
-    // QR simplificado determinístico basado en id
-    const cells = 21;
-    const cell  = size / cells;
-    ctx.fillStyle = bg;
-    ctx.fillRect(x, y, size, size);
+    // QR real y escaneable usando qrcode-generator
+    const url = `https://misteriosdechile.com?id=${id}`;
+    try {
+      const qr = qrcode(0, 'H');
+      qr.addData(url);
+      qr.make();
+      const cells = qr.getModuleCount();
+      const cell  = size / cells;
 
-    let seed = parseInt(id) * 7919;
-    const rnd = () => { seed=(seed*1664525+1013904223)&0xffffffff; return(seed>>>0)/0xffffffff; };
+      // Fondo
+      ctx.fillStyle = bg;
+      ctx.fillRect(x, y, size, size);
 
-    ctx.fillStyle = fg;
-    for(let row=0; row<cells; row++) {
-      for(let col=0; col<cells; col++) {
-        const finderTL = col<8 && row<8;
-        const finderTR = col>=cells-8 && row<8;
-        const finderBL = col<8 && row>=cells-8;
-        let fill = false;
-        if(finderTL||finderTR||finderBL) {
-          const fc = finderTR ? col-(cells-8) : col;
-          const fr = finderBL ? row-(cells-8) : row;
-          fill = fc===0||fc===6||fr===0||fr===6||(fc>=2&&fc<=4&&fr>=2&&fr<=4);
-        } else if((col%2===0&&row===6)||(row%2===0&&col===6)) {
-          fill = (col+row)%2===0;
-        } else if(col===7||col===cells-8||row===7) {
-          fill = false;
-        } else {
-          fill = rnd()>0.45;
+      // Módulos del QR en el color del diseño
+      ctx.fillStyle = fg;
+      for (let row = 0; row < cells; row++) {
+        for (let col = 0; col < cells; col++) {
+          if (qr.isDark(row, col)) {
+            ctx.fillRect(
+              x + col * cell,
+              y + row * cell,
+              cell, cell
+            );
+          }
         }
-        if(fill) ctx.fillRect(x+col*cell, y+row*cell, cell, cell);
       }
+    } catch(e) {
+      // Fallback: rectángulo con texto si la librería no carga
+      ctx.fillStyle = bg;
+      ctx.fillRect(x, y, size, size);
+      ctx.fillStyle = fg;
+      ctx.font = `bold ${size*0.08}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.fillText('QR', x + size/2, y + size/2);
     }
   }
 
