@@ -1336,6 +1336,9 @@ img{max-width:100%}
       }
     }
     document.getElementById('player-overlay').style.display='flex';
+    // Ocultar preview de thumbnail si quedó abierto (en móvil)
+    const pvEl = document.getElementById('thumb-zoom-preview');
+    if(pvEl) pvEl.style.display='none';
     if(addHistory&&!viewedHistory.includes(id)){viewedHistory.unshift(id);updateHistory()}
   }
 
@@ -1486,6 +1489,8 @@ img{max-width:100%}
     const strip = document.getElementById('history-strip');
 
     strip.addEventListener('mouseover', function(e){
+      // No mostrar en dispositivos táctiles
+      if(window.matchMedia('(hover: none)').matches) return;
       const thumb = e.target.closest('.h-thumb');
       if(!thumb) return;
       const img = thumb.querySelector('img');
