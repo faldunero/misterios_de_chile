@@ -1059,40 +1059,42 @@ img{max-width:100%}
   }
 
   function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
-    // QR real y escaneable usando qrcode-generator
+    // QR real y escaneable — siempre negro sobre blanco para máxima compatibilidad
     const url = `https://misteriosdechile.com?id=${id}`;
+    const PADDING = Math.round(size * 0.05);   // quiet zone interior
+
     try {
       const qr = qrcode(0, 'H');
       qr.addData(url);
       qr.make();
-      const cells = qr.getModuleCount();
-      const cell  = size / cells;
+      const cells   = qr.getModuleCount();
+      const qrArea  = size - PADDING * 2;
+      const cell    = qrArea / cells;
 
-      // Fondo
-      ctx.fillStyle = bg;
+      // Fondo blanco/crema para que cualquier lector lo detecte
+      ctx.fillStyle = '#F5F0E8';
       ctx.fillRect(x, y, size, size);
 
-      // Módulos del QR en el color del diseño
-      ctx.fillStyle = fg;
+      // Módulos oscuros (negro puro para máximo contraste)
+      ctx.fillStyle = '#0D0D0D';
       for (let row = 0; row < cells; row++) {
         for (let col = 0; col < cells; col++) {
           if (qr.isDark(row, col)) {
             ctx.fillRect(
-              x + col * cell,
-              y + row * cell,
+              x + PADDING + col * cell,
+              y + PADDING + row * cell,
               cell, cell
             );
           }
         }
       }
     } catch(e) {
-      // Fallback: rectángulo con texto si la librería no carga
-      ctx.fillStyle = bg;
+      ctx.fillStyle = '#F5F0E8';
       ctx.fillRect(x, y, size, size);
-      ctx.fillStyle = fg;
-      ctx.font = `bold ${size*0.08}px monospace`;
+      ctx.fillStyle = '#0D0D0D';
+      ctx.font = `bold ${size * 0.08}px monospace`;
       ctx.textAlign = 'center';
-      ctx.fillText('QR', x + size/2, y + size/2);
+      ctx.fillText('QR', x + size / 2, y + size / 2);
     }
   }
 
