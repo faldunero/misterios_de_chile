@@ -1,0 +1,20 @@
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Node
+node_modules/
+npm-debug.log*
+
+# Firebase credentials (¡nunca subir!)
+serviceAccountKey.json
+*serviceAccount*.json
+
+# Archivos temporales de Office
+~$*
+
+# Los binarios grandes van en Firebase Storage, no en Git
+imagenes/
+audios/
+cartas_qr_png/
