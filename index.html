@@ -74,6 +74,9 @@ h1 span{color:var(--gold)}
 #gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:100%;max-width:900px}
 .g-card{border-radius:var(--r);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.07);cursor:zoom-in;transition:transform .2s,border-color .2s,box-shadow .2s;background:var(--slate)}
 .g-card:hover{transform:translateY(-3px) scale(1.04);border-color:rgba(201,168,76,.6);box-shadow:0 10px 32px rgba(0,0,0,.55),0 0 0 1.5px rgba(201,168,76,.35)}
+.g-card-premium{background:#080A14;border:2px solid #D2A834!important;box-shadow:0 0 12px rgba(210,168,52,.35),0 0 0 1px #6E4E16 inset}
+.g-card-premium:hover{border-color:#FFD750!important;box-shadow:0 10px 32px rgba(0,0,0,.7),0 0 18px rgba(255,215,80,.4),0 0 0 1px #6E4E16 inset!important}
+.g-premium-badge{position:absolute;top:0;left:0;right:0;background:linear-gradient(90deg,#6E4E16,#D2A834,#6E4E16);font-size:.55rem;font-weight:700;letter-spacing:.12em;color:#080A14;text-align:center;padding:2px 0;text-transform:uppercase}
 .g-card img{width:100%;height:80px;object-fit:cover;display:block;transition:transform .3s ease}
 .g-card:hover img{transform:scale(1.12)}
 .g-card::after{content:'🔍';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:1.5rem;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));z-index:5}
@@ -788,7 +791,12 @@ img{max-width:100%}
     document.getElementById('qr-hint').style.display='block';
   }
 
+  // Detecta si una carta es edición especial (IDs 76-80)
+  function esPremium(id) { const n = parseInt(id); return n >= 76 && n <= 80; }
+
   function dibujarCarta(canvas, id) {
+    if (esPremium(id)) { dibujarCartaPremium(canvas, id); return; }
+
     // Proporciones carta poker 63x88mm
     const W = 315, H = 440;
     canvas.width  = W;
@@ -867,6 +875,149 @@ img{max-width:100%}
     ctx.fillStyle = MIST;
     ctx.font = '500 10px DM Sans, sans-serif';
     ctx.fillText(`ANVERSO  ·  ID ${id}  ·  1536 – 1910`, W/2, H-18);
+  }
+
+  // ── CARTA PREMIUM (IDs 76-80) ────────────────────────────────────────────
+  function dibujarCartaPremium(canvas, id) {
+    const W = 315, H = 440;
+    canvas.width = W; canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    const BG       = '#08080E';
+    const SLATE_DK = '#0E1224';
+    const GOLD_HI  = '#FFD750';
+    const GOLD     = '#D2A834';
+    const GOLD_DIM = '#A07822';
+    const GOLD_DK  = '#644E16';
+    const MIST     = '#A09070';
+    const CREAM    = '#F0DCA5';
+
+    // Fondo negro
+    ctx.fillStyle = BG;
+    roundRect(ctx, 0, 0, W, H, 14); ctx.fill();
+
+    // Triple borde dorado
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 2.5;
+    roundRect(ctx, 4, 4, W-8, H-8, 12); ctx.stroke();
+    ctx.strokeStyle = GOLD_DIM; ctx.lineWidth = 1;
+    roundRect(ctx, 9, 9, W-18, H-18, 9); ctx.stroke();
+    ctx.strokeStyle = GOLD_DK; ctx.lineWidth = 0.8;
+    roundRect(ctx, 13, 13, W-26, H-26, 7); ctx.stroke();
+
+    // Rombos decorativos en bordes
+    const dStep = 40;
+    ctx.fillStyle = GOLD_DIM;
+    for(let y = dStep; y < H; y += dStep) { dibujarDiamante(ctx,6,y,3,GOLD_DIM); dibujarDiamante(ctx,W-6,y,3,GOLD_DIM); }
+    for(let x = dStep; x < W; x += dStep) { dibujarDiamante(ctx,x,6,3,GOLD_DIM); dibujarDiamante(ctx,x,H-6,3,GOLD_DIM); }
+
+    // Ornamentos de esquina elaborados
+    dibujarEsquinasPremium(ctx, GOLD, GOLD_DIM, W, H);
+
+    // Corona SVG-like en el top center
+    dibujarCoronaCanvas(ctx, W/2, 8, GOLD);
+
+    // Eyebrow
+    ctx.fillStyle = MIST;
+    ctx.font = '500 10px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('MISTERIOS DE CHILE  ·  VOLUMEN I', W/2, 38);
+
+    // Banda "EDICIÓN ESPECIAL"
+    const grad = ctx.createLinearGradient(20, 0, W-20, 0);
+    grad.addColorStop(0, '#3A2A08'); grad.addColorStop(0.5, '#6E4E16'); grad.addColorStop(1, '#3A2A08');
+    ctx.fillStyle = grad;
+    roundRect(ctx, 18, 44, W-36, 18, 3); ctx.fill();
+    ctx.strokeStyle = GOLD_DIM; ctx.lineWidth = 0.8;
+    roundRect(ctx, 18, 44, W-36, 18, 3); ctx.stroke();
+    ctx.fillStyle = GOLD;
+    ctx.font = 'bold 9px DM Sans, sans-serif';
+    ctx.fillText('★  EDICIÓN ESPECIAL  ★', W/2, 57);
+
+    // Línea dorada
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(22, 66); ctx.lineTo(W-22, 66); ctx.stroke();
+
+    // QR zone — fondo slate oscuro con doble marco
+    const qrTop=70, qrBot=122, qrH=H-qrTop-qrBot;
+    const qrX=16, qrW=W-32;
+    ctx.fillStyle = SLATE_DK;
+    roundRect(ctx, qrX, qrTop, qrW, qrH, 6); ctx.fill();
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 1.5;
+    roundRect(ctx, qrX, qrTop, qrW, qrH, 6); ctx.stroke();
+    ctx.strokeStyle = GOLD_DK; ctx.lineWidth = 0.7;
+    roundRect(ctx, qrX+4, qrTop+4, qrW-8, qrH-8, 4); ctx.stroke();
+
+    // Rombos en esquinas del marco QR
+    [[qrX,qrTop],[qrX+qrW,qrTop],[qrX,qrTop+qrH],[qrX+qrW,qrTop+qrH]].forEach(([x,y])=>dibujarDiamante(ctx,x,y,5,GOLD));
+
+    // QR pattern
+    const qrSize = Math.min(qrW, qrH) - 16;
+    const qrDrawX = (W-qrSize)/2, qrDrawY = qrTop+(qrH-qrSize)/2;
+    dibujarQRCanvas(ctx, id, qrDrawX, qrDrawY, qrSize, SLATE_DK, GOLD);
+
+    // Separador con estrella de 8 puntas
+    const sepY = H-116;
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(22, sepY); ctx.lineTo(W-22, sepY); ctx.stroke();
+    dibujarEstrella(ctx, W/2, sepY, 7, 3, GOLD);
+    dibujarDiamante(ctx, W/2-22, sepY, 3, GOLD_DIM);
+    dibujarDiamante(ctx, W/2+22, sepY, 3, GOLD_DIM);
+
+    // ESCANEA PARA / EL RELATO
+    ctx.fillStyle = GOLD_HI;
+    ctx.font = 'bold 21px Times New Roman, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ESCANEA PARA', W/2, H-82);
+    ctx.fillText('EL RELATO', W/2, H-56);
+
+    // Línea + footer
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(22, H-40); ctx.lineTo(W-22, H-40); ctx.stroke();
+    dibujarDiamante(ctx, W/2, H-40, 4, GOLD);
+
+    ctx.fillStyle = MIST;
+    ctx.font = '500 9px DM Sans, sans-serif';
+    ctx.fillText(`ANVERSO  ·  ID ${id}  ·  1536 – 1910`, W/2, H-22);
+  }
+
+  function dibujarEsquinasPremium(ctx, gold, goldDim, W, H) {
+    const m=16, arm=20;
+    [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]].forEach(([x,y,dx,dy])=>{
+      ctx.strokeStyle=gold; ctx.lineWidth=1.8;
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+dx*arm,y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+dy*arm); ctx.stroke();
+      ctx.strokeStyle=gold; ctx.lineWidth=0.8;
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+dx*(arm*0.55),y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+dy*(arm*0.55)); ctx.stroke();
+      dibujarEstrella(ctx, x, y, 7, 3, gold);
+      dibujarDiamante(ctx, x+dx*(arm+5), y, 4, goldDim);
+      dibujarDiamante(ctx, x, y+dy*(arm+5), 4, goldDim);
+    });
+  }
+
+  function dibujarCoronaCanvas(ctx, cx, topY, gold) {
+    const bw=44, bh=13, bx=cx-bw/2, by=topY+20;
+    ctx.fillStyle=gold;
+    ctx.fillRect(bx,by,bw,bh);
+    [[bx+3,11],[cx,17],[bx+bw-3,11]].forEach(([px,ph])=>{
+      ctx.beginPath(); ctx.moveTo(px-7,by); ctx.lineTo(px,by-ph); ctx.lineTo(px+7,by); ctx.closePath(); ctx.fill();
+    });
+    ctx.fillStyle='#08080E';
+    [bx+9, cx, bx+bw-9].forEach(px=>{
+      ctx.beginPath(); ctx.arc(px, by+6, 3, 0, Math.PI*2); ctx.fill();
+    });
+  }
+
+  function dibujarEstrella(ctx, cx, cy, rOut, rIn, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    for(let i=0; i<16; i++){
+      const a = Math.PI/8*i - Math.PI/2;
+      const r = i%2===0 ? rOut : rIn;
+      i===0 ? ctx.moveTo(cx+r*Math.cos(a),cy+r*Math.sin(a))
+             : ctx.lineTo(cx+r*Math.cos(a),cy+r*Math.sin(a));
+    }
+    ctx.closePath(); ctx.fill();
   }
 
   function roundRect(ctx, x, y, w, h, r) {
@@ -967,16 +1118,22 @@ img{max-width:100%}
     const g=document.getElementById('gallery-grid'); g.innerHTML='';
     Object.keys(baseNombres).sort().forEach(id=>{
       const hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
-      const c=document.createElement('div'); c.className='g-card';
+      const isPrem=esPremium(id);
+      const c=document.createElement('div');
+      c.className='g-card' + (isPrem ? ' g-card-premium' : '');
       c.onclick=()=>openMystery(id,false);
-      if(hasAud){const b=document.createElement('div');b.className='g-aud-badge';b.textContent='🔊';c.appendChild(b)}
+      if(isPrem){const b=document.createElement('div');b.className='g-premium-badge';b.textContent='★ EDICIÓN ESPECIAL ★';c.appendChild(b)}
+      if(hasAud&&!isPrem){const b=document.createElement('div');b.className='g-aud-badge';b.textContent='🔊';c.appendChild(b)}
       if(hasImg){
         const img=document.createElement('img');
         img.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2F${baseNombres[id]}.png?alt=media`;
         img.onerror=function(){this.style.display='none';const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.insertBefore(p,c.querySelector('.g-id')||c.firstChild)};
         c.appendChild(img);
       } else {const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.appendChild(p)}
-      const d=document.createElement('div');d.className='g-id';d.textContent=`ID ${id}`;c.appendChild(d);
+      const d=document.createElement('div');d.className='g-id';
+      d.textContent= isPrem ? `★ ID ${id}` : `ID ${id}`;
+      if(isPrem) d.style.color='#FFD750';
+      c.appendChild(d);
       g.appendChild(c);
     });
   }
@@ -1246,8 +1403,22 @@ img{max-width:100%}
     const splash = document.getElementById('splash-qr');
     const titulo = document.getElementById('splash-titulo');
     const idTag  = document.getElementById('splash-id');
+    const badge  = document.getElementById('splash-premium-badge');
     titulo.textContent = eventosData[id] || 'Misterio Histórico';
-    idTag.textContent  = `ID ${id}  ·  Volumen I`;
+
+    if (esPremium(id)) {
+      idTag.textContent = `★  EDICIÓN ESPECIAL  ·  ID ${id}  ·  Volumen I  ★`;
+      idTag.style.color = '#FFD750';
+      idTag.style.letterSpacing = '.12em';
+      if (badge) badge.style.display = 'block';
+      splash.style.background = 'linear-gradient(160deg,#08080E 60%,#1A1000)';
+    } else {
+      idTag.textContent = `ID ${id}  ·  Volumen I`;
+      idTag.style.color = '';
+      idTag.style.letterSpacing = '';
+      if (badge) badge.style.display = 'none';
+      splash.style.background = '';
+    }
     splash.style.display = 'flex';
   }
 
@@ -1259,6 +1430,10 @@ img{max-width:100%}
 
 <!-- SPLASH QR — aparece cuando se llega por QR físico -->
 <div id="splash-qr" style="display:none;position:fixed;inset:0;z-index:5000;background:var(--ink-soft);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <!-- Badge edición especial (solo visible en cartas 76-80) -->
+  <div id="splash-premium-badge" style="display:none;margin-bottom:18px;padding:5px 22px;background:linear-gradient(90deg,#3A2A08,#6E4E16,#3A2A08);border:1px solid #D2A834;border-radius:999px;font-size:.62rem;font-weight:700;letter-spacing:.18em;color:#FFD750;text-transform:uppercase">
+    ★ &nbsp; CARTA ESPECIAL &nbsp; ★
+  </div>
   <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Misterios de Chile" style="height:64px;width:auto;margin-bottom:24px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))" onerror="this.style.display='none'">
   <p style="font-size:.65rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;font-weight:600;margin-bottom:8px">Misterios de Chile</p>
   <h2 id="splash-titulo" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--cream);line-height:1.15;margin-bottom:8px"></h2>
