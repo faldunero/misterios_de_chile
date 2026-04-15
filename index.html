@@ -747,6 +747,21 @@ img{max-width:100%}
     guardarSesion();
   }
 
+  function recuperarSesion() {
+    document.getElementById('modal-sesion-recuperada').style.display = 'none';
+    const id = window._cartaRecuperar;
+    if(id && idsConAudio.has(id)){
+      currentID = id;
+      drawQR(id, 'id');
+    }
+  }
+
+  function descartarSesion() {
+    document.getElementById('modal-sesion-recuperada').style.display = 'none';
+    window._cartaRecuperar = null;
+    // No hacer nada más — el usuario genera una carta nueva normalmente
+  }
+
   function confirmarReinicio() {
     const dlg = document.getElementById('modal-reinicio');
     dlg.style.display = 'flex';
@@ -769,17 +784,17 @@ img{max-width:100%}
       sesion.availableIDs.forEach(id => availableIDs.push(id));
       viewedHistory.length = 0;
       sesion.viewedHistory.forEach(id => viewedHistory.push(id));
-      // Si había una carta activa cuando se cerró el browser, restaurarla
       const cartaAnterior = sesion.currentID || null;
       currentID = null;
       if (viewedHistory.length > 0) updateHistory();
       updateCounter();
       if (cartaAnterior && idsConAudio.has(cartaAnterior)) {
-        // Mostrar el QR de la carta que estaba abierta
-        drawQR(cartaAnterior, 'id');
-        currentID = cartaAnterior;
-        // Mensaje sutil en el hint indicando que es una restauración
-        document.getElementById('qr-hint').textContent = '↩ Toca para continuar la carta anterior';
+        // Había una carta activa — mostrar modal de recuperación
+        const evento = eventosData[cartaAnterior] || `ID ${cartaAnterior}`;
+        document.getElementById('modal-recuperada-carta').textContent = `"${evento}"`;
+        window._cartaRecuperar = cartaAnterior;
+        const modal = document.getElementById('modal-sesion-recuperada');
+        modal.style.display = 'flex';
       }
     } else {
       // Sesión nueva
@@ -1583,6 +1598,20 @@ img{max-width:100%}
 
 
 <!-- MODAL REINICIO -->
+<!-- MODAL SESIÓN RECUPERADA -->
+<div id="modal-sesion-recuperada" style="display:none;position:fixed;inset:0;z-index:6500;background:rgba(0,0,0,.82);align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--slate);border:1px solid rgba(201,168,76,.35);border-radius:1.25rem;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.8)">
+    <p style="font-size:2rem;margin-bottom:10px">⚠️</p>
+    <h3 style="font-family:'Playfair Display',serif;color:var(--gold);font-size:1.1rem;margin-bottom:10px">Sesión interrumpida</h3>
+    <p style="font-size:.82rem;color:var(--mist);line-height:1.6;margin-bottom:8px">El juego se cerró inesperadamente mientras estaba activa una carta.</p>
+    <p style="font-size:.82rem;color:var(--cream);font-weight:600;margin-bottom:22px" id="modal-recuperada-carta"></p>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <button onclick="recuperarSesion()" style="width:100%;padding:13px;background:linear-gradient(135deg,var(--gold),#A07830);border:none;color:var(--ink);border-radius:.75rem;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;cursor:pointer;letter-spacing:.04em">↩ Volver a esa carta</button>
+      <button onclick="descartarSesion()" style="width:100%;padding:12px;background:transparent;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:.75rem;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer">Generar carta nueva</button>
+    </div>
+  </div>
+</div>
+
 <div id="modal-reinicio" style="display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:24px">
   <div style="background:var(--slate);border:1px solid rgba(201,168,76,.25);border-radius:1.25rem;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.7)">
     <p style="font-size:2rem;margin-bottom:12px">↺</p>
