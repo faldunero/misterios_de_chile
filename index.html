@@ -56,7 +56,9 @@ h1 span{color:var(--gold)}
 #btn-abrir{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s}
 #btn-abrir:hover{opacity:.88;transform:translateY(-1px)}
 #btn-abrir:disabled{opacity:.35;cursor:not-allowed;transform:none}
-#id-error{font-size:.74rem;color:#e05555;text-align:center;padding:6px 12px;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);border-radius:var(--r);width:100%}
+#id-error{font-size:.74rem;color:#e05555;text-align:center;padding:6px 12px;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);border-radius:var(--r);width:100%;display:none}
+#btn-refresh-qr{display:none;position:absolute;top:8px;right:8px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.4);color:var(--gold);border-radius:50%;width:32px;height:32px;font-size:1rem;cursor:pointer;align-items:center;justify-content:center;transition:background .2s;z-index:10;line-height:1}
+#btn-refresh-qr:hover{background:rgba(201,168,76,.3)}
 #btn-generate:hover{opacity:.9;transform:translateY(-1px)}
 #btn-generate:disabled{opacity:.35;cursor:not-allowed;transform:none}
 #btn-gallery{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:10px 20px;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
@@ -400,6 +402,7 @@ img{max-width:100%}
     <canvas id="carta-canvas" style="display:none"></canvas>
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
+    <button id="btn-refresh-qr" title="Cambiar carta" onclick="event.stopPropagation(); refreshQR()">↺</button>
   </div>
   <button id="btn-generate" style="display:none"></button>
   <div id="id-input-group">
@@ -776,11 +779,12 @@ img{max-width:100%}
       updateCounter();
     }
 
-    // Habilitar input de carta
+    // Habilitar input de carta y ocultar error
     const inputEl = document.getElementById('input-carta-id');
     inputEl.disabled = false;
     inputEl.placeholder = 'Ingresa el ID de tu carta (ej: 04 o ID 04)';
     document.getElementById('btn-abrir').disabled = false;
+    document.getElementById('id-error').style.display = 'none';
 
     // Si viene ?id=XX desde QR físico, mostrar splash
     const params = new URLSearchParams(window.location.search);
@@ -813,11 +817,33 @@ img{max-width:100%}
     const canvas = document.getElementById('carta-canvas');
     canvas.style.display = 'block';
     dibujarCarta(canvas, id);
+    // Mostrar botón refresh
+    const rb = document.getElementById('btn-refresh-qr');
+    if(rb){ rb.style.display='flex'; }
   }
 
   function resetQR(){
     document.getElementById('carta-canvas').style.display='none';
     document.getElementById('qr-hint').style.display='block';
+    const rb = document.getElementById('btn-refresh-qr');
+    if(rb){ rb.style.display='none'; }
+    currentID = null;
+  }
+
+  function refreshQR(){
+    // Devuelve la carta actual al mazo sin quemarla y genera una nueva
+    if(currentID){
+      const idx = availableIDs.indexOf(currentID);
+      if(idx === -1){
+        // No estaba en disponibles (fue sacada) → devolverla en posición aleatoria
+        const pos = Math.floor(Math.random() * (availableIDs.length + 1));
+        availableIDs.splice(pos, 0, currentID);
+        updateCounter();
+      }
+      currentID = null;
+    }
+    generateMystery();
+    guardarSesion();
   }
 
   // Detecta si una carta es edición especial (IDs 76-80)
