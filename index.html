@@ -831,19 +831,9 @@ img{max-width:100%}
   }
 
   function refreshQR(){
-    // Devuelve la carta actual al mazo sin quemarla y genera una nueva
-    if(currentID){
-      const idx = availableIDs.indexOf(currentID);
-      if(idx === -1){
-        // No estaba en disponibles (fue sacada) → devolverla en posición aleatoria
-        const pos = Math.floor(Math.random() * (availableIDs.length + 1));
-        availableIDs.splice(pos, 0, currentID);
-        updateCounter();
-      }
-      currentID = null;
-    }
+    // La carta no estaba descontada — simplemente genera otra aleatoria
+    currentID = null;
     generateMystery();
-    guardarSesion();
   }
 
   // Detecta si una carta es edición especial (IDs 76-80)
@@ -1158,9 +1148,10 @@ img{max-width:100%}
   // ── MAIN
   function generateMystery(){
     if(!availableIDs.length) return;
-    const i=Math.floor(Math.random()*availableIDs.length);
-    currentID=availableIDs[i]; availableIDs.splice(i,1);
-    drawQR(currentID); updateCounter();
+    const i = Math.floor(Math.random() * availableIDs.length);
+    currentID = availableIDs[i];
+    // NO se descuenta aún — se descuenta cuando el usuario abre el audio/imagen
+    drawQR(currentID);
     guardarSesion();
   }
 
@@ -1201,13 +1192,9 @@ img{max-width:100%}
     errEl.style.display = 'none';
     document.getElementById('input-carta-id').value = '';
 
-    // Quitar de disponibles
-    const idx = availableIDs.indexOf(id);
-    if (idx !== -1) availableIDs.splice(idx, 1);
-
+    // Solo mostramos el QR — NO se descuenta del contador hasta que abra el audio/imagen
     currentID = id;
     drawQR(id);
-    updateCounter();
     guardarSesion();
   }
   function tocarZona(){
@@ -1275,6 +1262,14 @@ img{max-width:100%}
   function openMystery(id, addHistory=false){
     currentID=id;
     isHistoryReplay = !addHistory && viewedHistory.includes(id);
+
+    // Descontar del contador AQUÍ — solo cuando realmente se abre el audio/imagen
+    if(addHistory && !isHistoryReplay){
+      const idx = availableIDs.indexOf(id);
+      if(idx !== -1) availableIDs.splice(idx, 1);
+      updateCounter();
+      guardarSesion();
+    }
     const nom=baseNombres[id], hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
     const imgEl=document.getElementById('full-img'), phEl=document.getElementById('no-img-ph');
     if(hasImg){imgEl.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2F${nom}.png?alt=media`;imgEl.style.display='block';phEl.style.display='none'}
