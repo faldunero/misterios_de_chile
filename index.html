@@ -393,7 +393,7 @@ img{max-width:100%}
   </header>
   <div id="counter-pill">Misterios restantes <strong id="counter-num">80</strong></div>
   <div class="qr-zone" onclick="clickToOpen()" id="qr-zone-wrap">
-    <p class="qr-hint" id="qr-hint">Toca aquí para comenzar el juego</p>
+    <p class="qr-hint" id="qr-hint">Ingresa el ID de tu carta abajo<br>y toca aquí para jugar</p>
     <canvas id="carta-canvas" style="display:none"></canvas>
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
@@ -1081,36 +1081,36 @@ img{max-width:100%}
   }
 
   function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
-    // QR real con diseño original del juego (fondo oscuro, módulos dorados)
-    // La zona QR lleva un fondo blanco interno para que sea escaneable
     const url = `https://misteriosdechile.com?id=${id}`;
-    const PAD = Math.round(size * 0.06); // margen interior blanco (quiet zone)
-
     try {
       const qr = qrcode(0, 'H');
       qr.addData(url);
       qr.make();
-      const cells  = qr.getModuleCount();
-      const inner  = size - PAD * 2;
+      const cells = qr.getModuleCount();
+
+      // Quiet zone: 4 módulos de margen (estándar QR)
+      const MARGIN = Math.round(size * 0.07);
+      const inner  = size - MARGIN * 2;
       const cell   = inner / cells;
 
-      // Fondo del color del diseño
+      // Fondo del diseño (slate oscuro)
       ctx.fillStyle = bg;
       ctx.fillRect(x, y, size, size);
 
-      // Zona interior blanca (quiet zone) para que los lectores lo detecten
-      ctx.fillStyle = '#FFFFFF';
-      ctx.fillRect(x + PAD * 0.3, y + PAD * 0.3, size - PAD * 0.6, size - PAD * 0.6);
+      // Fondo blanco SOLO bajo los módulos (para escaneabilidad)
+      ctx.fillStyle = '#F8F4EC';
+      ctx.fillRect(x + MARGIN - cell, y + MARGIN - cell,
+                   inner + cell * 2,  inner + cell * 2);
 
-      // Módulos del QR en dorado oscuro sobre blanco
-      ctx.fillStyle = '#1A1200';
-      for (let row = 0; row < cells; row++) {
-        for (let col = 0; col < cells; col++) {
-          if (qr.isDark(row, col)) {
+      // Módulos en navy oscuro sobre fondo claro
+      ctx.fillStyle = '#12192A';
+      for (let r = 0; r < cells; r++) {
+        for (let c = 0; c < cells; c++) {
+          if (qr.isDark(r, c)) {
             ctx.fillRect(
-              x + PAD + col * cell,
-              y + PAD + row * cell,
-              cell, cell
+              Math.round(x + MARGIN + c * cell),
+              Math.round(y + MARGIN + r * cell),
+              Math.ceil(cell), Math.ceil(cell)
             );
           }
         }
@@ -1147,19 +1147,38 @@ img{max-width:100%}
 
     // Acepta: "04", "4", "ID 04", "id04", "ID04" etc.
     const match = raw.match(/\d+/);
-    if (!match) { errEl.style.display='block'; return; }
+    if (!match) {
+      errEl.textContent = 'ID inválido — verifica el número en tu carta e inténtalo de nuevo.';
+      errEl.style.display = 'block';
+      resetQR(); return;
+    }
 
     const num = parseInt(match[0], 10);
-    if (num < 1 || num > 80) { errEl.style.display='block'; return; }
+    if (num < 1 || num > 80) {
+      errEl.textContent = 'ID inválido — verifica el número en tu carta e inténtalo de nuevo.';
+      errEl.style.display = 'block';
+      resetQR(); return;
+    }
 
     const id = String(num).padStart(2, '0');
-    if (!idsConAudio.has(id)) { errEl.style.display='block'; return; }
+    if (!idsConAudio.has(id)) {
+      errEl.textContent = 'ID inválido — verifica el número en tu carta e inténtalo de nuevo.';
+      errEl.style.display = 'block';
+      resetQR(); return;
+    }
 
-    // ID válido
+    // Carta ya jugada
+    if (viewedHistory.includes(id)) {
+      errEl.textContent = `La carta ID ${id} ya fue jugada en esta sesión. Intenta con otra.`;
+      errEl.style.display = 'block';
+      resetQR(); return;
+    }
+
+    // ID válido y disponible
     errEl.style.display = 'none';
     document.getElementById('input-carta-id').value = '';
 
-    // Quitar de disponibles si aún no fue jugada
+    // Quitar de disponibles
     const idx = availableIDs.indexOf(id);
     if (idx !== -1) availableIDs.splice(idx, 1);
 
