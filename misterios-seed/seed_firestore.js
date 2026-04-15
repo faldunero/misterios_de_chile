@@ -1,6 +1,6 @@
 /**
  * seed_firestore.js
- * Pobla el Firestore del proyecto "misteriosdechile" con las 75 cartas.
+ * Pobla el Firestore del proyecto "misteriosdechile" con las 80 cartas.
  *
  * INSTRUCCIONES:
  * 1. Instala dependencias:
@@ -99,6 +99,11 @@ const baseNombres = {
   "73": "id_73_el_travia_electrico",
   "74": "id_74_matanza_escuela_santa_maria",
   "75": "id_75_centenario_de_chile",
+  "76": "id_76_combate_naval_de_iquique",
+  "77": "id_77_cuestion_social",
+  "78": "id_78_constitucion_moralista_1823",
+  "79": "id_79_constitucion_liberal_1828",
+  "80": "id_80_constitucion_de_1833",
 };
 
 const eventosData = {
@@ -177,6 +182,11 @@ const eventosData = {
   "73": "El Tranvía Eléctrico",
   "74": "Matanza Escuela Santa Maria",
   "75": "Centenario de Chile",
+  "76": "Combate Naval de Iquique",
+  "77": "Cuestión Social",
+  "78": "Constitución Moralista 1823",
+  "79": "Constitución Liberal 1828",
+  "80": "Constitución de 1833",
 };
 
 const pistasData = {
@@ -255,6 +265,11 @@ const pistasData = {
   "73": ["Modernización del transporte público en la capital.", "Se introdujeron carros eléctricos para mover a los pasajeros.", "Reemplazaron a los antiguos carros tirados por caballos."],
   "74": ["Trágica represión contra huelguistas del salitre en Iquique.", "Cientos de trabajadores y sus familias fueron atacados en una escuela.", "Es uno de los episodios más tristes de la historia social chilena."],
   "75": ["Grandes fiestas y monumentos para celebrar 100 años de libertad.", "Se conmemoró el primer siglo de la independencia nacional.", "La ciudad se llenó de obras y celebraciones masivas."],
+  "76": ["Dos naves se enfrentaron en aguas del norte. La más pequeña resistió hasta el último cañonazo antes de hundirse.", "Ocurrió durante una guerra en que Chile enfrentó a sus vecinos del norte por el control de un mineral muy valioso.", "El comandante de la nave menor no abandonó su puesto ni su bandera, aunque sabía que no podía ganar."],
+  "77": ["Miles de familias vivían hacinadas sin agua limpia ni atención médica, mientras el país producía una riqueza enorme.", "Sucedió cuando el norte de Chile era el centro económico del país, entre fines del siglo XIX y comienzos del XX.", "Fueron hombres y mujeres trabajadores que se unieron, marcharon y pararon sus labores para exigir un trato justo."],
+  "78": ["Se redactó un documento tan exigente que quería regular hasta las costumbres privadas de las personas. Nadie pudo cumplirlo.", "Fue en los primeros años del país como nación independiente, cuando aún se buscaba cómo organizarse.", "Lo redactó un político y jurista que soñaba con una república perfecta, ordenada hasta en sus más mínimos detalles."],
+  "79": ["Un documento buscó repartir el poder entre distintas autoridades, proteger los derechos de las personas y crear un cargo para gobernar el país.", "Nació en una época de ideas nuevas y libertades, cuando muchos países de América recién estrenaban su independencia.", "Fue impulsado por pensadores que creían en la libertad, la igualdad y que el Congreso debía tener más poder que el gobernante."],
+  "80": ["Tras años de desorden, se creó un documento que puso al mando a un gobernante muy poderoso y que solo algunos podían votar.", "Se dictó poco después de que un bando derrotara a otro en una guerra civil, imponiendo su visión de cómo debía ser el país.", "Detrás de él estaba un ministro muy influyente que creía en el orden, la autoridad fuerte y el rol de la Iglesia en el Estado."],
 };
 
 const respuestasData = {
@@ -333,6 +348,11 @@ const respuestasData = {
   "73": { anio: "1900", evento: "El Tranvía Eléctrico", personajes: "Ciudadania" },
   "74": { anio: "1907", evento: "Matanza Escuela Santa Maria", personajes: "Pedro Montt" },
   "75": { anio: "1910", evento: "Centenario de Chile", personajes: "Emiliano Figueroa" },
+  "76": { anio: "1879", evento: "Combate Naval de Iquique", personajes: "Arturo Prat, Miguel Grau" },
+  "77": { anio: "1880", evento: "Cuestión Social", personajes: "Luis Emilio Recabarren" },
+  "78": { anio: "1823", evento: "Constitución Moralista 1823", personajes: "Juan Egaña" },
+  "79": { anio: "1828", evento: "Constitución Liberal 1828", personajes: "Francisco Antonio Pinto, Melchor de Santiago Concha" },
+  "80": { anio: "1833", evento: "Constitución de 1833", personajes: "Diego Portales, Mariano Egaña, Manuel José Gandarillas" },
 };
 
 // ── SEED ─────────────────────────────────────────────────────────────────────
