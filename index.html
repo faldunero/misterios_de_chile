@@ -17,7 +17,7 @@ body{background:var(--ink-soft);color:var(--cream);font-family:'DM Sans',sans-se
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
 
 /* ── MAIN ── */
-#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 20px 80px;position:relative;z-index:1}
+#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 20px 110px;position:relative;z-index:1}
 .main-header{text-align:center;margin-bottom:28px}
 .main-logo-img{height:72px;width:auto;margin-bottom:14px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
 @media(max-width:480px){.main-logo-img{height:56px}}
@@ -177,7 +177,7 @@ h1 span{color:var(--gold)}
 #screen-main > *{position:relative;z-index:1}
 
 /* ── LOGO LUDOLAB ABAJO AL CENTRO ── */
-#watermark-ludolab{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.6;transition:opacity .2s;white-space:nowrap}
+#watermark-ludolab{position:fixed;bottom:0px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.45;transition:opacity .2s;white-space:nowrap;padding-bottom:4px}
 #watermark-ludolab:hover{opacity:1}
 #watermark-ludolab a{display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none}
 #watermark-ludolab .wm-icon{flex-shrink:0}
@@ -275,7 +275,7 @@ img{max-width:100%}
 }
 
 /* Pantalla principal */
-#screen-main{padding:20px 16px 80px}
+#screen-main{padding:20px 16px 110px}
 .qr-zone{max-width:min(280px,80vw)}
 #btn-generate{max-width:min(300px,90vw)}
 

@@ -358,9 +358,9 @@ const respuestasData = {
 const eraData = {
   "01": "Conquista",       "02": "Conquista",       "03": "Conquista",
   "04": "Conquista",       "05": "Conquista",       "06": "Conquista",
-  "07": "Conquista",       "08": "Colonia",         "09": "Colonia",
-  "10": "Colonia",         "11": "Colonia",         "12": "Colonia",
-  "13": "Colonia",         "14": "Colonia",         "15": "Colonia",
+  "07": "Conquista",       "08": "La Colonia",      "09": "La Colonia",
+  "10": "La Colonia",      "11": "La Colonia",      "12": "La Colonia",
+  "13": "La Colonia",      "14": "La Colonia",      "15": "La Colonia",
   "16": "Independencia",   "17": "Independencia",   "18": "Independencia",
   "19": "Independencia",   "20": "Independencia",   "21": "Independencia",
   "22": "Independencia",   "23": "Reconquista",     "24": "Reconquista",
