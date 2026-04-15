@@ -191,13 +191,11 @@ h1 span{color:var(--gold)}
 #screen-main > *{position:relative;z-index:1}
 
 /* ── LOGO LUDOLAB ABAJO AL CENTRO ── */
-#watermark-ludolab{position:fixed;bottom:0px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.45;transition:opacity .2s;white-space:nowrap;padding-bottom:4px}
+#watermark-ludolab{position:fixed;bottom:6px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.7;transition:opacity .25s;white-space:nowrap}
 #watermark-ludolab:hover{opacity:1}
-#watermark-ludolab a{display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none}
-#watermark-ludolab .wm-icon{flex-shrink:0}
-#watermark-ludolab .wm-text{display:flex;flex-direction:column;line-height:1.2}
-#watermark-ludolab .wm-name{font-size:.72rem;font-weight:900;font-family:'DM Sans',sans-serif;background:linear-gradient(90deg,#4facfe,#43c6ac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.02em}
-#watermark-ludolab .wm-tagline{font-size:.5rem;color:var(--mist);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif}
+#watermark-ludolab a{display:flex;align-items:center;gap:8px;cursor:pointer;text-decoration:none;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);border-radius:999px;padding:5px 14px 5px 10px;backdrop-filter:blur(6px)}
+#watermark-ludolab .wm-logo{height:22px;width:auto;filter:brightness(0) invert(1);opacity:.85}
+#watermark-ludolab .wm-tagline{font-size:.58rem;color:var(--mist);letter-spacing:.12em;text-transform:uppercase;font-family:'DM Sans',sans-serif;font-weight:500}
 
 /* ── LOGO MISTERIOS FIJO oculto (movido al header principal) ── */
 #logo-misterios-fijo{display:none}
@@ -242,7 +240,7 @@ h1 span{color:var(--gold)}
 @media(max-width:480px){
   h1{font-size:1.8rem}.qr-zone{max-width:260px}
   #gallery-grid{grid-template-columns:repeat(auto-fill,minmax(85px,1fr))}
-  #watermark-ludolab{bottom:8px;opacity:0.38}
+  #watermark-ludolab{bottom:6px;opacity:0.65}
   /* Player móvil: columnas laterales se convierten en fila bajo la imagen */
   .player-content-row{flex-direction:column;gap:8px}
   .player-side,.pistas-section{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
@@ -617,24 +615,8 @@ img{max-width:100%}
 <!-- LOGO LUDOLAB ABAJO AL CENTRO -->
 <div id="watermark-ludolab">
   <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
-    <div class="wm-icon">
-      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="wm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stop-color="#4facfe"/>
-            <stop offset="100%" stop-color="#43c6ac"/>
-          </linearGradient>
-        </defs>
-        <circle cx="10" cy="10" r="8.5" stroke="url(#wm-grad)" stroke-width="1.4" fill="none"/>
-        <path d="M10 2.5 L10 17.5" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
-        <path d="M2.5 10 L17.5 10" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
-        <path d="M5 5 L15 15 M15 5 L5 15" stroke="url(#wm-grad)" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
-      </svg>
-    </div>
-    <div class="wm-text">
-      <span class="wm-name">ludolab.cl</span>
-      <span class="wm-tagline">Juega · Aprende · Explora</span>
-    </div>
+    <img class="wm-logo" src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
+    <span class="wm-tagline">Juega · Aprende · Explora</span>
   </a>
 </div>
 
