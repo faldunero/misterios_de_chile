@@ -44,7 +44,16 @@ h1 span{color:var(--gold)}
 #qr-label{display:none}
 
 /* Buttons */
-#btn-generate{width:100%;max-width:300px;padding:15px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s;margin-bottom:10px}
+#btn-generate{display:none}
+#id-input-group{width:100%;max-width:300px;display:flex;flex-direction:column;align-items:center;gap:8px;margin-bottom:10px}
+#input-carta-id{width:100%;padding:14px 16px;background:var(--slate);border:1.5px solid rgba(201,168,76,.35);border-radius:var(--r);color:var(--cream);font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:600;letter-spacing:.06em;text-align:center;outline:none;transition:border-color .2s;text-transform:uppercase}
+#input-carta-id::placeholder{color:var(--mist);font-weight:400;text-transform:none;letter-spacing:.02em;font-size:.82rem}
+#input-carta-id:focus{border-color:var(--gold)}
+#input-carta-id:disabled{opacity:.35;cursor:not-allowed}
+#btn-abrir{width:100%;padding:14px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s}
+#btn-abrir:hover{opacity:.88;transform:translateY(-1px)}
+#btn-abrir:disabled{opacity:.35;cursor:not-allowed;transform:none}
+#id-error{font-size:.74rem;color:#e05555;text-align:center;padding:6px 12px;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.25);border-radius:var(--r);width:100%}
 #btn-generate:hover{opacity:.9;transform:translateY(-1px)}
 #btn-generate:disabled{opacity:.35;cursor:not-allowed;transform:none}
 #btn-gallery{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:10px 20px;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
@@ -384,12 +393,19 @@ img{max-width:100%}
   </header>
   <div id="counter-pill">Misterios restantes <strong id="counter-num">80</strong></div>
   <div class="qr-zone" onclick="clickToOpen()" id="qr-zone-wrap">
-    <p class="qr-hint" id="qr-hint">Genera un misterio y toca aquí para abrirlo</p>
+    <p class="qr-hint" id="qr-hint">Toca aquí para comenzar el juego</p>
     <canvas id="carta-canvas" style="display:none"></canvas>
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
   </div>
-  <button id="btn-generate" onclick="generateMystery()">¡A Jugar!</button>
+  <button id="btn-generate" style="display:none"></button>
+  <div id="id-input-group">
+    <input type="text" id="input-carta-id" placeholder="Ingresa el ID de tu carta (ej: 04 o ID 04)"
+           disabled autocomplete="off" autocorrect="off" spellcheck="false"
+           onkeydown="if(event.key==='Enter') abrirCartaPorID()">
+    <button id="btn-abrir" onclick="abrirCartaPorID()" disabled>Abrir carta</button>
+    <p id="id-error" style="display:none">ID inválido — verifica el número en tu carta e inténtalo de nuevo.</p>
+  </div>
   <button id="btn-reglas" onclick="abrirReglas()">📖 Reglas del juego</button>
   <button id="btn-gallery" onclick="showGallery()">Ver galería completa</button>
   <button id="btn-reinicio" onclick="confirmarReinicio()" title="Nueva partida">↺ Nueva partida</button>
@@ -758,9 +774,10 @@ img{max-width:100%}
       updateCounter();
     }
 
-    const btnGen = document.getElementById('btn-generate');
-    btnGen.disabled = false;
-    btnGen.textContent = '¡A Jugar!';
+    // Habilitar input de carta
+    document.getElementById('input-carta-id').disabled = false;
+    document.getElementById('btn-abrir').disabled = false;
+    document.getElementById('input-carta-id').focus();
 
     // Si viene ?id=XX desde QR físico, mostrar splash
     const params = new URLSearchParams(window.location.search);
@@ -781,8 +798,11 @@ img{max-width:100%}
 
   // Deshabilitar botón mientras carga
   document.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('btn-generate');
-    if (btn) { btn.disabled = true; btn.textContent = 'Preparando…'; }
+    const inp = document.getElementById('input-carta-id');
+    const btn = document.getElementById('btn-abrir');
+    if (inp) inp.disabled = true;
+    if (inp) inp.placeholder = 'Preparando…';
+    if (btn) btn.disabled = true;
   });
 
   // ── CARTA CANVAS ────────────────────────────────────────────────────────
@@ -1104,8 +1124,12 @@ img{max-width:100%}
   // ── COUNTER
   function updateCounter(){
     document.getElementById('counter-num').textContent=availableIDs.length;
-    const b=document.getElementById('btn-generate');
-    if(!availableIDs.length){b.textContent='PARTIDA COMPLETADA';b.disabled=true}
+    if(!availableIDs.length){
+      const btn=document.getElementById('btn-abrir');
+      if(btn){btn.textContent='PARTIDA COMPLETADA';btn.disabled=true;}
+      const inp=document.getElementById('input-carta-id');
+      if(inp) inp.disabled=true;
+    }
   }
 
   // ── MAIN
@@ -1114,6 +1138,34 @@ img{max-width:100%}
     const i=Math.floor(Math.random()*availableIDs.length);
     currentID=availableIDs[i]; availableIDs.splice(i,1);
     drawQR(currentID); updateCounter();
+    guardarSesion();
+  }
+
+  function abrirCartaPorID() {
+    const raw   = (document.getElementById('input-carta-id').value || '').trim();
+    const errEl = document.getElementById('id-error');
+
+    // Acepta: "04", "4", "ID 04", "id04", "ID04" etc.
+    const match = raw.match(/\d+/);
+    if (!match) { errEl.style.display='block'; return; }
+
+    const num = parseInt(match[0], 10);
+    if (num < 1 || num > 80) { errEl.style.display='block'; return; }
+
+    const id = String(num).padStart(2, '0');
+    if (!idsConAudio.has(id)) { errEl.style.display='block'; return; }
+
+    // ID válido
+    errEl.style.display = 'none';
+    document.getElementById('input-carta-id').value = '';
+
+    // Quitar de disponibles si aún no fue jugada
+    const idx = availableIDs.indexOf(id);
+    if (idx !== -1) availableIDs.splice(idx, 1);
+
+    currentID = id;
+    drawQR(id);
+    updateCounter();
     guardarSesion();
   }
   function clickToOpen(){if(currentID) openMystery(currentID,true)}
