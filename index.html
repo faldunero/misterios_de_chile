@@ -1235,6 +1235,9 @@ img{max-width:100%}
   }
   function tocarZona(){
     if(_scanActive) return; // mientras escanea, el tap no hace nada
+    // Limpia mensaje de error del escáner si quedó visible de un intento previo
+    const scanErr = document.getElementById('qr-scanner-error');
+    if(scanErr && scanErr.style.display !== 'none'){ scanErr.style.display='none'; scanErr.textContent=''; }
     if(currentID){
       // Ya hay un QR generado → abrir el misterio
       openMystery(currentID, true);
@@ -1556,6 +1559,11 @@ img{max-width:100%}
     document.getElementById('audio-player').pause();
     document.getElementById('player-overlay').style.display='none';
     resetQR(); currentID=null;
+    // Limpia mensajes de error del escáner o del input que quedaron de una acción previa
+    const scanErr = document.getElementById('qr-scanner-error');
+    if(scanErr){ scanErr.style.display='none'; scanErr.textContent=''; }
+    const idErr = document.getElementById('id-error');
+    if(idErr){ idErr.style.display='none'; }
   }
   const fmt=s=>isNaN(s)||!isFinite(s)?'00:00':`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
   document.getElementById('audio-player').ontimeupdate=()=>{
