@@ -61,16 +61,15 @@ h1 span{color:var(--gold)}
 #btn-refresh-qr:hover{background:rgba(41,128,185,1);transform:rotate(30deg)}
 #btn-scan-qr{position:absolute;top:8px;left:8px;background:rgba(201,168,76,.9);border:2px solid #E8C97A;color:#1A1A2E;border-radius:50%;width:36px;height:36px;font-size:1.05rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s,transform .15s;z-index:10;line-height:1;box-shadow:0 2px 10px rgba(0,0,0,.45)}
 #btn-scan-qr:hover{background:rgba(232,201,122,1);transform:scale(1.05)}
-#qr-scanner-overlay{display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.92);flex-direction:column;align-items:center;justify-content:center;padding:24px;box-sizing:border-box}
-#qr-scanner-overlay.active{display:flex}
-#qr-scanner-box{width:100%;max-width:420px;aspect-ratio:1/1;border-radius:16px;overflow:hidden;position:relative;background:#000;box-shadow:0 0 0 3px var(--gold),0 24px 64px rgba(0,0,0,.7)}
-#qr-scanner-video{width:100%;height:100%;object-fit:cover;display:block;transform:translateZ(0)}
-#qr-scanner-frame{position:absolute;inset:14%;border:2px solid rgba(255,215,120,.75);border-radius:12px;box-shadow:0 0 0 9999px rgba(0,0,0,.35);pointer-events:none}
-#qr-scanner-title{color:#F0DCA5;font-family:'Playfair Display',serif;font-size:1.25rem;font-weight:700;margin-bottom:10px;text-align:center}
-#qr-scanner-hint{color:var(--mist);font-size:.78rem;letter-spacing:.04em;margin-top:14px;text-align:center;max-width:420px;line-height:1.5}
-#qr-scanner-error{color:#e05555;font-size:.8rem;margin-top:12px;text-align:center;max-width:420px;line-height:1.45;display:none}
-#qr-scanner-close{margin-top:22px;padding:12px 28px;background:transparent;color:var(--cream);border:1.5px solid rgba(245,240,232,.35);border-radius:999px;font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;cursor:pointer;transition:border-color .2s,color .2s}
-#qr-scanner-close:hover{border-color:var(--gold);color:var(--gold)}
+#btn-scan-qr.scanning{background:rgba(224,85,85,.95);border-color:#F08080;color:#fff;font-size:1.3rem}
+#qr-scanner-video{display:none;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;border-radius:12px;background:#000}
+#qr-scanner-frame{display:none;position:absolute;inset:15%;border:2px solid rgba(255,215,120,.85);border-radius:10px;box-shadow:0 0 0 9999px rgba(0,0,0,.32);pointer-events:none;z-index:5}
+#qr-scanner-frame::before,#qr-scanner-frame::after,#qr-scanner-frame>span::before,#qr-scanner-frame>span::after{content:"";position:absolute;width:18px;height:18px;border:3px solid var(--gold)}
+#qr-scanner-frame::before{top:-3px;left:-3px;border-right:none;border-bottom:none;border-top-left-radius:10px}
+#qr-scanner-frame::after{top:-3px;right:-3px;border-left:none;border-bottom:none;border-top-right-radius:10px}
+#qr-scanner-frame>span::before{bottom:-3px;left:-3px;border-right:none;border-top:none;border-bottom-left-radius:10px}
+#qr-scanner-frame>span::after{bottom:-3px;right:-3px;border-left:none;border-top:none;border-bottom-right-radius:10px}
+#qr-scanner-error{display:none;width:100%;max-width:280px;color:#e05555;font-size:.74rem;text-align:center;padding:8px 12px;margin-top:10px;background:rgba(224,85,85,.1);border:1px solid rgba(224,85,85,.3);border-radius:var(--r);line-height:1.4}
 #btn-generate:hover{opacity:.9;transform:translateY(-1px)}
 #btn-generate:disabled{opacity:.35;cursor:not-allowed;transform:none}
 #btn-gallery{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:10px 20px;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
@@ -411,21 +410,12 @@ img{max-width:100%}
     <canvas id="carta-canvas" style="display:none"></canvas>
     <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
     <p id="qr-label" style="display:none"></p>
+    <video id="qr-scanner-video" playsinline muted autoplay></video>
+    <div id="qr-scanner-frame"><span></span></div>
     <button id="btn-refresh-qr" title="Cambiar carta" onclick="event.stopPropagation(); refreshQR()">↺</button>
-    <button id="btn-scan-qr" title="Escanear QR con cámara" onclick="event.stopPropagation(); abrirEscaner()">📷</button>
+    <button id="btn-scan-qr" title="Escanear QR con cámara" onclick="event.stopPropagation(); toggleEscaner()">📷</button>
   </div>
-
-  <!-- ESCÁNER QR (cámara) -->
-  <div id="qr-scanner-overlay" role="dialog" aria-label="Escáner de QR">
-    <p id="qr-scanner-title">Escanea tu carta</p>
-    <div id="qr-scanner-box">
-      <video id="qr-scanner-video" playsinline muted autoplay></video>
-      <div id="qr-scanner-frame"></div>
-    </div>
-    <p id="qr-scanner-hint">Apunta la cámara al código QR de la carta. Se detectará automáticamente.</p>
-    <p id="qr-scanner-error"></p>
-    <button id="qr-scanner-close" onclick="cerrarEscaner()">Cancelar</button>
-  </div>
+  <p id="qr-scanner-error"></p>
   <button id="btn-generate" style="display:none"></button>
   <div id="id-input-group">
     <input type="text" id="input-carta-id" placeholder="Ingresa el ID de tu carta (ej: 04 o ID 04)"
@@ -1244,6 +1234,7 @@ img{max-width:100%}
     guardarSesion();
   }
   function tocarZona(){
+    if(_scanActive) return; // mientras escanea, el tap no hace nada
     if(currentID){
       // Ya hay un QR generado → abrir el misterio
       openMystery(currentID, true);
@@ -1254,15 +1245,23 @@ img{max-width:100%}
   }
 
   // ── ESCÁNER QR (cámara) ──────────────────────────────────────────────────
-  let _scanStream = null, _scanRAF = null, _scanCanvas = null, _scanCtx = null;
+  // Se monta dentro del mismo cuadrado "Toca aquí para jugar" (sin modal externo).
+  let _scanStream = null, _scanRAF = null, _scanCanvas = null, _scanCtx = null, _scanActive = false;
+
+  function toggleEscaner(){
+    if(_scanActive) cerrarEscaner();
+    else            abrirEscaner();
+  }
 
   async function abrirEscaner(){
-    const overlay = document.getElementById('qr-scanner-overlay');
-    const video   = document.getElementById('qr-scanner-video');
-    const errEl   = document.getElementById('qr-scanner-error');
+    const video  = document.getElementById('qr-scanner-video');
+    const frame  = document.getElementById('qr-scanner-frame');
+    const hint   = document.getElementById('qr-hint');
+    const canvas = document.getElementById('carta-canvas');
+    const btn    = document.getElementById('btn-scan-qr');
+    const errEl  = document.getElementById('qr-scanner-error');
     errEl.style.display = 'none';
     errEl.textContent = '';
-    overlay.classList.add('active');
 
     if(!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia){
       errEl.textContent = 'Tu navegador no permite acceder a la cámara. Usa el input de ID para ingresar el número manualmente.';
@@ -1275,9 +1274,23 @@ img{max-width:100%}
       return;
     }
 
+    _scanActive = true;
+    // oculta la carta/hint y muestra el video + botón rojo (×)
+    if(hint)   hint.style.display = 'none';
+    if(canvas) canvas.style.display = 'none';
+    video.style.display = 'block';
+    frame.style.display = 'block';
+    btn.classList.add('scanning');
+    btn.textContent = '×';
+    btn.title = 'Cerrar cámara';
+
     try {
       _scanStream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' } },
+        video: {
+          facingMode: { ideal: 'environment' },
+          width:  { ideal: 1280 },
+          height: { ideal: 720 }
+        },
         audio: false
       });
       video.srcObject = _scanStream;
@@ -1287,6 +1300,7 @@ img{max-width:100%}
       tickEscaner();
     } catch(e) {
       console.error(e);
+      cerrarEscaner();
       errEl.textContent = 'No se pudo acceder a la cámara. Revisa los permisos del navegador o usa el input de ID.';
       errEl.style.display = 'block';
     }
@@ -1301,7 +1315,7 @@ img{max-width:100%}
       _scanCtx.drawImage(video, 0, 0, _scanCanvas.width, _scanCanvas.height);
       try {
         const imgData = _scanCtx.getImageData(0, 0, _scanCanvas.width, _scanCanvas.height);
-        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'dontInvert' });
+        const code = jsQR(imgData.data, imgData.width, imgData.height, { inversionAttempts: 'attemptBoth' });
         if(code && code.data){
           procesarQRScan(code.data);
           return;
@@ -1324,26 +1338,37 @@ img{max-width:100%}
       return;
     }
     const idStr = String(id).padStart(2, '0');
-    // Reusa el flujo existente de "abrir por ID"
+    // Cierra la cámara y usa el flujo existente de "abrir por ID".
     const input = document.getElementById('input-carta-id');
     cerrarEscaner();
     if(input){ input.value = idStr; }
     abrirCartaPorID();
-    // Si la carta fue válida, abrimos el misterio directo (sin requerir segundo tap)
     if(currentID === idStr){ openMystery(idStr, true); }
   }
 
   function cerrarEscaner(){
-    const overlay = document.getElementById('qr-scanner-overlay');
-    const video   = document.getElementById('qr-scanner-video');
+    _scanActive = false;
+    const video  = document.getElementById('qr-scanner-video');
+    const frame  = document.getElementById('qr-scanner-frame');
+    const hint   = document.getElementById('qr-hint');
+    const canvas = document.getElementById('carta-canvas');
+    const btn    = document.getElementById('btn-scan-qr');
     if(_scanRAF){ cancelAnimationFrame(_scanRAF); _scanRAF = null; }
     if(_scanStream){
       _scanStream.getTracks().forEach(t => t.stop());
       _scanStream = null;
     }
-    if(video){ video.pause(); video.srcObject = null; }
+    if(video){ video.pause(); video.srcObject = null; video.style.display = 'none'; }
+    if(frame){ frame.style.display = 'none'; }
+    if(btn){ btn.classList.remove('scanning'); btn.textContent = '📷'; btn.title = 'Escanear QR con cámara'; }
+    // Restaura el estado visual previo del cuadrado
+    if(currentID){
+      if(canvas) canvas.style.display = 'block';
+      if(hint)   hint.style.display = 'none';
+    } else {
+      if(hint)   hint.style.display = 'block';
+    }
     _scanCanvas = null; _scanCtx = null;
-    overlay.classList.remove('active');
   }
   function clickToOpen(){if(currentID) openMystery(currentID,true)}
   function showGallery(){
