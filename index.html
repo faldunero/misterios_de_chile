@@ -843,8 +843,9 @@ img{max-width:100%}
     generateMystery();
   }
 
-  // Detecta si una carta es edición especial (IDs 76-80)
-  function esPremium(id) { const n = parseInt(id); return n >= 76 && n <= 80; }
+  // Todas las cartas se muestran con el mismo diseño estándar (sin corona ni edición especial).
+  // Se conserva la función por compatibilidad con el resto del código que la invoca.
+  function esPremium(id) { return false; }
 
   function dibujarCarta(canvas, id, modo='random') {
     if (esPremium(id)) { dibujarCartaPremium(canvas, id, modo); return; }
