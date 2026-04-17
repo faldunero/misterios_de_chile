@@ -1364,12 +1364,22 @@ img{max-width:100%}
       return;
     }
 
-    // Carta nueva y válida → cierra cámara y abre el misterio
+    // Carta nueva y válida → cierra cámara
     cerrarEscaner();
     const input = document.getElementById('input-carta-id');
     if(input){ input.value = ''; const errId = document.getElementById('id-error'); if(errId) errId.style.display='none'; }
-    currentID = idStr;
-    openMystery(idStr, true);
+
+    // En móvil se pasa por el splash con botón "▶ Iniciar Misterio" para garantizar
+    // que el audio/video arranque dentro de un gesto de usuario válido (autoplay
+    // policies de iOS/Safari). En desktop se abre directo.
+    const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
+                     || (navigator.maxTouchPoints && navigator.maxTouchPoints > 1);
+    if(isMobile && typeof mostrarSplash === 'function'){
+      mostrarSplash(idStr);
+    } else {
+      currentID = idStr;
+      openMystery(idStr, true);
+    }
   }
 
   function cerrarEscaner(){
