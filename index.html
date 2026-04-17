@@ -1347,17 +1347,29 @@ img{max-width:100%}
       return;
     }
     const idStr = String(id).padStart(2, '0');
-    // Cierra la cámara y abre el misterio directo (igual que el splash QR físico).
-    // No pasamos por abrirCartaPorID para no trabarse con validaciones como
-    // "ya jugada en esta sesión" — escanear un QR debe comportarse como si
-    // viniera desde fuera de la app.
+
+    // Valida que exista audio para este ID (igual que el input manual)
+    if(!idsConAudio.has(idStr)){
+      errEl.textContent = 'ID no reconocido. Verifica que sea una carta válida.';
+      errEl.style.display = 'block';
+      _scanRAF = requestAnimationFrame(tickEscaner);
+      return;
+    }
+
+    // Bloquea si la carta ya fue jugada en esta sesión (igual que el input manual)
+    if(viewedHistory.includes(idStr)){
+      errEl.textContent = `La carta ID ${idStr} ya fue jugada en esta sesión. Intenta con otra.`;
+      errEl.style.display = 'block';
+      _scanRAF = requestAnimationFrame(tickEscaner);
+      return;
+    }
+
+    // Carta nueva y válida → cierra cámara y abre el misterio
     cerrarEscaner();
-    // Limpia el input por si quedó algo de un intento previo
     const input = document.getElementById('input-carta-id');
     if(input){ input.value = ''; const errId = document.getElementById('id-error'); if(errId) errId.style.display='none'; }
     currentID = idStr;
-    // Si ya fue vista en esta sesión, openMystery la tratará como replay automáticamente
-    openMystery(idStr, !viewedHistory.includes(idStr));
+    openMystery(idStr, true);
   }
 
   function cerrarEscaner(){
