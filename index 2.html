@@ -1,0 +1,1286 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Misterios de Chile</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold:#C9A84C; --gold-lt:#E8C97A; --cream:#F5F0E8; --ink:#0E0E0E;
+  --ink-soft:#1A1A2E; --slate:#1E2A3A; --slate-lt:#253548; --mist:#8A9BB0;
+  --red:#C0392B; --green:#27AE60; --blue:#2980B9; --r:.75rem; --r-lg:1.25rem;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--ink-soft);color:var(--cream);font-family:'DM Sans',sans-serif;min-height:100dvh;overflow-x:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.035'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+
+/* ── MAIN ── */
+#screen-main{display:flex;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 20px 80px;position:relative;z-index:1}
+.main-header{text-align:center;margin-bottom:28px}
+.main-logo-img{height:72px;width:auto;margin-bottom:14px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))}
+@media(max-width:480px){.main-logo-img{height:56px}}
+.eyebrow{font-size:.62rem;letter-spacing:.2em;color:var(--gold);text-transform:uppercase;font-weight:500;margin-bottom:6px}
+h1{font-family:'Playfair Display',serif;font-size:clamp(2rem,6vw,3rem);font-weight:900;line-height:1.05;color:var(--cream);letter-spacing:-.02em}
+h1 span{color:var(--gold)}
+.subtitle{font-size:.72rem;color:var(--mist);margin-top:6px;letter-spacing:.04em}
+.period-badge{display:inline-block;margin-top:8px;padding:4px 14px;background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.3);border-radius:999px;font-size:.68rem;color:var(--gold);letter-spacing:.12em;font-weight:600}
+.eyebrow-stage{color:var(--gold-lt);font-weight:600}
+#counter-pill{display:inline-flex;align-items:center;gap:6px;background:var(--slate);border:1px solid rgba(201,168,76,.2);border-radius:999px;padding:6px 16px;font-size:.72rem;color:var(--mist);margin-bottom:24px}
+#counter-pill strong{color:var(--gold);font-size:.85rem}
+
+/* QR */
+/* CARTA QR */
+.qr-zone{width:100%;max-width:240px;aspect-ratio:63/88;background:var(--ink-soft);border-radius:12px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;position:relative;overflow:hidden;box-shadow:0 0 0 1.5px rgba(201,168,76,.5),0 24px 64px rgba(0,0,0,.6);transition:transform .15s;margin-bottom:20px;padding:0}
+.qr-zone:active{transform:scale(.97)}
+
+/* Carta completa renderizada en canvas */
+#carta-canvas{width:100%;height:100%;display:block;border-radius:12px}
+
+/* Estado vacío */
+.qr-hint{color:#94a3b8;font-size:.75rem;text-align:center;padding:16px;font-style:italic;line-height:1.5;position:absolute}
+#qr-svg{display:none}
+#qr-label{display:none}
+
+/* Buttons */
+#btn-generate{width:100%;max-width:300px;padding:15px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.85rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;cursor:pointer;transition:opacity .15s,transform .15s;margin-bottom:10px}
+#btn-generate:hover{opacity:.9;transform:translateY(-1px)}
+#btn-generate:disabled{opacity:.35;cursor:not-allowed;transform:none}
+#btn-gallery{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:10px 20px;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+#btn-gallery:hover{border-color:var(--gold);color:var(--gold)}
+
+/* History */
+#history-section{display:none;width:100%;max-width:560px;margin-top:28px}
+.history-label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--mist);margin-bottom:10px;padding-left:2px}
+.history-strip{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
+.history-strip::-webkit-scrollbar{display:none}
+.h-thumb{flex-shrink:0;width:54px;height:40px;border-radius:6px;overflow:visible;position:relative;border:1px solid rgba(255,255,255,.08);transition:transform .2s,box-shadow .2s;cursor:zoom-in;background:var(--slate)}
+.h-thumb:hover{box-shadow:0 0 0 1.5px var(--gold)}
+#thumb-zoom-preview{position:fixed;display:none;z-index:9999;border-radius:8px;overflow:hidden;pointer-events:none;box-shadow:0 8px 32px rgba(0,0,0,.75),0 0 0 2px var(--gold);background:var(--slate);transition:opacity .12s}
+#thumb-zoom-preview img{width:140px;height:104px;object-fit:cover;display:block}
+.h-thumb img{width:100%;height:100%;object-fit:cover;border-radius:6px;display:block;transition:transform .2s}
+.h-thumb::after{content:'🔍';position:absolute;bottom:-4px;right:-4px;font-size:9px;opacity:0;transition:opacity .15s;pointer-events:none;z-index:1;filter:drop-shadow(0 1px 2px rgba(0,0,0,.8))}
+.h-thumb:hover::after{opacity:1}
+.h-thumb .h-id{position:absolute;bottom:1px;right:2px;font-size:6px;color:var(--gold);font-weight:700;text-shadow:0 1px 2px rgba(0,0,0,.8)}
+.h-audio{display:flex;align-items:center;justify-content:center;font-size:.9rem;width:100%;height:100%}
+
+/* ── GALLERY ── */
+#screen-gallery{display:none;flex-direction:column;align-items:center;min-height:100dvh;padding:24px 16px 80px;position:relative;z-index:1;background:transparent}
+.gallery-header{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:900px;margin-bottom:20px}
+.gallery-header h2{font-family:'Playfair Display',serif;font-size:1.3rem;color:var(--cream)}
+#btn-back{background:none;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:var(--r);padding:8px 14px;font-size:.75rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s}
+#btn-back:hover{border-color:var(--gold);color:var(--gold)}
+#gallery-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:10px;width:100%;max-width:900px}
+.g-card{border-radius:var(--r);overflow:hidden;position:relative;border:1px solid rgba(255,255,255,.07);cursor:zoom-in;transition:transform .2s,border-color .2s,box-shadow .2s;background:var(--slate)}
+.g-card:hover{transform:translateY(-3px) scale(1.04);border-color:rgba(201,168,76,.6);box-shadow:0 10px 32px rgba(0,0,0,.55),0 0 0 1.5px rgba(201,168,76,.35)}
+.g-card img{width:100%;height:80px;object-fit:cover;display:block;transition:transform .3s ease}
+.g-card:hover img{transform:scale(1.12)}
+.g-card::after{content:'🔍';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%) scale(0);font-size:1.5rem;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;filter:drop-shadow(0 2px 6px rgba(0,0,0,.8));z-index:5}
+.g-card:hover::after{opacity:1;transform:translate(-50%,-50%) scale(1)}
+.g-ph{width:100%;height:80px;display:flex;align-items:center;justify-content:center;font-size:1.3rem;background:var(--slate-lt)}
+.g-id{font-size:.62rem;font-weight:700;color:var(--gold);padding:4px 7px;font-family:monospace}
+.g-aud-badge{position:absolute;top:4px;right:4px;background:var(--blue);border-radius:3px;font-size:8px;padding:1px 4px;font-weight:700;color:#fff}
+
+/* ── PLAYER OVERLAY ── */
+#player-overlay{display:none;position:fixed;inset:0;z-index:1000;background:var(--ink-soft);flex-direction:column;align-items:center;overflow-y:auto}
+.player-inner{display:flex;flex-direction:column;align-items:center;width:100%;max-width:720px;padding:14px 16px 24px;min-height:100dvh}
+.player-topbar{display:flex;align-items:center;justify-content:space-between;width:100%;padding-bottom:12px;flex-shrink:0}
+.topbar-spacer{flex:0 0 90px}
+.player-logo{height:36px;width:auto;filter:drop-shadow(0 1px 6px rgba(0,0,0,.6))}
+.player-topbar-center{flex:1;display:flex;justify-content:center}
+#btn-close{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--mist);border-radius:var(--r);padding:6px 12px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .15s,color .15s,border-color .15s}
+#btn-close:hover{background:rgba(192,57,43,.2);color:#e74c3c;border-color:#e74c3c}
+/* ── PLAYER CONTENT ROW: 3 columnas [PREGUNTAS | IMAGEN | PISTAS] ── */
+.player-content-row{display:flex;align-items:center;gap:10px;width:100%;margin-bottom:8px}
+.player-side{display:flex;flex-direction:column;gap:7px;flex-shrink:0;width:76px;align-items:stretch}
+.img-frame{flex:1;min-width:0;display:flex;align-items:center;justify-content:center;position:relative}
+#full-img{display:block;width:auto;height:auto;max-width:100%;max-height:52dvh;object-fit:contain;border-radius:var(--r);border:1px solid rgba(201,168,76,.12)}
+.no-img-ph{display:none;width:100%;min-height:140px;background:var(--slate);border-radius:var(--r);align-items:center;justify-content:center;font-size:2.5rem;border:1px dashed rgba(138,155,176,.2)}
+
+/* ── LENGUAJE VISUAL UNIFICADO DE BOTONES ── */
+/* Base compartida: misma forma y tipografía para todos los botones del player */
+#btn-evaluar,.btn-pista,.ctrl-btn{
+  border-radius:var(--r);
+  font-family:'DM Sans',sans-serif;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  cursor:pointer;
+  transition:opacity .15s,transform .1s;
+  text-align:center;
+  border:none;
+}
+#btn-evaluar,.ctrl-btn{box-shadow:0 2px 8px rgba(0,0,0,.3)}
+#btn-evaluar:active,.btn-pista:active,.ctrl-btn:active{transform:scale(.96)}
+
+/* Botón PREGUNTAS (columna izquierda) */
+#btn-evaluar{display:none;padding:8px 7px;background:var(--gold);color:var(--ink);font-size:.64rem;line-height:1.4;width:100%}
+#btn-evaluar:hover{opacity:.88}
+
+/* Pistas (columna derecha) */
+.pistas-section{display:flex;flex-direction:column;gap:7px;width:76px;flex-shrink:0}
+#pista-status{font-size:.56rem;color:var(--gold);text-align:center;letter-spacing:.03em;min-height:12px;line-height:1.3}
+.btn-pista{width:100%;padding:8px 5px;background:var(--slate-lt);border:1px solid rgba(201,168,76,.18);color:var(--gold-lt);font-size:.64rem}
+.btn-pista:hover:not(:disabled){background:rgba(201,168,76,.12);border-color:var(--gold)}
+.btn-pista:disabled{opacity:.28;cursor:not-allowed;color:var(--mist);border-color:rgba(138,155,176,.08)}
+.btn-pista.vista{opacity:.55;color:var(--mist);font-size:.6rem}
+
+/* Controls */
+.player-controls{width:100%;flex-shrink:0;margin-top:10px;display:flex;flex-direction:column;gap:8px}
+.progress-row{display:flex;align-items:center;gap:10px}
+#time-display{font-family:monospace;font-size:.65rem;color:var(--mist);white-space:nowrap;min-width:80px;text-align:center}
+.progress-track{flex:1;height:4px;background:rgba(255,255,255,.08);border-radius:999px;cursor:pointer;overflow:hidden}
+#progress-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold-lt));border-radius:999px;transition:width .25s linear}
+.action-row{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+.ctrl-btn{padding:9px 16px;font-size:.7rem}
+.ctrl-btn:active{transform:scale(.97)}
+.ctrl-blue{background:var(--blue);color:#fff}
+.ctrl-green{background:var(--green);color:#fff}
+.ctrl-ghost{background:transparent;color:var(--mist);border:1px solid rgba(138,155,176,.2)}
+.ctrl-ghost:hover{border-color:var(--mist);color:var(--cream)}
+
+/* ── MODALS ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.65);z-index:2000;align-items:flex-start;justify-content:center;padding:14px;gap:12px;overflow-y:auto}
+.modal-overlay.open{display:flex;flex-direction:row;flex-wrap:wrap}
+@media(max-width:680px){.modal-overlay.open{flex-direction:column;align-items:center}}
+.modal-box{background:var(--slate);border:1px solid rgba(201,168,76,.18);border-radius:var(--r-lg);padding:22px;width:100%;max-width:390px;flex:1 1 320px;box-shadow:0 24px 80px rgba(0,0,0,.7);animation:mIn .18s ease;overflow-y:auto;max-height:90dvh}
+@keyframes mIn{from{opacity:0;transform:translateY(10px) scale(.97)}to{opacity:1;transform:none}}
+.modal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.modal-title{font-family:'Playfair Display',serif;font-size:.95rem;color:var(--cream)}
+.modal-close{background:none;border:none;color:var(--mist);font-size:1.3rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
+.modal-close:hover{color:var(--cream);background:rgba(255,255,255,.07)}
+
+/* Pista modal — locked state */
+.pista-block-locked .btn-show{opacity:.38;cursor:not-allowed}
+.pista-block-locked .q-text{opacity:.55}
+
+/* Eval modal */
+.q-text{font-size:.9rem;font-weight:500;color:var(--cream);margin-bottom:10px;line-height:1.55}
+.answer-box{display:none;background:rgba(39,174,96,.08);border:1px solid rgba(39,174,96,.35);border-radius:var(--r);padding:11px 13px;margin-bottom:10px}
+.answer-label{font-size:.58rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:3px}
+.answer-text{font-size:.9rem;font-weight:600;color:#6FCF97}
+.eval-q-block{border-bottom:1px solid rgba(255,255,255,.07);padding-bottom:12px;margin-bottom:12px}
+.eval-q-block:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+.q-label-num{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);margin-bottom:5px;font-weight:600}
+.btn-show{width:100%;padding:9px;background:rgba(201,168,76,.12);border:1px solid rgba(201,168,76,.35);color:var(--gold-lt);border-radius:var(--r);font-family:'DM Sans',sans-serif;font-size:.75rem;font-weight:600;cursor:pointer;transition:background .15s}
+.btn-show:hover{background:rgba(201,168,76,.22)}
+.btn-show:disabled{opacity:.35;cursor:not-allowed}
+
+/* ── FONDO HISTÓRICO (cubre TODAS las pantallas) ── */
+/* gradiente oscuro fijo para legibilidad en todas las pantallas */
+/* contenido del main por encima del fondo */
+#screen-main{position:relative;z-index:1}
+#screen-main > *{position:relative;z-index:1}
+
+/* ── LOGO LUDOLAB ABAJO AL CENTRO ── */
+#watermark-ludolab{position:fixed;bottom:14px;left:50%;transform:translateX(-50%);z-index:500;pointer-events:auto;opacity:0.6;transition:opacity .2s;white-space:nowrap}
+#watermark-ludolab:hover{opacity:1}
+#watermark-ludolab a{display:flex;align-items:center;gap:7px;cursor:pointer;text-decoration:none}
+#watermark-ludolab .wm-icon{flex-shrink:0}
+#watermark-ludolab .wm-text{display:flex;flex-direction:column;line-height:1.2}
+#watermark-ludolab .wm-name{font-size:.72rem;font-weight:900;font-family:'DM Sans',sans-serif;background:linear-gradient(90deg,#4facfe,#43c6ac);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.02em}
+#watermark-ludolab .wm-tagline{font-size:.5rem;color:var(--mist);letter-spacing:.1em;text-transform:uppercase;font-family:'DM Sans',sans-serif}
+
+/* ── LOGO MISTERIOS FIJO oculto (movido al header principal) ── */
+#logo-misterios-fijo{display:none}
+
+/* ── LOGO LUDOLAB EN PREGUNTAS ── */
+.ludolab-modal-logo{display:flex;justify-content:flex-end;margin-bottom:10px}
+.ludolab-modal-logo a{display:block;opacity:0.55;transition:opacity .2s;cursor:pointer}
+.ludolab-modal-logo a:hover{opacity:0.9}
+.ludolab-modal-logo img{height:22px;width:auto;filter:brightness(3) grayscale(1)}
+
+/* ── BOTÓN REGLAS ── */
+#btn-reglas{background:none;border:1px solid rgba(138,155,176,.2);color:var(--mist);border-radius:var(--r);padding:7px 16px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:6px;margin-bottom:10px}
+#btn-reglas:hover{border-color:var(--gold);color:var(--gold)}
+
+/* ── MODAL REGLAS ── */
+#modal-reglas-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:3000;align-items:center;justify-content:center;padding:16px}
+#modal-reglas-overlay.open{display:flex}
+#modal-reglas-box{background:var(--slate-lt);border:1px solid rgba(201,168,76,.2);border-radius:var(--r-lg);width:100%;max-width:560px;max-height:88dvh;display:flex;flex-direction:column;box-shadow:0 32px 100px rgba(0,0,0,.8);animation:mIn .2s ease}
+.reglas-header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid rgba(255,255,255,.07);flex-shrink:0}
+.reglas-title{font-family:'Playfair Display',serif;font-size:1rem;color:var(--cream);display:flex;align-items:center;gap:8px}
+.reglas-title span{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--gold);background:rgba(201,168,76,.1);border:1px solid rgba(201,168,76,.25);border-radius:999px;padding:2px 9px;font-family:'DM Sans',sans-serif;font-weight:600}
+#btn-close-reglas{background:none;border:none;color:var(--mist);font-size:1.4rem;cursor:pointer;padding:2px 6px;border-radius:4px;transition:color .15s,background .15s;line-height:1}
+#btn-close-reglas:hover{color:var(--cream);background:rgba(255,255,255,.07)}
+.reglas-body{overflow-y:auto;padding:22px;scrollbar-width:thin;scrollbar-color:rgba(201,168,76,.25) transparent;flex:1}
+.reglas-body::-webkit-scrollbar{width:4px}
+.reglas-body::-webkit-scrollbar-thumb{background:rgba(201,168,76,.3);border-radius:999px}
+.reglas-section{margin-bottom:22px}
+.reglas-section:last-child{margin-bottom:0}
+.reglas-h2{font-family:'Playfair Display',serif;font-size:.88rem;color:var(--gold);margin-bottom:8px;border-bottom:1px solid rgba(201,168,76,.15);padding-bottom:6px}
+.reglas-h3{font-size:.72rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--gold-lt);margin:12px 0 5px}
+.reglas-p{font-size:.82rem;line-height:1.65;color:var(--cream);margin-bottom:6px}
+.reglas-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:.76rem}
+.reglas-table th{background:rgba(201,168,76,.12);color:var(--gold);font-weight:600;text-align:left;padding:6px 10px;border:1px solid rgba(201,168,76,.15);font-size:.68rem;letter-spacing:.05em;text-transform:uppercase}
+.reglas-table td{padding:6px 10px;border:1px solid rgba(255,255,255,.07);color:var(--cream);vertical-align:top;line-height:1.5}
+.reglas-table tr:nth-child(even) td{background:rgba(255,255,255,.03)}
+.reglas-callout{background:rgba(201,168,76,.06);border-left:3px solid var(--gold);border-radius:0 var(--r) var(--r) 0;padding:10px 14px;margin:8px 0;font-size:.79rem;line-height:1.6;color:var(--cream)}
+.reglas-step{display:flex;gap:10px;margin-bottom:8px;align-items:flex-start}
+.reglas-step-num{flex-shrink:0;width:22px;height:22px;background:rgba(201,168,76,.15);border:1px solid rgba(201,168,76,.35);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.65rem;font-weight:700;color:var(--gold);margin-top:1px}
+.reglas-step-text{font-size:.82rem;line-height:1.6;color:var(--cream)}
+
+/* ── RESPONSIVE ── */
+@media(max-width:480px){
+  h1{font-size:1.8rem}.qr-zone{max-width:260px}
+  #gallery-grid{grid-template-columns:repeat(auto-fill,minmax(85px,1fr))}
+  #watermark-ludolab{bottom:8px;opacity:0.38}
+  /* Player móvil: columnas laterales se convierten en fila bajo la imagen */
+  .player-content-row{flex-direction:column;gap:8px}
+  .player-side,.pistas-section{width:100%;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:6px}
+  .btn-pista{width:auto;flex:1;max-width:100px;padding:7px 6px}
+  #btn-evaluar{padding:8px 18px;font-size:.65rem}
+  #full-img{max-height:38dvh}
+  .ctrl-btn{font-size:.68rem;padding:8px 10px}
+}
+@media(max-height:580px) and (orientation:landscape){
+  .player-logo{display:none}
+  .player-inner{padding:8px 14px 16px}
+  #full-img{max-height:36dvh}
+  .player-controls{margin-top:8px;gap:7px}
+  .pistas-section{margin-bottom:0}
+}
+
+
+#btn-reinicio{background:none;border:1px solid rgba(138,155,176,.15);color:var(--mist);border-radius:var(--r);padding:8px 16px;font-size:.72rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:border-color .2s,color .2s;margin-top:4px}
+#btn-reinicio:hover{border-color:var(--red);color:#e74c3c}
+
+/* ── RESPONSIVE FIXES ── */
+*{box-sizing:border-box}
+img{max-width:100%}
+
+/* Player overlay responsivo */
+.player-inner{padding:10px 12px 20px;max-width:100vw}
+.player-content-row{gap:6px}
+.player-side{width:64px;min-width:56px}
+.img-frame{min-width:0;flex:1}
+#full-img{max-height:44dvh}
+
+/* Controles */
+.action-row{gap:6px}
+.ctrl-btn{padding:8px 10px;font-size:.65rem}
+
+/* Modales responsivos */
+.modal-box{padding:16px;max-height:85dvh}
+@media(max-width:400px){
+  .modal-overlay.open{padding:8px;gap:8px}
+  .modal-box{padding:14px;flex:1 1 100%}
+  .player-side{width:52px}
+  .btn-pista{font-size:.58rem;padding:7px 4px}
+  #btn-evaluar{font-size:.58rem;padding:7px 5px}
+}
+
+/* Pantalla principal */
+#screen-main{padding:20px 16px 80px}
+.qr-zone{max-width:min(280px,80vw)}
+#btn-generate{max-width:min(300px,90vw)}
+
+/* Gallery */
+#gallery-grid{grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:8px}
+
+/* Splash */
+#splash-qr{background:var(--ink-soft)}
+#splash-btn:active{transform:scale(.97)}
+
+</style>
+</head>
+<body>
+
+<!-- MODAL OVERLAY -->
+<div id="modal-overlay" class="modal-overlay">
+  <!-- Pistas -->
+  <div id="modal-pista" class="modal-box" style="display:none">
+    <div class="modal-header">
+      <span class="modal-title">Pistas</span>
+      <button class="modal-close" onclick="cerrarModalPista()">×</button>
+    </div>
+    <div class="ludolab-modal-logo">
+      <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+        <img src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-1">
+      <p class="q-label-num">Pista 1 — El Enigma</p>
+      <p class="q-text">Contexto, lugar o qué pasó.</p>
+      <div id="pista-ans-box-1" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-1" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-1" disabled onclick="revelarPista(1)">👁 Revelar pista</button>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-2">
+      <p class="q-label-num">Pista 2 — El Rastro</p>
+      <p class="q-text">Pista temporal indirecta.</p>
+      <div id="pista-ans-box-2" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-2" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-2" disabled onclick="revelarPista(2)">👁 Revelar pista</button>
+    </div>
+    <div class="eval-q-block pista-block-locked" id="pista-block-3" style="border-bottom:none;margin-bottom:0;padding-bottom:0">
+      <p class="q-label-num">Pista 3 — Los Rostros</p>
+      <p class="q-text">Protagonistas del evento.</p>
+      <div id="pista-ans-box-3" class="answer-box" style="display:none">
+        <p class="answer-label">Pista revelada</p>
+        <p id="pista-ans-3" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-reveal-pista-3" disabled onclick="revelarPista(3)">👁 Revelar pista</button>
+    </div>
+  </div>
+  <!-- Preguntas -->
+  <div id="modal-eval" class="modal-box" style="display:none">
+    <div class="modal-header">
+      <span class="modal-title">Preguntas</span>
+      <button class="modal-close" onclick="cerrarModalEval()">×</button>
+    </div>
+    <div class="ludolab-modal-logo">
+      <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+        <img src="./logotipo_ludo_lab.svg" alt="Ludolab" onerror="this.style.display='none'">
+      </a>
+    </div>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 1</p>
+      <p id="eval-q-1" class="q-text"></p>
+      <div id="eval-ans-box-1" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-1" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-1" onclick="mostrarRespuesta(1)">👁 Mostrar respuesta</button>
+    </div>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 2</p>
+      <p id="eval-q-2" class="q-text"></p>
+      <div id="eval-ans-box-2" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-2" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-2" onclick="mostrarRespuesta(2)">👁 Mostrar respuesta</button>
+    </div>
+    <div class="eval-q-block">
+      <p class="q-label-num">Pregunta 3</p>
+      <p id="eval-q-3" class="q-text"></p>
+      <div id="eval-ans-box-3" class="answer-box" style="display:none">
+        <p class="answer-label">Respuesta correcta</p>
+        <p id="eval-ans-3" class="answer-text"></p>
+      </div>
+      <button class="btn-show" id="btn-show-3" onclick="mostrarRespuesta(3)">👁 Mostrar respuesta</button>
+    </div>
+  </div>
+</div>
+
+<!-- FONDO HISTÓRICO GLOBAL: mosaico de imágenes (cubre todas las pantallas) -->
+
+<!-- MAIN SCREEN -->
+<div id="screen-main">
+  <header class="main-header">
+    <img class="main-logo-img" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Misterios de Chile" onerror="this.src='./logotipo_misterios_de_chile/logotipo_misterios_de_chile.svg'">
+    <p class="eyebrow">Juego de historia · <span class="eyebrow-stage">Nivel Iniciado · Conquista → Centenario</span></p>
+    <p class="subtitle">80 cartas · Desde la Conquista hasta el Centenario</p>
+    <p class="period-badge">1536 – 1910</p>
+  </header>
+  <div id="counter-pill">Misterios restantes <strong id="counter-num">80</strong></div>
+  <div class="qr-zone" onclick="clickToOpen()" id="qr-zone-wrap">
+    <p class="qr-hint" id="qr-hint">Genera un misterio y toca aquí para abrirlo</p>
+    <canvas id="carta-canvas" style="display:none"></canvas>
+    <svg id="qr-svg" viewBox="0 0 21 21" xmlns="http://www.w3.org/2000/svg" style="display:none"></svg>
+    <p id="qr-label" style="display:none"></p>
+  </div>
+  <button id="btn-generate" onclick="generateMystery()">Generar misterio</button>
+  <button id="btn-reglas" onclick="abrirReglas()">📖 Reglas del juego</button>
+  <button id="btn-gallery" onclick="showGallery()">Ver galería completa</button>
+  <button id="btn-reinicio" onclick="confirmarReinicio()" title="Nueva partida">↺ Nueva partida</button>
+  <div id="history-section">
+    <p class="history-label">Vistos recientemente</p>
+    <div class="history-strip" id="history-strip"></div>
+  </div>
+</div>
+
+<!-- GALLERY SCREEN -->
+<div id="screen-gallery">
+  <div class="gallery-header">
+    <h2>Galería completa</h2>
+    <button id="btn-back" onclick="showMain()">← Volver</button>
+  </div>
+  <div id="gallery-grid"></div>
+</div>
+
+<!-- MODAL REGLAS -->
+<div id="modal-reglas-overlay" onclick="if(event.target===this)cerrarReglas()">
+  <div id="modal-reglas-box">
+    <div class="reglas-header">
+      <div class="reglas-title">
+        📖 Reglamento Oficial
+        <span>Nivel Iniciado</span>
+      </div>
+      <button id="btn-close-reglas" onclick="cerrarReglas()" title="Cerrar">×</button>
+    </div>
+    <div class="reglas-body">
+
+      <div class="reglas-section">
+        <div class="reglas-h2">¿De qué trata el juego?</div>
+        <p class="reglas-p">Misterios de Chile es un juego de cartas interactivo donde los jugadores compiten por ubicar hitos históricos en orden cronológico. Usando un código QR, cada carta activa una imagen de época y un relato de audio que describe el momento histórico sin revelar nombres ni fechas. El desafío: adivinar qué sucedió, cuándo ocurrió y quiénes fueron sus protagonistas.</p>
+        <p class="reglas-p"><strong>2 a 4 jugadores · 80 cartas · Desde la Conquista hasta el Centenario</strong></p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Inspiración</div>
+        <p class="reglas-p">La mecánica principal es similar al juego Hitster: los jugadores escuchan un fragmento de audio y deben ubicar la carta en la línea de tiempo correcta, antes o después de los hitos ya revelados en la mesa. Misterios de Chile agrega dos dimensiones adicionales: identificar el evento y sus protagonistas.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Las Expansiones</div>
+        <p class="reglas-p">Misterios de Chile es un sistema modular. Cada caja es un juego independiente, pero todas comparten las mismas reglas y se pueden combinar para crear una línea de tiempo extendida (Modo Expansión).</p>
+        <table class="reglas-table">
+          <thead><tr><th>Nivel</th><th>Curso</th><th>Contenido</th></tr></thead>
+          <tbody>
+            <tr><td>🟢 Iniciado</td><td>5°-6° Básico</td><td>Desde la Conquista hasta el Centenario (esta caja)</td></tr>
+            <tr><td>🔵 Explorador</td><td>7°-8° Básico</td><td>Antigüedad, Edad Media y Raíces de la Modernidad</td></tr>
+            <tr><td>🔴 Crítico</td><td>I-II Medio</td><td>El Siglo XIX, XX y la conformación del Estado Moderno</td></tr>
+            <tr><td>🟡 Ciudadano</td><td>III-IV Medio</td><td>Actualidad, Economía, Globalización y Derechos Civiles</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Diseño de la Carta</div>
+        <div class="reglas-h3">Anverso — Código QR</div>
+        <p class="reglas-p">Al escanear el QR con cualquier dispositivo, se activan dos elementos:</p>
+        <p class="reglas-p"><strong>Imagen de Época:</strong> Pintura, portada de diario o infografía que entrega pistas visuales del evento.</p>
+        <p class="reglas-p"><strong>Relato de Fondo:</strong> Audio narrado que describe el ambiente, clima social o conflicto del momento sin revelar nombres propios ni fechas exactas.</p>
+        <div class="reglas-h3">Reverso — Los Datos</div>
+        <p class="reglas-p">Contiene la información que valida o refuta la jugada: año exacto del evento, nombre del hito histórico, descripción breve de su impacto y protagonistas clave involucrados.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Preparación</div>
+        <div class="reglas-step"><div class="reglas-step-num">1</div><div class="reglas-step-text">Elige el modo: Una sola caja o combina expansiones para una línea de tiempo extendida.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">2</div><div class="reglas-step-text"><strong>Hito Inicial:</strong> Saca una carta al azar y colócala boca arriba (Reverso visible) en el centro de la mesa. Esta carta es el punto de partida de la línea de tiempo.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">3</div><div class="reglas-step-text"><strong>Reparto:</strong> Cada jugador recibe 5 cartas (boca abajo, sin mirar) y 10 fichas de apuesta.</div></div>
+        <div class="reglas-step"><div class="reglas-step-num">4</div><div class="reglas-step-text">Determina el primer jugador activo (el mayor, el más joven, o como acuerden).</div></div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">El Turno</div>
+        <p class="reglas-p">El jugador activo elige una carta de su mano y sigue este flujo:</p>
+        <div class="reglas-h3">Fase 1 — Activar el QR</div>
+        <p class="reglas-p">El jugador activo escanea el QR de su carta. Todos los jugadores ven la imagen y escuchan el relato de audio.</p>
+        <div class="reglas-h3">Fase 2 — Las Pistas (Opcional)</div>
+        <p class="reglas-p">Antes de declarar su respuesta, el jugador activo puede solicitar hasta 3 pistas adicionales que se desbloquean en la aplicación. Cada pista tiene un costo en fichas que se paga al pozo:</p>
+        <table class="reglas-table">
+          <thead><tr><th>Pista</th><th>Contenido</th><th>Costo</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Pista 1 — El Enigma</strong></td><td>Describe qué pasó, el contexto o el lugar.</td><td>1 ficha</td></tr>
+            <tr><td><strong>Pista 2 — El Rastro</strong></td><td>¿Cuándo ocurrió? Pista temporal indirecta.</td><td>2 fichas</td></tr>
+            <tr><td><strong>Pista 3 — Los Rostros</strong></td><td>Pista sobre los protagonistas del evento.</td><td>3 fichas</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">Las pistas son exclusivas del jugador activo. Un jugador que roba no tiene acceso a ellas. El costo de las pistas se descuenta independientemente del resultado final.</div>
+        <div class="reglas-h3">Fase 3 — Declarar o Rendirse</div>
+        <p class="reglas-p">Tras escuchar el audio (y usar las pistas que estime necesarias), el jugador activo tiene dos opciones:</p>
+        <p class="reglas-p"><strong>Declarar su respuesta</strong> respondiendo las tres preguntas — (1) Ubicación Cronológica, (2) El Evento, (3) Los Protagonistas.</p>
+        <p class="reglas-p"><strong>Rendirse formalmente</strong> sin declarar respuesta. Rendirse no tiene costo de fichas adicional. Al rendirse, se abre la Fase de Robo.</p>
+        <div class="reglas-h3">Fase 4 — El Robo (solo si el activo se rindió)</div>
+        <p class="reglas-p">Cuando el jugador activo se rinde, cualquier contrincante puede gritar <em>«¡Robo!»</em>. El primero en hacerlo tiene el derecho a intentar la Triple Intuición respondiendo las mismas tres preguntas, pero sin acceso a las pistas.</p>
+        <table class="reglas-table">
+          <thead><tr><th>Resultado del Robo</th><th>Consecuencia</th></tr></thead>
+          <tbody>
+            <tr><td>Acierta (1, 2 o 3 aciertos)</td><td>Gana fichas según tabla de aciertos</td></tr>
+            <tr><td>Falla (0 aciertos)</td><td>Paga 2 fichas al pozo (penalización por interrumpir)</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">Si nadie grita «¡Robo!», la carta igual entra a la línea de tiempo. Se voltea, todos conocen el evento, y el turno pasa al siguiente jugador. Nadie gana ni pierde fichas.</div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Resolución y Recompensas</div>
+        <p class="reglas-p">Se voltea la carta y se cuentan los aciertos (máximo 3: ubicación + evento + protagonistas). Las fichas pagadas por pistas se descuentan del resultado neto.</p>
+        <table class="reglas-table">
+          <thead><tr><th>Aciertos</th><th>Situación</th><th>Consecuencia</th></tr></thead>
+          <tbody>
+            <tr><td>0 — Olvido</td><td>Sin pistas</td><td>Pierdes 1 ficha. La carta igual entra a la línea.</td></tr>
+            <tr><td>0 — Olvido</td><td>Con pistas</td><td>Pierdes fichas pagadas por pistas + 1 ficha adicional.</td></tr>
+            <tr><td>1 — Conocimiento</td><td>—</td><td>Sin ganancia ni pérdida (más las pistas usadas). Carta a la línea.</td></tr>
+            <tr><td>2 — Erudito</td><td>—</td><td>Ganas 1 ficha del oponente (o del pozo). Carta a la línea.</td></tr>
+            <tr><td>3 — Maestro del Tiempo</td><td>—</td><td>Ganas 2 fichas de tus oponentes. Carta a la línea.</td></tr>
+          </tbody>
+        </table>
+        <div class="reglas-callout">La carta <strong>siempre</strong> entra a la línea de tiempo en su posición cronológica correcta, independientemente del resultado.</div>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Fin del Juego</div>
+        <p class="reglas-p">El juego termina cuando se agota el mazo. El jugador con más fichas al final gana. Si un jugador se queda sin fichas, no se elimina: simplemente no puede apostar en las rondas siguientes y pierde su turno hasta que algún resultado le devuelva fichas. En caso de empate al finalizar, gana quien tenga más cartas correctamente ubicadas en la línea de tiempo.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Modo Expansión</div>
+        <p class="reglas-p">Para partidas más largas, mezcla los mazos de múltiples expansiones. Las reglas son idénticas. La línea de tiempo se extiende desde la época más antigua hasta la más reciente, haciendo la ubicación cada vez más desafiante.</p>
+      </div>
+
+      <div class="reglas-section">
+        <div class="reglas-h2">Glosario Rápido</div>
+        <table class="reglas-table">
+          <thead><tr><th>Término</th><th>Definición</th></tr></thead>
+          <tbody>
+            <tr><td><strong>Línea de Tiempo</strong></td><td>Secuencia de cartas visibles en la mesa, ordenadas cronológicamente de izquierda a derecha.</td></tr>
+            <tr><td><strong>Triple Intuición</strong></td><td>Las tres preguntas que debe responder el jugador activo (o el robador): ubicación + evento + protagonistas.</td></tr>
+            <tr><td><strong>Robo</strong></td><td>Mecanismo por el cual un contrincante toma el turno después de que el jugador activo se rinde.</td></tr>
+            <tr><td><strong>Pozo</strong></td><td>Reserva común de fichas acumuladas por penalizaciones y pistas pagadas.</td></tr>
+            <tr><td><strong>Pistas</strong></td><td>Ayudas opcionales disponibles solo para el jugador activo, desbloqueadas en la aplicación a cambio de fichas.</td></tr>
+            <tr><td><strong>Modo Expansión</strong></td><td>Partida que combina los mazos de dos o más cajas del sistema Misterios de Chile.</td></tr>
+          </tbody>
+        </table>
+        <p class="reglas-p" style="margin-top:14px;font-size:.72rem;color:var(--mist);text-align:center">Misterios de Chile — Diseño: Felipe Ignacio Aldunate Romero</p>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- PLAYER OVERLAY -->
+<div id="player-overlay">
+  <div class="player-inner">
+    <div class="player-topbar">
+      <div class="topbar-spacer"></div>
+      <div class="player-topbar-center">
+        <img class="player-logo" src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Logo" onerror="this.style.display='none'">
+      </div>
+      <button id="btn-close" onclick="closePlayer()">✕ Cerrar</button>
+    </div>
+    <!-- 3 columnas: PREGUNTAS | imagen | PISTAS -->
+    <div class="player-content-row">
+      <!-- Izquierda: Preguntas -->
+      <div class="player-side player-side-left">
+        <button id="btn-evaluar" onclick="abrirEval()">📋<br>Preguntas</button>
+      </div>
+      <!-- Centro: Imagen -->
+      <div class="img-frame">
+        <img id="full-img" src="" alt="" onerror="imgErr(this)">
+        <div class="no-img-ph" id="no-img-ph">🔊</div>
+      </div>
+      <!-- Derecha: Pistas -->
+      <div class="player-side pistas-section">
+        <p id="pista-status"></p>
+        <button class="btn-pista" id="btn-p1" onclick="mostrarPista(1)" disabled>Pista 1</button>
+        <button class="btn-pista" id="btn-p2" onclick="mostrarPista(2)" disabled>Pista 2</button>
+        <button class="btn-pista" id="btn-p3" onclick="mostrarPista(3)" disabled>Pista 3</button>
+      </div>
+    </div>
+    <div class="player-controls">
+      <div class="progress-row">
+        <span id="time-display">00:00 / 00:00</span>
+        <div class="progress-track" onclick="seekAudio(event,this)">
+          <div id="progress-bar"></div>
+        </div>
+      </div>
+      <div class="action-row">
+        <button id="btn-play"    class="ctrl-btn ctrl-blue"  onclick="toggleAudio()">PAUSAR</button>
+        <button id="btn-end"     class="ctrl-btn ctrl-green" onclick="terminarAudio()">✓ TERMINAR</button>
+      </div>
+    </div>
+    <audio id="audio-player" preload="auto"></audio>
+  </div>
+</div>
+
+<!-- LOGO MISTERIOS DE CHILE (todas las páginas) -->
+<div id="logo-misterios-fijo">
+  <img src="./logotipo_misterios_de_chile/logotipo_misterios_de_chile.svg" alt="Misterios de Chile" onerror="this.src='./logotipo_misterios_de_chile/logo_misterios_de_chile.svg'">
+</div>
+
+<!-- LOGO LUDOLAB ABAJO AL CENTRO -->
+<div id="watermark-ludolab">
+  <a href="https://ludolab.cl" target="_blank" rel="noopener" title="Visitar ludolab.cl">
+    <div class="wm-icon">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="wm-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stop-color="#4facfe"/>
+            <stop offset="100%" stop-color="#43c6ac"/>
+          </linearGradient>
+        </defs>
+        <circle cx="10" cy="10" r="8.5" stroke="url(#wm-grad)" stroke-width="1.4" fill="none"/>
+        <path d="M10 2.5 L10 17.5" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M2.5 10 L17.5 10" stroke="url(#wm-grad)" stroke-width="1.3" stroke-linecap="round"/>
+        <path d="M5 5 L15 15 M15 5 L5 15" stroke="url(#wm-grad)" stroke-width="0.8" stroke-linecap="round" opacity="0.5"/>
+      </svg>
+    </div>
+    <div class="wm-text">
+      <span class="wm-name">ludolab.cl</span>
+      <span class="wm-tagline">Juega · Aprende · Explora</span>
+    </div>
+  </a>
+</div>
+
+<!-- Firebase SDK -->
+<script type="module">
+  import { initializeApp }                          from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app.js";
+  import { getFirestore, collection, getDocs }      from "https://www.gstatic.com/firebasejs/12.12.0/firebase-firestore.js";
+  import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.12.0/firebase-app-check.js";
+
+  const firebaseConfig = {
+    apiKey:            "AIzaSyCB6CvFW6K2tMhR3JC7sRf6teADM0WhcC8",
+    authDomain:        "misteriosdechile-7a538.firebaseapp.com",
+    projectId:         "misteriosdechile-7a538",
+    storageBucket:     "misteriosdechile-7a538.firebasestorage.app",
+    messagingSenderId: "487423840426",
+    appId:             "1:487423840426:web:6471eed89517211b2c80d3",
+    measurementId:     "G-N7F1BH864Q"
+  };
+
+  const fbApp = initializeApp(firebaseConfig);
+  initializeAppCheck(fbApp, {
+    provider: new ReCaptchaV3Provider("6Leu4LcsAAAAAAdBufaKQT6mObx4MRdoHLuk8Ix4"),
+    isTokenAutoRefreshEnabled: true
+  });
+  const db = getFirestore(fbApp);
+
+  async function cargarDatos() {
+    try {
+      const snap = await getDocs(collection(db, "cartas"));
+      snap.forEach(doc => {
+        const d  = doc.data();
+        const id = d.id;
+        window._baseNombres[id]    = d.nombre_archivo;
+        window._eventosData[id]    = d.evento;
+        window._pistasData[id]     = d.pistas;
+        window._respuestasData[id] = { anio: d.anio, evento: d.evento, personajes: d.personajes };
+        if (d.tiene_imagen) window._idsConImagen.add(id);
+        if (d.tiene_audio)  window._idsConAudio.add(id);
+      });
+      window.iniciarJuego();
+    } catch(err) {
+      console.error("Error cargando Firestore:", err);
+      const btn = document.getElementById('btn-generate');
+      btn.textContent = '⚠ Error al cargar datos';
+      btn.disabled = true;
+    }
+  }
+  cargarDatos();
+</script>
+
+<script>
+  // ── DATOS (poblados desde Firestore) ─────────────────────────────────────
+  window._baseNombres    = {};
+  window._eventosData    = {};
+  window._pistasData     = {};
+  window._respuestasData = {};
+  window._idsConImagen   = new Set();
+  window._idsConAudio    = new Set();
+
+  // Alias para que el código del juego no cambie
+  const baseNombres    = window._baseNombres;
+  const eventosData    = window._eventosData;
+  const pistasData     = window._pistasData;
+  const respuestasData = window._respuestasData;
+  const idsConImagen   = window._idsConImagen;
+  const idsConAudio    = window._idsConAudio;
+
+  // ── INICIO DEL JUEGO (llamado por cargarDatos() tras Firestore) ────────────
+  // ── SESIÓN PERSISTENTE ──────────────────────────────────────────────────
+  const SESSION_KEY = 'misterios_sesion_v1';
+
+  function guardarSesion() {
+    try {
+      localStorage.setItem(SESSION_KEY, JSON.stringify({
+        availableIDs,
+        viewedHistory,
+        currentID
+      }));
+    } catch(e) {}
+  }
+
+  function cargarSesion(todosIDs) {
+    try {
+      const raw = localStorage.getItem(SESSION_KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      // Validar que los IDs guardados son válidos
+      if (!Array.isArray(s.availableIDs) || !Array.isArray(s.viewedHistory)) return null;
+      // Filtrar solo IDs válidos
+      s.availableIDs  = s.availableIDs.filter(id => todosIDs.has(id));
+      s.viewedHistory = s.viewedHistory.filter(id => todosIDs.has(id));
+      return s;
+    } catch(e) { return null; }
+  }
+
+  function nuevaSesion() {
+    localStorage.removeItem(SESSION_KEY);
+    availableIDs.length = 0;
+    viewedHistory.length = 0;
+    [...idsConAudio].forEach(id => availableIDs.push(id));
+    currentID = null;
+    resetQR();
+    document.getElementById('history-section').style.display='none';
+    document.getElementById('history-strip').innerHTML='';
+    updateCounter();
+    guardarSesion();
+  }
+
+  function confirmarReinicio() {
+    const dlg = document.getElementById('modal-reinicio');
+    dlg.style.display = 'flex';
+  }
+  function cancelarReinicio() {
+    document.getElementById('modal-reinicio').style.display = 'none';
+  }
+  function ejecutarReinicio() {
+    document.getElementById('modal-reinicio').style.display = 'none';
+    nuevaSesion();
+  }
+
+  window.iniciarJuego = function() {
+    const todosIDs = new Set([...idsConAudio]);
+    const sesion = cargarSesion(todosIDs);
+
+    if (sesion && sesion.availableIDs.length < todosIDs.size) {
+      // Restaurar sesión previa
+      availableIDs.length = 0;
+      sesion.availableIDs.forEach(id => availableIDs.push(id));
+      viewedHistory.length = 0;
+      sesion.viewedHistory.forEach(id => viewedHistory.push(id));
+      currentID = sesion.currentID || null;
+      if (viewedHistory.length > 0) updateHistory();
+      if (currentID && idsConAudio.has(currentID)) drawQR(currentID);
+      updateCounter();
+    } else {
+      // Sesión nueva
+      availableIDs.length = 0;
+      [...idsConAudio].forEach(id => availableIDs.push(id));
+      updateCounter();
+    }
+
+    document.getElementById('btn-generate').disabled = false;
+
+    // Si viene ?id=XX desde QR físico, mostrar splash
+    const params = new URLSearchParams(window.location.search);
+    const idParam = params.get('id');
+    if (idParam && idsConAudio.has(idParam)) {
+      mostrarSplash(idParam);
+    }
+  };
+
+  // ── STATE
+  let availableIDs = [], currentID = null;
+  const viewedHistory = [];
+  const evalQs = [
+    {text:"¿En qué año ocurrió este evento?", key:"anio"},
+    {text:"¿De qué evento histórico se trata?", key:"evento"},
+    {text:"¿Quiénes fueron los protagonistas?", key:"personajes"}
+  ];
+
+  // Deshabilitar botón mientras carga
+  document.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('btn-generate');
+    if (btn) { btn.disabled = true; btn.textContent = 'Cargando cartas…'; }
+  });
+
+  // ── CARTA CANVAS ────────────────────────────────────────────────────────
+  function drawQR(id) {
+    document.getElementById('qr-hint').style.display='none';
+    const canvas = document.getElementById('carta-canvas');
+    canvas.style.display = 'block';
+    dibujarCarta(canvas, id);
+  }
+
+  function resetQR(){
+    document.getElementById('carta-canvas').style.display='none';
+    document.getElementById('qr-hint').style.display='block';
+  }
+
+  function dibujarCarta(canvas, id) {
+    // Proporciones carta poker 63x88mm
+    const W = 315, H = 440;
+    canvas.width  = W;
+    canvas.height = H;
+    const ctx = canvas.getContext('2d');
+
+    // Colores del juego
+    const NAVY     = '#1A1A2E';
+    const SLATE    = '#1E2A3A';
+    const SLATE_LT = '#253548';
+    const GOLD     = '#C9A84C';
+    const GOLD_LT  = '#E8C97A';
+    const MIST     = '#8A9BB0';
+    const CREAM    = '#F5F0E8';
+
+    // Fondo navy con esquinas redondeadas
+    ctx.fillStyle = NAVY;
+    roundRect(ctx, 0, 0, W, H, 14);
+    ctx.fill();
+
+    // Borde dorado exterior
+    ctx.strokeStyle = GOLD;
+    ctx.lineWidth = 2.5;
+    roundRect(ctx, 6, 6, W-12, H-12, 11);
+    ctx.stroke();
+
+    // Interior slate
+    ctx.fillStyle = SLATE;
+    roundRect(ctx, 10, 10, W-20, H-20, 9);
+    ctx.fill();
+
+    // Ornamentos esquina
+    dibujarEsquinas(ctx, GOLD, W, H);
+
+    // Eyebrow
+    ctx.fillStyle = MIST;
+    ctx.font = '500 11px DM Sans, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('MISTERIOS DE CHILE  ·  VOLUMEN I', W/2, 34);
+
+    // Línea dorada
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(28, 42); ctx.lineTo(W-28, 42); ctx.stroke();
+
+    // QR zone (fondo slate-lt)
+    const qrTop = 48, qrBot = 118, qrH = H - qrTop - qrBot;
+    const qrX = 18, qrW = W - 36;
+    ctx.fillStyle = SLATE_LT;
+    roundRect(ctx, qrX, qrTop, qrW, qrH, 6);
+    ctx.fill();
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 1.2;
+    roundRect(ctx, qrX, qrTop, qrW, qrH, 6);
+    ctx.stroke();
+
+    // QR real usando canvas
+    const qrSize = Math.min(qrW, qrH) - 16;
+    const qrDrawX = (W - qrSize) / 2;
+    const qrDrawY = qrTop + (qrH - qrSize) / 2;
+    dibujarQRCanvas(ctx, id, qrDrawX, qrDrawY, qrSize, SLATE_LT, GOLD);
+
+    // Separador con diamante
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(28, H-108); ctx.lineTo(W-28, H-108); ctx.stroke();
+    dibujarDiamante(ctx, W/2, H-108, 5, GOLD);
+
+    // Texto ESCANEA PARA / EL RELATO
+    ctx.fillStyle = GOLD_LT;
+    ctx.font = 'bold 22px Times New Roman, serif';
+    ctx.textAlign = 'center';
+    ctx.fillText('ESCANEA PARA', W/2, H-76);
+    ctx.fillText('EL RELATO', W/2, H-50);
+
+    // Línea y footer
+    ctx.strokeStyle = GOLD; ctx.lineWidth = 0.8;
+    ctx.beginPath(); ctx.moveTo(28, H-36); ctx.lineTo(W-28, H-36); ctx.stroke();
+    ctx.fillStyle = MIST;
+    ctx.font = '500 10px DM Sans, sans-serif';
+    ctx.fillText(`ANVERSO  ·  ID ${id}  ·  1536 – 1910`, W/2, H-18);
+  }
+
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x+r, y);
+    ctx.lineTo(x+w-r, y);
+    ctx.quadraticCurveTo(x+w, y, x+w, y+r);
+    ctx.lineTo(x+w, y+h-r);
+    ctx.quadraticCurveTo(x+w, y+h, x+w-r, y+h);
+    ctx.lineTo(x+r, y+h);
+    ctx.quadraticCurveTo(x, y+h, x, y+h-r);
+    ctx.lineTo(x, y+r);
+    ctx.quadraticCurveTo(x, y, x+r, y);
+    ctx.closePath();
+  }
+
+  function dibujarDiamante(ctx, x, y, s, color) {
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x, y-s); ctx.lineTo(x+s, y); ctx.lineTo(x, y+s); ctx.lineTo(x-s, y);
+    ctx.closePath(); ctx.fill();
+  }
+
+  function dibujarEsquinas(ctx, color, W, H) {
+    ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+    ctx.fillStyle = color;
+    const m = 18, L = 16, s = 4;
+    [[m,H-m,1,1],[W-m,H-m,-1,1],[m,m,1,-1],[W-m,m,-1,-1]].forEach(([x,y,sx,sy])=>{
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x+sx*L,y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x,y); ctx.lineTo(x,y+sy*L); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x,y+sy*s); ctx.lineTo(x+sx*s,y); ctx.lineTo(x,y-sy*s); ctx.lineTo(x-sx*s,y);
+      ctx.closePath(); ctx.fill();
+    });
+  }
+
+  function dibujarQRCanvas(ctx, id, x, y, size, bg, fg) {
+    // QR simplificado determinístico basado en id
+    const cells = 21;
+    const cell  = size / cells;
+    ctx.fillStyle = bg;
+    ctx.fillRect(x, y, size, size);
+
+    let seed = parseInt(id) * 7919;
+    const rnd = () => { seed=(seed*1664525+1013904223)&0xffffffff; return(seed>>>0)/0xffffffff; };
+
+    ctx.fillStyle = fg;
+    for(let row=0; row<cells; row++) {
+      for(let col=0; col<cells; col++) {
+        const finderTL = col<8 && row<8;
+        const finderTR = col>=cells-8 && row<8;
+        const finderBL = col<8 && row>=cells-8;
+        let fill = false;
+        if(finderTL||finderTR||finderBL) {
+          const fc = finderTR ? col-(cells-8) : col;
+          const fr = finderBL ? row-(cells-8) : row;
+          fill = fc===0||fc===6||fr===0||fr===6||(fc>=2&&fc<=4&&fr>=2&&fr<=4);
+        } else if((col%2===0&&row===6)||(row%2===0&&col===6)) {
+          fill = (col+row)%2===0;
+        } else if(col===7||col===cells-8||row===7) {
+          fill = false;
+        } else {
+          fill = rnd()>0.45;
+        }
+        if(fill) ctx.fillRect(x+col*cell, y+row*cell, cell, cell);
+      }
+    }
+  }
+
+  // ── COUNTER
+  function updateCounter(){
+    document.getElementById('counter-num').textContent=availableIDs.length;
+    const b=document.getElementById('btn-generate');
+    if(!availableIDs.length){b.textContent='PARTIDA COMPLETADA';b.disabled=true}
+  }
+
+  // ── MAIN
+  function generateMystery(){
+    if(!availableIDs.length) return;
+    const i=Math.floor(Math.random()*availableIDs.length);
+    currentID=availableIDs[i]; availableIDs.splice(i,1);
+    drawQR(currentID); updateCounter();
+    guardarSesion();
+  }
+  function clickToOpen(){if(currentID) openMystery(currentID,true)}
+  function showGallery(){
+    document.getElementById('screen-main').style.display='none';
+    document.getElementById('screen-gallery').style.display='flex';
+    renderGallery();
+  }
+  function showMain(){
+    document.getElementById('screen-gallery').style.display='none';
+    document.getElementById('screen-main').style.display='flex';
+  }
+
+  // ── GALLERY
+  function renderGallery(){
+    const g=document.getElementById('gallery-grid'); g.innerHTML='';
+    Object.keys(baseNombres).sort().forEach(id=>{
+      const hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
+      const c=document.createElement('div'); c.className='g-card';
+      c.onclick=()=>openMystery(id,false);
+      if(hasAud){const b=document.createElement('div');b.className='g-aud-badge';b.textContent='🔊';c.appendChild(b)}
+      if(hasImg){
+        const img=document.createElement('img');
+        img.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2F${baseNombres[id]}.png?alt=media`;
+        img.onerror=function(){this.style.display='none';const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.insertBefore(p,c.querySelector('.g-id')||c.firstChild)};
+        c.appendChild(img);
+      } else {const p=document.createElement('div');p.className='g-ph';p.textContent='🔊';c.appendChild(p)}
+      const d=document.createElement('div');d.className='g-id';d.textContent=`ID ${id}`;c.appendChild(d);
+      g.appendChild(c);
+    });
+  }
+
+  // ── PLAYER
+  function setStatus(txt,col){
+    const el=document.getElementById('pista-status');
+    el.textContent=txt;
+    el.style.color=col==='gold'?'var(--gold)':col==='green'?'var(--green)':'var(--mist)';
+  }
+  function unlockPista(n){
+    document.getElementById(`btn-p${n}`).disabled=false;
+    // Unlock en el modal de pistas
+    const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+    if(revBtn) revBtn.disabled=false;
+    const block=document.getElementById(`pista-block-${n}`);
+    if(block) block.classList.remove('pista-block-locked');
+  }
+
+  let isHistoryReplay = false;
+
+  function openMystery(id, addHistory=false){
+    currentID=id;
+    isHistoryReplay = !addHistory && viewedHistory.includes(id);
+    const nom=baseNombres[id], hasImg=idsConImagen.has(id), hasAud=idsConAudio.has(id);
+    const imgEl=document.getElementById('full-img'), phEl=document.getElementById('no-img-ph');
+    if(hasImg){imgEl.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2F${nom}.png?alt=media`;imgEl.style.display='block';phEl.style.display='none'}
+    else{imgEl.style.display='none';phEl.style.display='flex'}
+
+    // Pistas y preguntas: solo visibles en partida nueva (no desde miniaturas)
+    const pistasSection = document.querySelector('.pistas-section');
+    const leftSide = document.querySelector('.player-side-left');
+    if(isHistoryReplay){
+      pistasSection.style.display='none';
+      if(leftSide) leftSide.style.display='none';
+      document.getElementById('btn-evaluar').style.display='none';
+    } else {
+      pistasSection.style.display='';
+      if(leftSide) leftSide.style.display='';
+      ['btn-p1','btn-p2','btn-p3'].forEach((b,i)=>{
+        const el=document.getElementById(b);
+        el.disabled=true; // reset: bloqueado hasta que audio libere pista 1
+        el.className='btn-pista';el.textContent=`Pista ${i+1}`;
+      });
+      // Reset modal pistas
+      for(let n=1;n<=3;n++){
+        const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+        if(revBtn){revBtn.disabled=true;revBtn.textContent='👁 Revelar pista';}
+        const ansBox=document.getElementById(`pista-ans-box-${n}`);
+        if(ansBox) ansBox.style.display='none';
+        const block=document.getElementById(`pista-block-${n}`);
+        if(block) block.classList.add('pista-block-locked');
+      }
+      setStatus('Escucha el audio para desbloquear pistas','gold');
+      document.getElementById('btn-evaluar').style.display='none';
+    }
+    // Cerrar paneles si estaban abiertos
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.getElementById('modal-pista').style.display='none';
+    document.getElementById('modal-eval').style.display='none';
+
+    document.getElementById('progress-bar').style.width='0%';
+    document.getElementById('time-display').textContent='00:00 / 00:00';
+    const audio=document.getElementById('audio-player');
+    if(hasAud){
+      audio.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/audios%2F${nom}.mp4?alt=media`;
+      document.getElementById('btn-play').style.display='';
+      document.getElementById('btn-end').style.display= isHistoryReplay ? 'none' : '';
+      audio.play(); document.getElementById('btn-play').textContent='PAUSAR';
+    } else {
+      audio.src='';
+      document.getElementById('btn-play').style.display='none';
+      document.getElementById('btn-end').style.display='none';
+      if(!isHistoryReplay){
+        setStatus('Audio en preparación — pistas disponibles','mist');
+        unlockPista(1);
+      }
+    }
+    document.getElementById('player-overlay').style.display='flex';
+    if(addHistory&&!viewedHistory.includes(id)){viewedHistory.unshift(id);updateHistory()}
+  }
+
+  function imgErr(el){el.style.display='none';document.getElementById('no-img-ph').style.display='flex'}
+
+  document.getElementById('audio-player').onended=function(){
+    document.getElementById('btn-play').textContent='REPRODUCIR';
+    if(!isHistoryReplay){
+      unlockPista(1); setStatus('¡Pista 1 desbloqueada!','green');
+      document.getElementById('btn-evaluar').style.display='block';
+    }
+  };
+  function terminarAudio(){
+    document.getElementById('audio-player').pause();
+    document.getElementById('btn-play').textContent='REPRODUCIR';
+    if(!isHistoryReplay){
+      unlockPista(1); setStatus('¡Pista 1 desbloqueada!','green');
+      document.getElementById('btn-evaluar').style.display='block';
+    }
+  }
+  function toggleAudio(){
+    const a=document.getElementById('audio-player'),b=document.getElementById('btn-play');
+    if(a.paused){a.play();b.textContent='PAUSAR'}else{a.pause();b.textContent='REPRODUCIR'}
+  }
+  function closePlayer(){
+    document.getElementById('audio-player').pause();
+    document.getElementById('player-overlay').style.display='none';
+    resetQR(); currentID=null;
+  }
+  const fmt=s=>isNaN(s)||!isFinite(s)?'00:00':`${String(Math.floor(s/60)).padStart(2,'0')}:${String(Math.floor(s%60)).padStart(2,'0')}`;
+  document.getElementById('audio-player').ontimeupdate=()=>{
+    const a=document.getElementById('audio-player');
+    if(!a.duration) return;
+    document.getElementById('progress-bar').style.width=(a.currentTime/a.duration*100)+'%';
+    document.getElementById('time-display').textContent=`${fmt(a.currentTime)} / ${fmt(a.duration)}`;
+  };
+  function seekAudio(e,el){
+    const a=document.getElementById('audio-player');
+    if(!a.duration) return;
+    const r=el.getBoundingClientRect();
+    a.currentTime=((e.clientX-r.left)/r.width)*a.duration;
+  }
+
+  // ── PISTAS
+  function mostrarPista(n){
+    if(!currentID||!pistasData[currentID]) return;
+    // Pre-cargar contenido en el modal
+    for(let i=1;i<=3;i++){
+      document.getElementById(`pista-ans-${i}`).textContent=pistasData[currentID][i-1];
+    }
+    // Abrir SOLO el panel de pistas
+    document.getElementById('modal-pista').style.display='block';
+    document.getElementById('modal-overlay').classList.add('open');
+    // Solo revelar si no fue ya revelada (evitar resetear estado)
+    const alreadyShown=document.getElementById(`pista-ans-box-${n}`).style.display==='block';
+    if(!alreadyShown) revelarPista(n);
+  }
+
+  function revelarPista(n){
+    if(!currentID||!pistasData[currentID]) return;
+    document.getElementById(`pista-ans-${n}`).textContent=pistasData[currentID][n-1];
+    document.getElementById(`pista-ans-box-${n}`).style.display='block';
+    const revBtn=document.getElementById(`btn-reveal-pista-${n}`);
+    revBtn.textContent='✓ Pista vista'; revBtn.disabled=true;
+    // Marcar el botón del player: cambia texto y estilo pero QUEDA HABILITADO
+    // (para poder reabrir el modal aunque ya esté vista)
+    const pBtn=document.getElementById(`btn-p${n}`);
+    pBtn.classList.add('vista'); pBtn.textContent='✓ Vista';
+    // Desbloquear siguiente pista
+    if(n<3){unlockPista(n+1);setStatus(`¡Pista ${n+1} disponible!`,'gold');}
+    else setStatus('Todas las pistas reveladas.','mist');
+  }
+
+  // ── EVALUACIÓN
+  function abrirEval(){
+    if(!currentID) return;
+    const r=respuestasData[currentID];
+    evalQs.forEach((q,i)=>{
+      const n=i+1;
+      document.getElementById(`eval-q-${n}`).textContent=q.text;
+      document.getElementById(`eval-ans-${n}`).textContent=r[q.key];
+      document.getElementById(`eval-ans-box-${n}`).style.display='none';
+      const btn=document.getElementById(`btn-show-${n}`);
+      btn.style.display=''; btn.disabled=false; btn.textContent='👁 Mostrar respuesta';
+    });
+    // Abrir SOLO el panel de preguntas (derecha)
+    document.getElementById('modal-eval').style.display='block';
+    document.getElementById('modal-overlay').classList.add('open');
+  }
+
+  function mostrarRespuesta(n){
+    document.getElementById(`eval-ans-box-${n}`).style.display='block';
+    const btn=document.getElementById(`btn-show-${n}`);
+    btn.textContent='✓ Respuesta vista'; btn.disabled=true;
+  }
+
+  // Cierre individual por modal
+  function cerrarModalPista(){
+    document.getElementById('modal-pista').style.display='none';
+    if(document.getElementById('modal-eval').style.display==='none')
+      document.getElementById('modal-overlay').classList.remove('open');
+  }
+  function cerrarModalEval(){
+    document.getElementById('modal-eval').style.display='none';
+    if(document.getElementById('modal-pista').style.display==='none')
+      document.getElementById('modal-overlay').classList.remove('open');
+  }
+  function cerrarModal(){
+    document.getElementById('modal-overlay').classList.remove('open');
+    document.getElementById('modal-pista').style.display='none';
+    document.getElementById('modal-eval').style.display='none';
+  }
+
+  // ── REGLAS
+  function abrirReglas(){
+    document.getElementById('modal-reglas-overlay').classList.add('open');
+  }
+  function cerrarReglas(){
+    document.getElementById('modal-reglas-overlay').classList.remove('open');
+  }
+
+  // ── HISTORY
+  function updateHistory(){
+    guardarSesion();
+    document.getElementById('history-section').style.display='block';
+    const strip=document.getElementById('history-strip'); strip.innerHTML='';
+    viewedHistory.forEach(id=>{
+      const div=document.createElement('div'); div.className='h-thumb'; div.onclick=()=>openMystery(id,false);
+      if(idsConImagen.has(id)){
+        const img=document.createElement('img'); img.src=`https://firebasestorage.googleapis.com/v0/b/misteriosdechile-7a538.firebasestorage.app/o/imagenes%2F${baseNombres[id]}.png?alt=media`;
+        img.style.cssText='width:100%;height:100%;object-fit:cover';
+        img.onerror=function(){this.remove();const a=document.createElement('div');a.className='h-audio';a.textContent='🔊';div.appendChild(a)};
+        div.appendChild(img);
+      } else {const a=document.createElement('div');a.className='h-audio';a.textContent='🔊';div.appendChild(a)}
+      const id_tag=document.createElement('div'); id_tag.className='h-id'; id_tag.textContent=id; div.appendChild(id_tag);
+      strip.appendChild(div);
+    });
+  }
+
+  // ── THUMB ZOOM PREVIEW (lupa flotante para el historial)
+  (function(){
+    const pv = document.createElement('div');
+    pv.id = 'thumb-zoom-preview';
+    const pvImg = document.createElement('img');
+    pv.appendChild(pvImg);
+    document.body.appendChild(pv);
+
+    const strip = document.getElementById('history-strip');
+
+    strip.addEventListener('mouseover', function(e){
+      const thumb = e.target.closest('.h-thumb');
+      if(!thumb) return;
+      const img = thumb.querySelector('img');
+      if(!img) return;
+
+      pvImg.src = img.src;
+      pv.style.display = 'block';
+
+      const rect = thumb.getBoundingClientRect();
+      const pw = 140, ph = 104;
+      let x = rect.left + rect.width / 2 - pw / 2;
+      let y = rect.top - ph - 10;
+
+      // Si no hay espacio arriba, mostrar abajo
+      if(y < 8) y = rect.bottom + 10;
+      // Ajustar para no salir por los lados
+      if(x < 8) x = 8;
+      if(x + pw > window.innerWidth - 8) x = window.innerWidth - pw - 8;
+
+      pv.style.left = x + 'px';
+      pv.style.top  = y + 'px';
+    });
+
+    strip.addEventListener('mouseout', function(e){
+      const thumb = e.target.closest('.h-thumb');
+      if(!thumb) return;
+      if(!thumb.contains(e.relatedTarget)){
+        pv.style.display = 'none';
+      }
+    });
+  })();
+
+  // ── SPLASH QR ────────────────────────────────────────────────────────────
+  let _splashID = null;
+
+  function mostrarSplash(id) {
+    _splashID = id;
+    const splash = document.getElementById('splash-qr');
+    const titulo = document.getElementById('splash-titulo');
+    const idTag  = document.getElementById('splash-id');
+    titulo.textContent = eventosData[id] || 'Misterio Histórico';
+    idTag.textContent  = `ID ${id}  ·  Volumen I`;
+    splash.style.display = 'flex';
+  }
+
+  function iniciarDesdeSplash() {
+    document.getElementById('splash-qr').style.display = 'none';
+    if (_splashID) openMystery(_splashID, true);
+  }
+</script>
+
+<!-- SPLASH QR — aparece cuando se llega por QR físico -->
+<div id="splash-qr" style="display:none;position:fixed;inset:0;z-index:5000;background:var(--ink-soft);flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;text-align:center">
+  <img src="./logotipo_misterios_de_chile/logo_misterios_de_chile.svg" alt="Misterios de Chile" style="height:64px;width:auto;margin-bottom:24px;filter:drop-shadow(0 2px 8px rgba(0,0,0,.6))" onerror="this.style.display='none'">
+  <p style="font-size:.65rem;letter-spacing:.18em;color:var(--gold);text-transform:uppercase;font-weight:600;margin-bottom:8px">Misterios de Chile</p>
+  <h2 id="splash-titulo" style="font-family:'Playfair Display',serif;font-size:clamp(1.4rem,5vw,2rem);font-weight:900;color:var(--cream);line-height:1.15;margin-bottom:8px"></h2>
+  <p id="splash-id" style="font-size:.68rem;color:var(--mist);letter-spacing:.1em;margin-bottom:36px"></p>
+  <button id="splash-btn" onclick="iniciarDesdeSplash()" style="width:100%;max-width:320px;padding:18px 24px;background:linear-gradient(135deg,var(--gold),#A07830);color:var(--ink);border:none;border-radius:.75rem;font-family:'DM Sans',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.06em;text-transform:uppercase;cursor:pointer;box-shadow:0 4px 24px rgba(201,168,76,.35)">
+    ▶ Iniciar Misterio
+  </button>
+  <p style="font-size:.62rem;color:var(--mist);margin-top:16px;opacity:.6">Toca para reproducir el audio y comenzar</p>
+</div>
+
+
+<!-- MODAL REINICIO -->
+<div id="modal-reinicio" style="display:none;position:fixed;inset:0;z-index:6000;background:rgba(0,0,0,.75);align-items:center;justify-content:center;padding:24px">
+  <div style="background:var(--slate);border:1px solid rgba(201,168,76,.25);border-radius:1.25rem;padding:28px 24px;max-width:340px;width:100%;text-align:center;box-shadow:0 24px 80px rgba(0,0,0,.7)">
+    <p style="font-size:2rem;margin-bottom:12px">↺</p>
+    <h3 style="font-family:'Playfair Display',serif;color:var(--cream);font-size:1.1rem;margin-bottom:10px">¿Nueva partida?</h3>
+    <p style="font-size:.8rem;color:var(--mist);line-height:1.6;margin-bottom:24px">Se borrarán todas las cartas jugadas y el historial de esta sesión. Esta acción no se puede deshacer.</p>
+    <div style="display:flex;gap:10px">
+      <button onclick="cancelarReinicio()" style="flex:1;padding:12px;background:transparent;border:1px solid rgba(138,155,176,.25);color:var(--mist);border-radius:.75rem;font-family:'DM Sans',sans-serif;font-size:.82rem;cursor:pointer">Cancelar</button>
+      <button onclick="ejecutarReinicio()" style="flex:1;padding:12px;background:var(--red);border:none;color:#fff;border-radius:.75rem;font-family:'DM Sans',sans-serif;font-size:.82rem;font-weight:700;cursor:pointer">Reiniciar</button>
+    </div>
+  </div>
+</div>
+</body>
+</html>
