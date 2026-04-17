@@ -1294,6 +1294,15 @@ img{max-width:100%}
         audio: false
       });
       video.srcObject = _scanStream;
+      // iOS/Safari: algunos navegadores no inician el video automáticamente
+      // aun con autoplay. Hay que forzar load() + play() explícitos.
+      try { video.load(); } catch(_) {}
+      // Espera a tener metadata antes de play (evita NotAllowedError en iOS)
+      await new Promise(resolve => {
+        if(video.readyState >= 1) return resolve();
+        const onReady = () => { video.removeEventListener('loadedmetadata', onReady); resolve(); };
+        video.addEventListener('loadedmetadata', onReady, { once:true });
+      });
       await video.play();
       _scanCanvas = document.createElement('canvas');
       _scanCtx = _scanCanvas.getContext('2d', { willReadFrequently: true });
@@ -1338,12 +1347,17 @@ img{max-width:100%}
       return;
     }
     const idStr = String(id).padStart(2, '0');
-    // Cierra la cámara y usa el flujo existente de "abrir por ID".
-    const input = document.getElementById('input-carta-id');
+    // Cierra la cámara y abre el misterio directo (igual que el splash QR físico).
+    // No pasamos por abrirCartaPorID para no trabarse con validaciones como
+    // "ya jugada en esta sesión" — escanear un QR debe comportarse como si
+    // viniera desde fuera de la app.
     cerrarEscaner();
-    if(input){ input.value = idStr; }
-    abrirCartaPorID();
-    if(currentID === idStr){ openMystery(idStr, true); }
+    // Limpia el input por si quedó algo de un intento previo
+    const input = document.getElementById('input-carta-id');
+    if(input){ input.value = ''; const errId = document.getElementById('id-error'); if(errId) errId.style.display='none'; }
+    currentID = idStr;
+    // Si ya fue vista en esta sesión, openMystery la tratará como replay automáticamente
+    openMystery(idStr, !viewedHistory.includes(idStr));
   }
 
   function cerrarEscaner(){
