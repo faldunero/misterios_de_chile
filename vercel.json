@@ -1,0 +1,31 @@
+{
+  "version": 2,
+  "buildCommand": "echo 'Static files ready'",
+  "outputDirectory": ".",
+  "routes": [
+    {
+      "src": "/historias/(.*)",
+      "dest": "/historias/$1"
+    },
+    {
+      "src": "/historias",
+      "dest": "/historias/index.html"
+    },
+    {
+      "src": "/fabulas/(.*)",
+      "dest": "/fabulas/$1"
+    },
+    {
+      "src": "/fabulas",
+      "dest": "/fabulas/index.html"
+    },
+    {
+      "src": "/(.*\\..*)",
+      "dest": "/$1"
+    },
+    {
+      "src": "/.*",
+      "dest": "/index.html"
+    }
+  ]
+}

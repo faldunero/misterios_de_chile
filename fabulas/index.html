@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misterios de Chile - Ludolab</title>
+    <style>
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f2f5;
+            font-family: sans-serif;
+        }
+
+        /* CONTENEDOR DE LA TARJETA (SIN BLOQUE BLANCO) */
+        .tarjeta-misterio {
+            width: 90vw;
+            max-width: 450px;
+            height: 80vh; /* Altura ajustable según prefieras */
+            background-color: #1a2a3a; /* El azul oscuro del marco */
+            border: 12px solid #1a2a3a;
+            border-radius: 40px;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* LA IMAGEN COMPLETA */
+        .tarjeta-misterio img {
+            width: 100%;
+            height: 100%;
+            /* 'contain' asegura que la imagen se vea completa sin recortarse */
+            object-fit: contain; 
+            display: block;
+            border-radius: 25px; /* Suaviza las esquinas internas de la foto */
+        }
+
+        /* Opcional: Un pequeño overlay para el ID si lo necesitas luego */
+        .id-badge {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.8);
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            color: #1a2a3a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="tarjeta-misterio">
+        <!-- El ID dinámico se puede inyectar aquí -->
+        <img id="img-principal" src="./imagenes/mitos/la_tirana.jpg" alt="Misterio de Chile">
+        <div class="id-badge" id="id-display">AM-02CL</div>
+    </div>
+
+    <script>
+        // Si necesitas que cargue una aleatoria al inicio:
+        const mitos = [
+            { id: "AM-01CL", img: "./imagenes/mitos/licanantay.jpg" },
+            { id: "AM-02CL", img: "./imagenes/mitos/la_tirana.jpg" },
+            { id: "AM-03CL", img: "./imagenes/mitos/ojo_alicanto.jpg" },
+            { id: "AM-15CL", img: "./imagenes/mitos/camino_santiago.jpg" }
+        ];
+
+        function shuffle() {
+            const misterio = mitos[Math.floor(Math.random() * mitos.length)];
+            document.getElementById('img-principal').src = misterio.img;
+            document.getElementById('id-display').innerText = misterio.id;
+        }
+
+        // Descomenta si quieres que cambie al hacer click en la tarjeta
+        // document.querySelector('.tarjeta-misterio').onclick = shuffle;
+    </script>
+</body>
+</html>
