@@ -4,14 +4,6 @@
   "outputDirectory": ".",
   "routes": [
     {
-      "src": "/historias/(.*)",
-      "dest": "/historias/$1"
-    },
-    {
-      "src": "/historias",
-      "dest": "/historias/index.html"
-    },
-    {
       "src": "/juegos/(.*)",
       "dest": "/juegos/$1"
     },
@@ -25,7 +17,7 @@
     },
     {
       "src": "/.*",
-      "dest": "/historias/index.html"
+      "dest": "/index.html"
     }
   ]
 }
