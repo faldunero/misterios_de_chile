@@ -12,12 +12,12 @@
       "dest": "/historias/index.html"
     },
     {
-      "src": "/fabulas/(.*)",
-      "dest": "/fabulas/$1"
+      "src": "/juegos/(.*)",
+      "dest": "/juegos/$1"
     },
     {
-      "src": "/fabulas",
-      "dest": "/fabulas/index.html"
+      "src": "/juegos",
+      "dest": "/juegos/index.html"
     },
     {
       "src": "/(.*\\..*)",
@@ -25,7 +25,7 @@
     },
     {
       "src": "/.*",
-      "dest": "/index.html"
+      "dest": "/historias/index.html"
     }
   ]
 }
